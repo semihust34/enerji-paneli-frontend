@@ -87,3 +87,53 @@ document.addEventListener('DOMContentLoaded', () => {
     // Tabloyu çalıştır
     loadTableData();
 });
+
+// Modal Açma/Kapama İşlemleri
+const modal = document.getElementById('addModal');
+const openBtn = document.getElementById('openModalBtn');
+const closeBtn = document.getElementById('closeModalBtn');
+
+openBtn.addEventListener('click', () => {
+    modal.classList.remove('hidden');
+});
+
+closeBtn.addEventListener('click', () => {
+    modal.classList.add('hidden');
+});
+
+// Modalın dışındaki siyah alana tıklayınca kapatma
+window.addEventListener('click', (event) => {
+    if (event.target === modal) {
+        modal.classList.add('hidden');
+    }
+});
+
+// Formu Gönderme ve Tabloyu Anlık Güncelleme
+document.getElementById('newFactoryForm').addEventListener('submit', (e) => {
+    e.preventDefault(); // Sayfa yenilenmesini engelle
+
+    // Inputlardaki değerleri al
+    const nameVal = document.getElementById('newFacName').value;
+    const ipVal = document.getElementById('newFacIp').value;
+    const countVal = document.getElementById('newFacCount').value;
+
+    // Yeni objeyi sahte veri dizimize ekle
+    const newFactory = {
+        id: mockFactoryData.length + 1,
+        name: nameVal,
+        ip: ipVal,
+        meterCount: parseInt(countVal),
+        lastSeen: "Şimdi eklendi",
+        status: "Bağlantı Bekleniyor",
+        isWarning: false
+    };
+
+    mockFactoryData.push(newFactory);
+
+    // Tabloyu yeniden çiz (JavaScript dizisindeki yeni veriyle)
+    loadTableData();
+
+    // Formu temizle ve modalı kapat
+    document.getElementById('newFactoryForm').reset();
+    modal.classList.add('hidden');
+});
