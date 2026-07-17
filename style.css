@@ -155,6 +155,11 @@ button:hover {
     background-color: transparent;
     border: 1px solid var(--error-color);
     color: var(--error-color);
+    /* Eklenen yeni kurallar */
+    margin-top: auto; 
+    flex-shrink: 0;
+    border-radius: 6px;
+    padding: 10px;
 }
 
 .logout-btn:hover {
@@ -334,4 +339,78 @@ tbody tr:hover {
     display: flex;
     flex-direction: column;
     border-right: 1px solid #333;
+}
+
+/* --- MOBİL UYUMLULUK (RESPONSIVE) --- */
+@media (max-width: 768px) {
+    /* Ana yapıyı alt alta dizer */
+    .dashboard-body {
+        flex-direction: column;
+        height: auto;
+    }
+
+    /* Sol menüyü tepeye yatay olarak sabitler */
+    .sidebar {
+        width: 100%;
+        height: auto;
+        min-height: auto;
+        min-width: 100%;
+        padding: 15px 0;
+        border-right: none;
+        border-bottom: 1px solid #333;
+    }
+
+    /* Menü linklerini yan yana kaydırılabilir yapar */
+    .nav-links {
+        display: flex;
+        overflow-x: auto;
+        white-space: nowrap;
+        padding-bottom: 10px;
+        margin: 0 10px;
+    }
+
+    .nav-links li a {
+        padding: 10px 15px;
+        border-left: none;
+        border-bottom: 3px solid transparent;
+    }
+
+    .nav-links li a:hover, .nav-links li a.active {
+        border-left: none;
+        border-bottom: 3px solid var(--accent-color);
+    }
+
+    .logout-btn {
+        margin: 10px 20px;
+    }
+
+    /* Ana içerik alanını telefon ekranına sığdırır */
+    .main-content {
+        padding: 15px;
+        width: 100%;
+        height: auto;
+        overflow-y: visible;
+    }
+
+    header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    /* Sayı kartlarını alt alta dizer */
+    .content-cards {
+        flex-direction: column;
+    }
+
+    .table-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+
+    /* Yeni fabrika ekle butonunu tam genişlik yapar */
+    #openModalBtn {
+        width: 100% !important;
+    }
 }
