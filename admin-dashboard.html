@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Paneli - Enerji İzleme</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="dashboard-body">
+
+    <!-- Sol Menü -->
+    <aside class="sidebar">
+        <div class="logo">EnerjiPanel</div>
+        <ul class="nav-links">
+            <li><a href="#" class="active">Genel Bakış</a></li>
+            <li><a href="#">Fabrikalar & Sayaçlar</a></li>
+            <li><a href="#">Müşteri Yönetimi</a></li>
+            <li><a href="#">Sistem Logları</a></li>
+        </ul>
+        <button id="logoutBtn" class="logout-btn">Çıkış Yap</button>
+    </aside>
+
+    <!-- Ana İçerik Alanı -->
+    <main class="main-content">
+        <header>
+            <h2>Admin Kontrol Merkezi</h2>
+            <div class="user-info">
+                Hoş geldin, <span id="adminName">Yetkili</span>
+            </div>
+        </header>
+
+        <section class="content-cards">
+            <!-- İstatistik Kartları -->
+            <div class="card">
+                <h3>Toplam Fabrika</h3>
+                <p class="big-number">12</p>
+            </div>
+            <div class="card">
+                <h3>Aktif Sayaç (4G)</h3>
+                <p class="big-number">84</p>
+            </div>
+            <div class="card warning">
+                <h3>Reaktif Alarmı!</h3>
+                <p>1 Fabrika sınırda</p>
+            </div>
+        </section>
+
+        <section class="data-table-section">
+            <h3>Son Eklenen Müşteriler</h3>
+            <!-- Tablo buraya gelecek -->
+            <div class="placeholder-box">Tablo veya grafik alanı...</div>
+        </section>
+    </main>
+
+    <script src="admin.js"></script>
+</body>
+</html>
