@@ -163,6 +163,11 @@ function renderChart() {
         options: {
             maintainAspectRatio: false, // <-- BU SATIRI EKLE
             responsive: true,
+             layout: {
+                padding: {
+                    bottom: 10 
+                }
+            },           
             plugins: {
                 legend: { display: false } // Üstteki etiketi gizler
             },
@@ -174,7 +179,11 @@ function renderChart() {
                 },
                 x: {
                     grid: { color: '#2c2c2c' },
-                    ticks: { color: '#a0a0a0' }
+                    ticks: { 
+                        color: '#a0a0a0',
+                        // 2. EKLENEN KISIM: Saat yazılarını (08:00 vb.) çizgiden aşağı iter
+                        padding: 10 
+                    }
                 }
             }
         }
