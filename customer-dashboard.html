@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Müşteri Paneli - Enerji İzleme</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="dashboard-body">
+
+    <!-- Sol Menü (Müşteriye Özel Sadeleştirilmiş) -->
+    <aside class="sidebar">
+        <div class="logo">EnerjiPanel</div>
+        <ul class="nav-links">
+            <li><a href="#" class="active">Tesis Özeti</a></li>
+            <li><a href="#">Geçmiş Fatura Raporları</a></li>
+            <li><a href="#">Destek Talebi</a></li>
+        </ul>
+        <button id="logoutBtn" class="logout-btn">Çıkış Yap</button>
+    </aside>
+
+    <!-- Ana İçerik Alanı -->
+    <main class="main-content">
+        <header>
+            <h2>Müşteri İzleme Ekranı</h2>
+            <div class="user-info">
+                Hoş geldin, <span id="customerName">Sayın Müşterimiz</span>
+            </div>
+        </header>
+
+        <section class="content-cards">
+            <!-- Müşteriye Özel İstatistikler -->
+            <div class="card">
+                <h3>Bana Ait Tesisler</h3>
+                <p class="big-number">2</p>
+            </div>
+            <div class="card">
+                <h3>Güncel Reaktif Oran</h3>
+                <p class="big-number">%12</p>
+            </div>
+        </section>
+
+        <section class="data-table-section">
+            <div class="table-header" style="margin-bottom: 15px;">
+                <h3>Aktif Tesislerim ve Sayaç Durumları</h3>
+            </div>
+            
+            <div class="table-container">
+                <table id="customerTable">
+                    <thead>
+                        <tr>
+                            <th>Tesis Adı</th>
+                            <th>Bağlı Sayaç</th>
+                            <th>Son Veri Güncelleme</th>
+                            <th>Durum</th>
+                        </tr>
+                    </thead>
+                    <tbody id="customerTableBody">
+                        <!-- Müşteriye ait veriler buraya gelecek -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <!-- Script her zaman en altta! -->
+    <script src="customer.js"></script>
+</body>
+</html>
