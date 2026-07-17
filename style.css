@@ -211,3 +211,71 @@ header {
     border-radius: 8px;
     border: 1px dashed #555;
 }
+
+/* --- TABLO STİLLERİ --- */
+.table-container {
+    background-color: var(--surface-color);
+    border-radius: 8px;
+    padding: 15px;
+    border: 1px solid #333;
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+thead tr {
+    border-bottom: 2px solid #444;
+}
+
+th {
+    padding: 12px 15px;
+    color: var(--text-secondary);
+    font-weight: 600;
+}
+
+td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #2c2c2c;
+    color: var(--text-primary);
+}
+
+tbody tr:hover {
+    background-color: #252525;
+}
+
+/* Durum Etiketleri (Badges) */
+.badge {
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+
+.badge.success {
+    background-color: rgba(0, 173, 181, 0.2);
+    color: var(--accent-color);
+}
+
+.badge.danger {
+    background-color: rgba(207, 102, 121, 0.2);
+    color: var(--error-color);
+}
+
+.action-btn {
+    padding: 6px 12px;
+    background-color: transparent;
+    border: 1px solid var(--text-secondary);
+    color: var(--text-secondary);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.action-btn:hover {
+    border-color: var(--accent-color);
+    color: var(--accent-color);
+}
