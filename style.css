@@ -340,6 +340,11 @@ tbody tr:hover {
     border-right: 1px solid #333;
 }
 
+/* Masaüstünde Grafik Yüksekliği */
+.chart-section {
+    height: 350px;
+}
+
 /* --- MOBİL UYUMLULUK (RESPONSIVE) --- */
 @media (max-width: 768px) {
     /* Ana yapıyı alt alta dizer */
@@ -408,8 +413,19 @@ tbody tr:hover {
         gap: 15px;
     }
 
-    /* Yeni fabrika ekle butonunu tam genişlik yapar */
+/* Yeni fabrika ekle butonunu tam genişlik yapar */
     #openModalBtn {
         width: 100% !important;
     }
-}
+
+    /* --- B KISMI: Telefonda Grafik Yüksekliği --- */
+    .chart-section {
+        height: 300px;
+    }
+    
+    #energyChart {
+        height: 100% !important;
+        width: 100% !important;
+    }
+} 
+/* DOSYANIN EN SONU (Bu parantez @media'yı kapatır) */

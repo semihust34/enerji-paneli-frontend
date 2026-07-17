@@ -161,6 +161,7 @@ function renderChart() {
             }]
         },
         options: {
+            maintainAspectRatio: false, // <-- BU SATIRI EKLE
             responsive: true,
             plugins: {
                 legend: { display: false } // Üstteki etiketi gizler
