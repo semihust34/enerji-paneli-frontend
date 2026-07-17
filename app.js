@@ -38,7 +38,7 @@ function mockBackendLogin(username, password) {
     return new Promise((resolve) => {
         setTimeout(() => {
             // Admin Senaryosu
-            if (username === "admin" && password === "1234") {
+            if (username === "admin" && password === "1234ab") {
                 resolve({
                     success: true,
                     role: "ADMIN",
