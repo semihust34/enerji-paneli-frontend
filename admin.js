@@ -137,3 +137,50 @@ document.getElementById('newFactoryForm').addEventListener('submit', (e) => {
     document.getElementById('newFactoryForm').reset();
     modal.classList.add('hidden');
 });
+
+// --- GRAFİK (CHART.JS) OLUŞTURMA ---
+function renderChart() {
+    const ctx = document.getElementById('energyChart').getContext('2d');
+    
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: ['08:00', '10:00', '12:00', '14:00', '16:00', '18:00', '20:00'],
+            datasets: [{
+                label: 'Ortalama Reaktif Oran (%)',
+                data: [12, 15, 18, 14, 22, 19, 20],
+                borderColor: '#00adb5', // Bizim vurgu rengimiz (Turkuaz)
+                backgroundColor: 'rgba(0, 173, 181, 0.1)', // Altını hafif doldurma
+                borderWidth: 2,
+                pointBackgroundColor: '#121212',
+                pointBorderColor: '#00adb5',
+                pointBorderWidth: 2,
+                pointRadius: 4,
+                fill: true,
+                tension: 0.4 // Çizgileri kavisli (smooth) yapar
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { display: false } // Üstteki etiketi gizler
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: { color: '#2c2c2c' }, // Arka plan çizgileri (Koyu)
+                    ticks: { color: '#a0a0a0' } // Rakam renkleri
+                },
+                x: {
+                    grid: { color: '#2c2c2c' },
+                    ticks: { color: '#a0a0a0' }
+                }
+            }
+        }
+    });
+}
+
+// Sayfa yüklendiğinde grafiği de çizdir
+document.addEventListener('DOMContentLoaded', () => {
+    renderChart();
+});
