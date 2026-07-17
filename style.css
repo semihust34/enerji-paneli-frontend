@@ -151,15 +151,14 @@ button:hover {
 }
 
 .logout-btn {
-    margin: 20px;
+    width: calc(100% - 40px); /* %100 genişlikten sağ ve sol boşlukları (20+20) çıkarır */
+    margin: auto 20px 20px 20px; /* Üstten sonuna kadar iter, sağ-alt-soldan 20px boşluk bırakır */
     background-color: transparent;
     border: 1px solid var(--error-color);
     color: var(--error-color);
-    /* Eklenen yeni kurallar */
-    margin-top: auto; 
-    flex-shrink: 0;
     border-radius: 6px;
     padding: 10px;
+    flex-shrink: 0;
 }
 
 .logout-btn:hover {
