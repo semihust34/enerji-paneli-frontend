@@ -10,7 +10,7 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
 
     try {
         // Gerçek Flask backend'e POST isteği atıyoruz
-        const response = await fetch('http://127.0.0.1:5000/api/login', {
+        const response = await fetch('https://outnumber-acquire-headscarf.ngrok-free.app/api/login', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

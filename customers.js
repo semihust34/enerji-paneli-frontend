@@ -10,7 +10,7 @@ let globalUsersData = [];
 
 async function loadCustomers() {
     try {
-        const response = await fetch('http://127.0.0.1:5000/api/customers');
+        const response = await fetch('https://outnumber-acquire-headscarf.ngrok-free.app/api/customers');
         const result = await response.json();
         
         if (result.success) {
@@ -79,7 +79,7 @@ window.deleteUser = async function(userId) {
     if (!confirm("Bu kullanıcıyı kalıcı olarak silmek istediğinize emin misiniz?")) return;
 
     try {
-        const response = await fetch(`http://127.0.0.1:5000/api/customers/${userId}`, { method: 'DELETE' });
+        const response = await fetch(`https://outnumber-acquire-headscarf.ngrok-free.app/api/customers/${userId}`, { method: 'DELETE' });
         const result = await response.json();
         if (response.ok && result.success) {
             loadCustomers();
@@ -224,7 +224,7 @@ document.addEventListener('DOMContentLoaded', () => {
             };
 
             try {
-                const response = await fetch('http://127.0.0.1:5000/api/customers', {
+                const response = await fetch('https://outnumber-acquire-headscarf.ngrok-free.app/api/customers', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(data)
@@ -268,7 +268,7 @@ document.addEventListener('DOMContentLoaded', () => {
             };
 
             try {
-                const response = await fetch(`http://127.0.0.1:5000/api/customers/${userId}`, {
+                const response = await fetch(`https://outnumber-acquire-headscarf.ngrok-free.app/customers/${userId}`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(data)
