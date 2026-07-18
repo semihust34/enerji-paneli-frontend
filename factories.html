@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fabrikalar ve Sayaçlar - Enerji İzleme</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="dashboard-body">
+
+    <!-- Sol Menü -->
+    <aside class="sidebar">
+        <div class="logo">EnerjiPanel</div>
+        <ul class="nav-links">
+            <li><a href="admin-dashboard.html"><i class="fas fa-chart-line"></i> Genel Bakış</a></li>
+            
+            <!-- Aktif Sınıfı Buraya Geldi -->
+            <li><a href="factories.html" class="active"><i class="fas fa-industry"></i> Fabrikalar & Sayaçlar</a></li>
+            
+            <li><a href="customer-management.html"><i class="fas fa-users"></i> Müşteri Yönetimi</a></li>
+            <li><a href="system-logs.html"><i class="fas fa-terminal"></i> Sistem Logları</a></li>
+        </ul>
+        <button id="logoutBtn" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Çıkış Yap</button>
+    </aside>
+
+    <main class="main-content">
+        <header>
+            <h2>Tesis ve Cihaz Yönetimi</h2>
+            <div class="user-info">Hoş geldin, <span id="adminName">Yetkili</span></div>
+        </header>
+
+        <!-- Filtreleme ve Arama Çubuğu -->
+        <section style="background-color: var(--surface-color); padding: 15px; border-radius: 8px; border: 1px solid #333; margin-bottom: 20px; display: flex; gap: 15px; align-items: center;">
+            <div class="input-group" style="margin-bottom: 0; flex: 1;">
+                <input type="text" id="searchInput" placeholder="Fabrika Adı, IP Adresi veya Sayaç ID ara..." style="width: 100%; border-color: #444;">
+            </div>
+            <button style="width: auto; padding: 12px 25px;"><i class="fas fa-search"></i> Cihaz Bul</button>
+        </section>
+
+        <!-- Detaylı Sayaç Tablosu -->
+        <section class="data-table-section">
+            <div class="table-container">
+                <table id="metersTable">
+                    <thead>
+                        <tr>
+                            <th>Tesis Adı</th>
+                            <th>Sayaç ID (Seri No)</th>
+                            <th>Modem IP</th>
+                            <th>Sinyal (4G)</th>
+                            <th>Son Okuma</th>
+                            <th>Durum</th>
+                            <th>İşlem</th>
+                        </tr>
+                    </thead>
+                    <tbody id="metersTableBody">
+                        <!-- JavaScript ile veriler buraya dolacak -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+    
+    <script src="factories.js"></script>
+</body>
+</html>
