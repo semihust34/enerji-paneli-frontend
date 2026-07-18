@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Logları - Enerji İzleme</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="dashboard-body">
+
+    <!-- Sol Menü -->
+    <aside class="sidebar">
+        <div class="logo">EnerjiPanel</div>
+        <ul class="nav-links">
+            <li><a href="admin-dashboard.html"><i class="fas fa-chart-line"></i> Genel Bakış</a></li>
+            <li><a href="#"><i class="fas fa-industry"></i> Fabrikalar & Sayaçlar</a></li>
+            <li><a href="customer-management.html"><i class="fas fa-users"></i> Müşteri Yönetimi</a></li>
+            <!-- Sistem Logları Sayfası Aktif -->
+            <li><a href="system-logs.html" class="active"><i class="fas fa-terminal"></i> Sistem Logları</a></li>
+        </ul>
+        <button id="logoutBtn" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Çıkış Yap</button>
+    </aside>
+
+    <main class="main-content">
+        <header>
+            <h2>Gerçek Zamanlı Sistem Logları</h2>
+            <div class="user-info">Hoş geldin, <span id="adminName">Yetkili</span></div>
+        </header>
+
+        <!-- Terminal Kutusu -->
+        <section class="terminal-container" style="background-color: #050505; border: 1px solid #333; border-radius: 8px; padding: 20px; height: 75vh; overflow-y: auto; font-family: 'Courier New', monospace; box-shadow: inset 0 0 10px rgba(0,0,0,0.8);">
+            
+            <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #333; padding-bottom: 10px; margin-bottom: 15px;">
+                <span style="color: var(--text-secondary);"><i class="fas fa-server"></i> Sunucu Durumu: <span style="color: var(--accent-color);">Aktif (9000 Portu Dinleniyor)</span></span>
+                <button id="clearLogsBtn" class="action-btn" style="padding: 4px 10px; font-size: 0.8rem;"><i class="fas fa-eraser"></i> Ekranı Temizle</button>
+            </div>
+            
+            <!-- JavaScript logları buraya yazdıracak -->
+            <div id="logOutput" style="font-size: 0.95rem; line-height: 1.6;"></div>
+            
+        </section>
+    </main>
+    
+    <script src="logs.js"></script>
+</body>
+</html>
