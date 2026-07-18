@@ -87,30 +87,6 @@ function viewDetails(factoryId) {
     alert("Seçilen Fabrika ID: " + factoryId + "\n(İleride bu butona basınca sayacın anlık verilerine veya grafiğine gideceğiz.)");
 }
 
-// Modal Açma/Kapama İşlemleri
-const modal = document.getElementById('addModal');
-const openBtn = document.getElementById('openModalBtn');
-const closeBtn = document.getElementById('closeModalBtn');
-
-if (openBtn) {
-    openBtn.addEventListener('click', () => {
-        modal.classList.remove('hidden');
-    });
-}
-
-if (closeBtn) {
-    closeBtn.addEventListener('click', () => {
-        modal.classList.add('hidden');
-    });
-}
-
-// Modalın dışındaki siyah alana tıklayınca kapatma
-window.addEventListener('click', (event) => {
-    if (event.target === modal) {
-        modal.classList.add('hidden');
-    }
-});
-
 // Formu Gönderme ve Tabloyu Anlık Güncelleme
 const newFactoryForm = document.getElementById('newFactoryForm');
 if (newFactoryForm) {
