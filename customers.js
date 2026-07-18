@@ -268,7 +268,7 @@ document.addEventListener('DOMContentLoaded', () => {
             };
 
             try {
-                const response = await fetch(`https://outnumber-acquire-headscarf.ngrok-free.app/customers/${userId}`, {
+                const response = await fetch(`https://outnumber-acquire-headscarf.ngrok-free.app/api/customers/${userId}`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(data)
