@@ -13,7 +13,8 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
         const response = await fetch('https://outnumber-acquire-headscarf.ngrok-free.dev/api/login', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'ngrok-skip-browser-warning': 'true'
             },
             body: JSON.stringify({ username: usernameInput, password: passwordInput })
         });

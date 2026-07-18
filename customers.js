@@ -226,7 +226,10 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 const response = await fetch('https://outnumber-acquire-headscarf.ngrok-free.dev/api/customers', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'ngrok-skip-browser-warning': 'true'
+                    },
                     body: JSON.stringify(data)
                 });
                 const result = await response.json();
