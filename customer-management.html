@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Müşteri Yönetimi - Enerji İzleme</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="dashboard-body">
+
+    <!-- Sol Menü -->
+    <aside class="sidebar">
+        <div class="logo">EnerjiPanel</div>
+        <ul class="nav-links">
+            <li><a href="admin-dashboard.html"><i class="fas fa-chart-line"></i> Genel Bakış</a></li>
+            <li><a href="#"><i class="fas fa-industry"></i> Fabrikalar & Sayaçlar</a></li>
+            <!-- Müşteri Yönetimi Butonu Aktif Edildi -->
+            <li><a href="customer-management.html" class="active"><i class="fas fa-users"></i> Müşteri Yönetimi</a></li>
+            <li><a href="#"><i class="fas fa-terminal"></i> Sistem Logları</a></li>
+        </ul>
+        <button id="logoutBtn" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Çıkış Yap</button>
+    </aside>
+
+    <main class="main-content">
+        <header>
+            <h2>Müşteri Yönetimi ve Yetkilendirme</h2>
+            <div class="user-info">Hoş geldin, <span id="adminName">Yetkili</span></div>
+        </header>
+
+        <section class="data-table-section">
+            <div class="table-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h3>Sisteme Kayıtlı Müşteriler</h3>
+                <button id="openCustomerModalBtn" style="width: auto; padding: 10px 20px;">+ Yeni Müşteri Ekle</button>
+            </div>
+            
+            <div class="table-container">
+                <table id="customerTable">
+                    <thead>
+                        <tr>
+                            <th>Müşteri/Firma Adı</th>
+                            <th>Kullanıcı Adı</th>
+                            <th>Erişim Sağladığı Tesisler</th>
+                            <th>Yetki Seviyesi</th>
+                            <th>İşlem</th>
+                        </tr>
+                    </thead>
+                    <tbody id="customerTableBody">
+                        <!-- JavaScript ile veriler buraya dolacak -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <!-- Yeni Müşteri Ekleme Formu (Modal) -->
+    <div id="customerModal" class="modal hidden">
+        <div class="modal-content" style="max-width: 500px;">
+            <span class="close-btn" id="closeCustomerModalBtn">&times;</span>
+            <h3 style="margin-bottom: 20px;"><i class="fas fa-user-plus"></i> Yeni Müşteri Hesabı Oluştur</h3>
+            
+            <form id="newCustomerForm">
+                <div class="input-group">
+                    <label>Müşteri/Firma Adı</label>
+                    <input type="text" id="custName" placeholder="Örn: ABC Lojistik" required autocomplete="off">
+                </div>
+                <div style="display: flex; gap: 15px;">
+                    <div class="input-group" style="flex: 1;">
+                        <label>Kullanıcı Adı</label>
+                        <input type="text" id="custUsername" placeholder="Örn: abc_user" required>
+                    </div>
+                    <div class="input-group" style="flex: 1;">
+                        <label>Geçici Şifre</label>
+                        <input type="password" id="custPassword" required>
+                    </div>
+                </div>
+                
+                <!-- Fabrika Atama Alanı -->
+                <div class="input-group" style="background-color: #2c2c2c; padding: 15px; border-radius: 6px; border: 1px solid #333;">
+                    <label style="color: var(--accent-color); font-weight: bold; margin-bottom: 10px;"><i class="fas fa-building"></i> Görüntüleyebileceği Fabrikalar</label>
+                    <div style="display: flex; flex-direction: column; gap: 10px;">
+                        <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                            <input type="checkbox" name="factories" value="Plastik Enjeksiyon A.Ş."> Plastik Enjeksiyon A.Ş.
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                            <input type="checkbox" name="factories" value="Demir Döküm Fabrikası"> Demir Döküm Fabrikası
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Yetki Atama Alanı -->
+                <div class="input-group" style="background-color: #2c2c2c; padding: 15px; border-radius: 6px; border: 1px solid #333; margin-top: 15px;">
+                    <label style="color: var(--accent-color); font-weight: bold; margin-bottom: 10px;"><i class="fas fa-shield-alt"></i> İşlem Yetkileri</label>
+                    <div style="display: flex; flex-direction: column; gap: 10px;">
+                        <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                            <input type="checkbox" name="permissions" value="Sadece İzleme" checked disabled> Sadece İzleme (Zorunlu)
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                            <input type="checkbox" name="permissions" value="Rapor İndirme"> Geçmiş Raporları İndirme
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                            <input type="checkbox" name="permissions" value="Alarm Ayarlama"> Alarm Eşik Değerlerini Değiştirme
+                        </label>
+                    </div>
+                </div>
+
+                <button type="submit" style="margin-top: 15px;">Müşteri Hesabını Aktifleştir</button>
+            </form>
+        </div>
+    </div>
+    
+    <script src="customers.js"></script>
+</body>
+</html>
