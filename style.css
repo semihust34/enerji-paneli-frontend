@@ -429,17 +429,19 @@ tbody tr:hover {
     }
 } 
 
+.login-container {
+    display: flex;
+    flex-direction: column; /* Elemanları alt alta dizer */
+    align-items: center;    /* Yatayda ortalar */
+    justify-content: center;
+    min-height: 100vh;
+}
+
 .logo-container {
-    text-align: center;
-    margin-bottom: 30px; /* Logo ile kutu arasında daha fazla boşluk bırakır */
+    margin-bottom: 25px;    /* Logo ile kutu arasına mesafe koyar */
 }
 
 .login-logo {
-    max-width: 300px; /* Biraz büyütebiliriz, artık dışarıda olduğu için daha iyi durur */
+    max-width: 300px;       /* Logonu biraz büyütebilirsin */
     height: auto;
-}
-
-.login-box {
-    /* Mevcut özelliklerin duruyor, sadece ek olarak: */
-    margin-top: 0; 
 }
