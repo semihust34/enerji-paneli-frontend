@@ -1,69 +1,38 @@
-// customers.js
-
-// Temsili Müşteri Verileri
-const mockCustomers = [
-    {
-        id: 1,
-        companyName: "ABC Lojistik",
-        username: "abc_admin",
-        assignedFactories: ["Plastik Enjeksiyon A.Ş."],
-        permissions: ["İzleme", "Rapor İndirme"]
-    },
-    {
-        id: 2,
-        companyName: "Mega Metal A.Ş.",
-        username: "mega_user",
-        assignedFactories: ["Demir Döküm Fabrikası", "Plastik Enjeksiyon A.Ş."],
-        permissions: ["İzleme", "Alarm Ayarlama"]
-    }
-];
-
-// Tabloyu Ekrana Çizdiren Fonksiyon
-function renderCustomerTable() {
-    const tbody = document.getElementById('customerTableBody');
-    tbody.innerHTML = '';
-    
-    mockCustomers.forEach(cust => {
-        // Yetkileri şık rozetlere (badge) dönüştürüyoruz
-        const permissionsHtml = cust.permissions.map(p => `<span class="badge success" style="margin-right: 5px;">${p}</span>`).join('');
-        // Fabrikaları alt alta yazdırıyoruz
-        const factoriesHtml = cust.assignedFactories.join('<br>');
-
-        const row = `
-            <tr>
-                <td><strong>${cust.companyName}</strong></td>
-                <td><span style="color: var(--text-secondary);">@${cust.username}</span></td>
-                <td>${factoriesHtml}</td>
-                <td>${permissionsHtml}</td>
-                <td>
-                    <button class="action-btn" style="margin-right: 5px;"><i class="fas fa-edit"></i> Düzenle</button> 
-                    <button class="action-btn" style="color: var(--error-color); border-color: var(--error-color);"><i class="fas fa-trash"></i> Sil</button>
-                </td>
-            </tr>
-        `;
-        tbody.innerHTML += row;
-    });
-}
-
 document.addEventListener('DOMContentLoaded', () => {
-    // Sayfa yüklendiğinde tabloyu doldur
-    renderCustomerTable();
+    const customerForm = document.getElementById('newCustomerForm');
 
-    // Modal (Açılır Pencere) İşlemleri
-    const modal = document.getElementById('customerModal');
-    const openBtn = document.getElementById('openCustomerModalBtn');
-    const closeBtn = document.getElementById('closeCustomerModalBtn');
+    customerForm.addEventListener('submit', async (e) => {
+        e.preventDefault(); // Sayfanın yenilenmesini engelle
 
-    openBtn.addEventListener('click', () => {
-        modal.classList.remove('hidden');
-    });
+        // Formdan verileri çek
+        const customerData = {
+            company_name: document.getElementById('custName').value,
+            username: document.getElementById('custUsername').value,
+            password: document.getElementById('custPassword').value
+        };
 
-    closeBtn.addEventListener('click', () => {
-        modal.classList.add('hidden');
-    });
+        try {
+            // Backend'e POST isteği gönder
+            const response = await fetch('http://127.0.0.1:5000/api/customers', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(customerData)
+            });
 
-    // Çıkış Yap Butonu
-    document.getElementById('logoutBtn').addEventListener('click', () => {
-        window.location.href = 'index.html';
+            const result = await response.json();
+
+            if (result.success) {
+                alert('Başarılı: ' + result.message);
+                customerForm.reset(); // Formu temizle
+                // Burada istersen müşteri listesini yenileyen bir fonksiyon çağırabilirsin
+            } else {
+                alert('Hata: ' + result.message);
+            }
+        } catch (error) {
+            console.error('Bağlantı Hatası:', error);
+            alert('Sunucuya ulaşılamadı. Python sunucusunun çalıştığından emin ol!');
+        }
     });
 });
