@@ -1,17 +1,13 @@
 // customers.js
 
-// 1. GÜVENLİK: Aktif kullanıcının rolünü al
 const currentUserRole = localStorage.getItem('userRole');
 
-// Müşterilerin bu sayfaya girmesini engelle
 if (currentUserRole === 'CUSTOMER') {
     window.location.href = 'customer-dashboard.html';
 }
 
-// Global olarak tüm kullanıcı verilerini tutacağımız dizi
 let globalUsersData = [];
 
-// 2. Kullanıcıları Listeleme Fonksiyonu
 async function loadCustomers() {
     try {
         const response = await fetch('http://127.0.0.1:5000/api/customers');
@@ -23,7 +19,6 @@ async function loadCustomers() {
             tbody.innerHTML = '';
             
             result.customers.forEach(user => {
-                // --- A. ŞİFRE GÖSTERİM MANTIĞI ---
                 let displayPassword = "*****";
                 if (currentUserRole === 'SUPERADMIN') {
                     displayPassword = user.password; 
@@ -32,9 +27,7 @@ async function loadCustomers() {
                     else displayPassword = user.password;
                 }
 
-                // --- B. YETKİ MANTIĞI: KİM KİMİ DÜZENLEYEBİLİR VE SİLEBİLİR? ---
                 let canEditAndDelete = false;
-                
                 if (currentUserRole === 'SUPERADMIN') {
                     canEditAndDelete = true;
                 } else if (currentUserRole === 'ADMIN') {
@@ -53,18 +46,25 @@ async function loadCustomers() {
                     actionHtml = `<span style="color: #555; font-size: 0.8rem;"><i class="fas fa-lock"></i> Yetki Yok</span>`;
                 }
 
-                // --- C. ROL ETİKETLERİ ---
                 let roleBadge = '';
-                if (user.role === 'SUPERADMIN') roleBadge = '<span class="badge" style="background: rgba(255, 215, 0, 0.2); color: #ffd700;">Yönetici</span>';
-                else if (user.role === 'ADMIN') roleBadge = '<span class="badge danger">Personel</span>';
-                else roleBadge = '<span class="badge success">Müşteri</span>';
+                let facilitiesText = 'Tüm Tesisler'; // Admin ve SuperAdmin için varsayılan
+
+                if (user.role === 'SUPERADMIN') {
+                    roleBadge = '<span class="badge" style="background: rgba(255, 215, 0, 0.2); color: #ffd700;">Yönetici</span>';
+                } else if (user.role === 'ADMIN') {
+                    roleBadge = '<span class="badge danger">Personel</span>';
+                } else {
+                    roleBadge = '<span class="badge success">Müşteri</span>';
+                    // Müşteri ise seçili fabrikaları göster, boşsa Atanmadı yaz
+                    facilitiesText = user.factories ? user.factories : '<span style="color:var(--error-color)">Atanmadı</span>';
+                }
 
                 tbody.innerHTML += `
                     <tr>
                         <td>${user.company_name}</td>
                         <td>${user.username}</td>
                         <td style="font-family: monospace; color: var(--accent-color);">${displayPassword}</td>
-                        <td>Tüm Tesisler</td>
+                        <td style="font-size: 0.9rem;">${facilitiesText}</td>
                         <td>${roleBadge}</td>
                         <td>${actionHtml}</td>
                     </tr>
@@ -76,7 +76,6 @@ async function loadCustomers() {
     }
 }
 
-// 3. Silme Fonksiyonu
 window.deleteUser = async function(userId) {
     if (!confirm("Bu kullanıcıyı kalıcı olarak silmek istediğinize emin misiniz?")) return;
 
@@ -93,7 +92,6 @@ window.deleteUser = async function(userId) {
     }
 };
 
-// 4. Düzenleme Modalını Açma Fonksiyonu
 window.openEditModal = function(userId) {
     const userToEdit = globalUsersData.find(u => u.id === userId);
     if (!userToEdit) return;
@@ -104,16 +102,22 @@ window.openEditModal = function(userId) {
     document.getElementById('editCustPassword').value = userToEdit.password;
     document.getElementById('editCustRole').value = userToEdit.role;
 
+    // Fabrika kutucuklarını temizle ve kullanıcının yetkilerine göre işaretle
+    document.querySelectorAll('input[name="editFactories"]').forEach(cb => cb.checked = false);
+    if (userToEdit.factories) {
+        const userFacs = userToEdit.factories.split(', ');
+        userFacs.forEach(fac => {
+            const cb = document.querySelector(`input[name="editFactories"][value="${fac}"]`);
+            if (cb) cb.checked = true;
+        });
+    }
+
     document.getElementById('editCustomerModal').classList.remove('hidden');
 };
 
-// 5. Olay Dinleyicileri (Sayfa Yüklendiğinde)
 document.addEventListener('DOMContentLoaded', () => {
     loadCustomers();
 
-    // =========================================================================
-    // YENİ EKLENEN GÜVENLİK KATI: Personel ise SUPERADMIN seçeneğini DOM'dan sil
-    // =========================================================================
     if (currentUserRole !== 'SUPERADMIN') {
         const custRoleSelect = document.getElementById('custRole');
         const editCustRoleSelect = document.getElementById('editCustRole');
@@ -128,9 +132,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (superAdminOption) superAdminOption.remove();
         }
     }
-    // =========================================================================
 
-    // Yeni Kullanıcı Ekleme Modal İşlemleri
     const addModal = document.getElementById('customerModal');
     const openAddBtn = document.getElementById('openCustomerModalBtn');
     const closeAddBtn = document.getElementById('closeCustomerModalBtn');
@@ -138,18 +140,15 @@ document.addEventListener('DOMContentLoaded', () => {
     if (openAddBtn) openAddBtn.addEventListener('click', () => addModal.classList.remove('hidden'));
     if (closeAddBtn) closeAddBtn.addEventListener('click', () => addModal.classList.add('hidden'));
 
-    // Düzenleme Modal İşlemleri
     const editModal = document.getElementById('editCustomerModal');
     const closeEditBtn = document.getElementById('closeEditModalBtn');
     if (closeEditBtn) closeEditBtn.addEventListener('click', () => editModal.classList.add('hidden'));
 
-    // Modalların Dışına Tıklayınca Kapatma
     window.addEventListener('click', (e) => {
         if (e.target === addModal) addModal.classList.add('hidden');
         if (e.target === editModal) editModal.classList.add('hidden');
     });
 
-    // Çıkış Yap
     const logoutBtn = document.getElementById('logoutBtn');
     if (logoutBtn) {
         logoutBtn.addEventListener('click', () => {
@@ -158,16 +157,21 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // A. YENİ KULLANICI KAYIT İŞLEMİ (POST)
     const newCustomerForm = document.getElementById('newCustomerForm');
     if (newCustomerForm) {
         newCustomerForm.addEventListener('submit', async (e) => {
             e.preventDefault();
+            
+            // Seçili fabrikaları virgülle birleştir (Örn: "Plastik Enjeksiyon A.Ş., Demir Döküm Fabrikası")
+            const checkedFactories = Array.from(document.querySelectorAll('input[name="factories"]:checked'))
+                                          .map(cb => cb.value).join(', ');
+
             const data = {
                 company_name: document.getElementById('custName').value,
                 username: document.getElementById('custUsername').value,
                 password: document.getElementById('custPassword').value,
-                role: document.getElementById('custRole').value 
+                role: document.getElementById('custRole').value,
+                factories: checkedFactories 
             };
 
             try {
@@ -191,18 +195,22 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // B. KULLANICI DÜZENLEME İŞLEMİ (PUT)
     const editCustomerForm = document.getElementById('editCustomerForm');
     if (editCustomerForm) {
         editCustomerForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             
             const userId = document.getElementById('editUserId').value;
+            
+            const checkedEditFactories = Array.from(document.querySelectorAll('input[name="editFactories"]:checked'))
+                                              .map(cb => cb.value).join(', ');
+
             const data = {
                 company_name: document.getElementById('editCustName').value,
                 username: document.getElementById('editCustUsername').value,
                 password: document.getElementById('editCustPassword').value,
-                role: document.getElementById('editCustRole').value 
+                role: document.getElementById('editCustRole').value,
+                factories: checkedEditFactories
             };
 
             try {

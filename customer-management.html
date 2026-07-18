@@ -84,6 +84,18 @@
                     </div>
                 </div>
 
+                <div class="input-group" style="background-color: #2c2c2c; padding: 15px; border-radius: 6px; border: 1px solid #333;">
+                    <label style="color: var(--accent-color); font-weight: bold; margin-bottom: 10px;"><i class="fas fa-building"></i> Görüntüleyebileceği Fabrikalar</label>
+                    <div style="display: flex; flex-direction: column; gap: 10px;">
+                        <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                            <input type="checkbox" name="factories" value="Plastik Enjeksiyon A.Ş."> Plastik Enjeksiyon A.Ş.
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                            <input type="checkbox" name="factories" value="Demir Döküm Fabrikası"> Demir Döküm Fabrikası
+                        </label>
+                    </div>
+                </div>
+
                 <button type="submit" style="margin-top: 15px;">Hesabı Aktifleştir</button>
             </form>
         </div>
@@ -96,7 +108,6 @@
             <h3 style="margin-bottom: 20px;"><i class="fas fa-user-edit"></i> Hesabı Düzenle</h3>
             
             <form id="editCustomerForm">
-                <!-- Hangi kullanıcıyı güncelleyeceğimizi bilmek için ID tutucu -->
                 <input type="hidden" id="editUserId">
 
                 <div class="input-group">
@@ -120,6 +131,18 @@
                             <option value="ADMIN">Personel</option>
                             <option value="SUPERADMIN">Yönetici</option>
                         </select>
+                    </div>
+                </div>
+
+                <div class="input-group" style="background-color: #2c2c2c; padding: 15px; border-radius: 6px; border: 1px solid #333; margin-top: 15px;">
+                    <label style="color: var(--accent-color); font-weight: bold; margin-bottom: 10px;"><i class="fas fa-building"></i> Görüntüleyebileceği Fabrikalar</label>
+                    <div style="display: flex; flex-direction: column; gap: 10px;">
+                        <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                            <input type="checkbox" name="editFactories" value="Plastik Enjeksiyon A.Ş."> Plastik Enjeksiyon A.Ş.
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                            <input type="checkbox" name="editFactories" value="Demir Döküm Fabrikası"> Demir Döküm Fabrikası
+                        </label>
                     </div>
                 </div>
 
