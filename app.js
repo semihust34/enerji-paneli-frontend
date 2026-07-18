@@ -1,34 +1,38 @@
 // app.js
 document.getElementById('loginForm').addEventListener('submit', async function(event) {
-    event.preventDefault();
+    event.preventDefault(); // Sayfanın yenilenmesini durdur
 
     const usernameInput = document.getElementById('username').value;
     const passwordInput = document.getElementById('password').value;
     const errorDiv = document.getElementById('errorMessage');
     
-    errorDiv.classList.add('hidden');
+    errorDiv.classList.add('hidden'); // Her denemede hatayı gizle
 
     try {
-        // Gerçek API'ye POST isteği atıyoruz
+        // Gerçek Flask backend'e POST isteği atıyoruz
         const response = await fetch('http://127.0.0.1:5000/api/login', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json'
+            },
             body: JSON.stringify({ username: usernameInput, password: passwordInput })
         });
         
         const responseData = await response.json();
         
         if (response.ok && responseData.success) {
+            // Başarılı giriş: Token ve rolü LocalStorage'a kaydet
             localStorage.setItem('userToken', responseData.token);
             localStorage.setItem('userRole', responseData.role);
             
-            if (responseData.role === 'ADMIN') {
+            // ROLE KONTROLÜ VE YÖNLENDİRME (SUPERADMIN VE ADMIN AYNI PANELE GİDER)
+            if(responseData.role === 'ADMIN' || responseData.role === 'SUPERADMIN') {
                 window.location.href = 'admin-dashboard.html';
-            } else {
+            } else if (responseData.role === 'CUSTOMER') {
                 window.location.href = 'customer-dashboard.html';
             }
         } else {
-            errorDiv.textContent = responseData.message || "Giriş başarısız.";
+            errorDiv.textContent = responseData.message || "Kullanıcı adı veya şifre hatalı!";
             errorDiv.classList.remove('hidden');
         }
     } catch (error) {

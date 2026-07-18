@@ -1,23 +1,29 @@
 // admin.js
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. Güvenlik Kontrolü (Sadece Adminler girebilir)
+    // 1. Güvenlik Kontrolü (Sadece Adminler ve Yöneticiler girebilir)
     const userRole = localStorage.getItem('userRole');
     
-    if (userRole !== 'ADMIN') {
+    if (userRole !== 'ADMIN' && userRole !== 'SUPERADMIN') {
         alert("Bu sayfayı görüntüleme yetkiniz yok!");
         window.location.href = 'index.html'; // Giriş sayfasına geri şutla
         return;
     }
 
     // 2. Çıkış Yapma İşlemi
-    document.getElementById('logoutBtn').addEventListener('click', () => {
-        localStorage.removeItem('userToken');
-        localStorage.removeItem('userRole');
-        window.location.href = 'index.html';
-    });
+    const logoutBtn = document.getElementById('logoutBtn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', () => {
+            localStorage.removeItem('userToken');
+            localStorage.removeItem('userRole');
+            window.location.href = 'index.html';
+        });
+    }
+
+    // Tabloyu ve Grafiği Çalıştır
+    if (typeof loadTableData === 'function') loadTableData();
+    if (typeof renderChart === 'function') renderChart();
 });
 
-// admin.js (Mevcut kodların altına eklenecek)
 
 // Backend'den gelecek olan örnek veri yapısı
 const mockFactoryData = [
@@ -53,6 +59,7 @@ const mockFactoryData = [
 // Sayfa yüklendiğinde tabloyu dolduracak fonksiyon
 function loadTableData() {
     const tableBody = document.getElementById('tableBody');
+    if (!tableBody) return;
     tableBody.innerHTML = ''; // Önce tabloyu temizle
 
     mockFactoryData.forEach(factory => {
@@ -80,26 +87,22 @@ function viewDetails(factoryId) {
     alert("Seçilen Fabrika ID: " + factoryId + "\n(İleride bu butona basınca sayacın anlık verilerine veya grafiğine gideceğiz.)");
 }
 
-// Güvenlik kontrolünden sonra (DOMContentLoaded içinde) tabloyu yükle
-document.addEventListener('DOMContentLoaded', () => {
-    // (Önceki güvenlik kontrolleri ve logout kodu burada duruyor...)
-    
-    // Tabloyu çalıştır
-    loadTableData();
-});
-
 // Modal Açma/Kapama İşlemleri
 const modal = document.getElementById('addModal');
 const openBtn = document.getElementById('openModalBtn');
 const closeBtn = document.getElementById('closeModalBtn');
 
-openBtn.addEventListener('click', () => {
-    modal.classList.remove('hidden');
-});
+if (openBtn) {
+    openBtn.addEventListener('click', () => {
+        modal.classList.remove('hidden');
+    });
+}
 
-closeBtn.addEventListener('click', () => {
-    modal.classList.add('hidden');
-});
+if (closeBtn) {
+    closeBtn.addEventListener('click', () => {
+        modal.classList.add('hidden');
+    });
+}
 
 // Modalın dışındaki siyah alana tıklayınca kapatma
 window.addEventListener('click', (event) => {
@@ -109,38 +112,44 @@ window.addEventListener('click', (event) => {
 });
 
 // Formu Gönderme ve Tabloyu Anlık Güncelleme
-document.getElementById('newFactoryForm').addEventListener('submit', (e) => {
-    e.preventDefault(); // Sayfa yenilenmesini engelle
+const newFactoryForm = document.getElementById('newFactoryForm');
+if (newFactoryForm) {
+    newFactoryForm.addEventListener('submit', (e) => {
+        e.preventDefault(); // Sayfa yenilenmesini engelle
 
-    // Inputlardaki değerleri al
-    const nameVal = document.getElementById('newFacName').value;
-    const ipVal = document.getElementById('newFacIp').value;
-    const countVal = document.getElementById('newFacCount').value;
+        // Inputlardaki değerleri al
+        const nameVal = document.getElementById('newFacName').value;
+        const ipVal = document.getElementById('newFacIp').value;
+        const countVal = document.getElementById('newFacCount').value;
 
-    // Yeni objeyi sahte veri dizimize ekle
-    const newFactory = {
-        id: mockFactoryData.length + 1,
-        name: nameVal,
-        ip: ipVal,
-        meterCount: parseInt(countVal),
-        lastSeen: "Şimdi eklendi",
-        status: "Bağlantı Bekleniyor",
-        isWarning: false
-    };
+        // Yeni objeyi sahte veri dizimize ekle
+        const newFactory = {
+            id: mockFactoryData.length + 1,
+            name: nameVal,
+            ip: ipVal,
+            meterCount: parseInt(countVal),
+            lastSeen: "Şimdi eklendi",
+            status: "Bağlantı Bekleniyor",
+            isWarning: false
+        };
 
-    mockFactoryData.push(newFactory);
+        mockFactoryData.push(newFactory);
 
-    // Tabloyu yeniden çiz (JavaScript dizisindeki yeni veriyle)
-    loadTableData();
+        // Tabloyu yeniden çiz (JavaScript dizisindeki yeni veriyle)
+        loadTableData();
 
-    // Formu temizle ve modalı kapat
-    document.getElementById('newFactoryForm').reset();
-    modal.classList.add('hidden');
-});
+        // Formu temizle ve modalı kapat
+        newFactoryForm.reset();
+        modal.classList.add('hidden');
+    });
+}
 
 // --- GRAFİK (CHART.JS) OLUŞTURMA ---
 function renderChart() {
-    const ctx = document.getElementById('energyChart').getContext('2d');
+    const chartCanvas = document.getElementById('energyChart');
+    if (!chartCanvas) return;
+    
+    const ctx = chartCanvas.getContext('2d');
     
     new Chart(ctx, {
         type: 'line',
@@ -189,8 +198,3 @@ function renderChart() {
         }
     });
 }
-
-// Sayfa yüklendiğinde grafiği de çizdir
-document.addEventListener('DOMContentLoaded', () => {
-    renderChart();
-});
