@@ -1,65 +1,38 @@
 // app.js
 document.getElementById('loginForm').addEventListener('submit', async function(event) {
-    event.preventDefault(); // Sayfanın yenilenmesini durdur
+    event.preventDefault();
 
     const usernameInput = document.getElementById('username').value;
     const passwordInput = document.getElementById('password').value;
     const errorDiv = document.getElementById('errorMessage');
     
-    errorDiv.classList.add('hidden'); // Her denemede hatayı gizle
+    errorDiv.classList.add('hidden');
 
     try {
-        // Backend API hazır olana kadar simüle edilmiş giriş fonksiyonu kullanıyoruz
-        const responseData = await mockBackendLogin(usernameInput, passwordInput);
+        // Gerçek API'ye POST isteği atıyoruz
+        const response = await fetch('http://127.0.0.1:5000/api/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username: usernameInput, password: passwordInput })
+        });
         
-        if(responseData.success) {
-            // Başarılı giriş: Token ve rolü LocalStorage'a kaydet
+        const responseData = await response.json();
+        
+        if (response.ok && responseData.success) {
             localStorage.setItem('userToken', responseData.token);
             localStorage.setItem('userRole', responseData.role);
             
-            // ROLE KONTROLÜ VE YÖNLENDİRME
-            if(responseData.role === 'ADMIN') {
+            if (responseData.role === 'ADMIN') {
                 window.location.href = 'admin-dashboard.html';
-            } else if (responseData.role === 'CUSTOMER') {
+            } else {
                 window.location.href = 'customer-dashboard.html';
             }
         } else {
-            errorDiv.textContent = responseData.message;
+            errorDiv.textContent = responseData.message || "Giriş başarısız.";
             errorDiv.classList.remove('hidden');
         }
     } catch (error) {
-        errorDiv.textContent = "Sunucuya bağlanılamadı.";
+        errorDiv.textContent = "Sunucuya bağlanılamadı. Python sunucusunun çalıştığından emin ol!";
         errorDiv.classList.remove('hidden');
     }
 });
-
-// Geçici (Mock) Backend Fonksiyonu
-function mockBackendLogin(username, password) {
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            // Admin Senaryosu
-            if (username === "admin" && password === "1234ab") {
-                resolve({
-                    success: true,
-                    role: "ADMIN",
-                    token: "mock_jwt_token_for_admin_xyz"
-                });
-            } 
-            // Müşteri Senaryosu
-            else if (username === "musteri" && password === "1234") {
-                resolve({
-                    success: true,
-                    role: "CUSTOMER",
-                    token: "mock_jwt_token_for_customer_abc"
-                });
-            } 
-            // Hatalı Giriş
-            else {
-                resolve({
-                    success: false,
-                    message: "Kullanıcı adı veya şifre hatalı!"
-                });
-            }
-        }, 1000); // 1 saniyelik ağ gecikmesi simülasyonu
-    });
-}
