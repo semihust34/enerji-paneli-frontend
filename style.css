@@ -1,5 +1,3 @@
-/* style.css */
-
 :root {
     --bg-color: #121212;
     --surface-color: #1e1e1e;
@@ -17,19 +15,22 @@
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-body {
+/* Sadece Giriş Sayfası İçin Sabitleme */
+body.login-page {
     background-color: var(--bg-color);
     color: var(--text-primary);
-    min-height: 100vh;
-    padding: 20px;
-}
-
-/* Sadece giriş sayfası için kilitli ekran ayarı */
-body.login-page {
     display: flex;
     justify-content: center;
     align-items: center;
-    overflow: hidden; /* İşte bu kısım mobildeki kaymayı engeller */
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden; /* Sayfanın kaymasını kesin olarak engeller */
+}
+
+/* Normal Sayfalar (Dashboard) İçin */
+body:not(.login-page) {
+    background-color: var(--bg-color);
+    color: var(--text-primary);
 }
 
 /* --- GİRİŞ EKRANI STİLLERİ --- */
@@ -39,6 +40,7 @@ body.login-page {
     align-items: center;
     justify-content: center;
     width: 100%;
+    padding: 20px;
 }
 
 .logo-container {
@@ -47,7 +49,7 @@ body.login-page {
 }
 
 .login-logo {
-    max-width: 300px;
+    max-width: 350px; /* Logon burada büyütüldü */
     width: 100%;
     height: auto;
 }
@@ -389,11 +391,4 @@ tbody tr:hover {
     .chart-section {
         height: 300px;
     }
-}
-
-/* Logo boyutunu burada 350px olarak büyüttük */
-.login-logo {
-    max-width: 350px; 
-    width: 100%;
-    height: auto;
 }
