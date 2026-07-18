@@ -14,10 +14,7 @@
         <div class="logo">EnerjiPanel</div>
         <ul class="nav-links">
             <li><a href="admin-dashboard.html"><i class="fas fa-chart-line"></i> Genel Bakış</a></li>
-            
-            <!-- Aktif Sınıfı Buraya Geldi -->
             <li><a href="factories.html" class="active"><i class="fas fa-industry"></i> Fabrikalar & Sayaçlar</a></li>
-            
             <li><a href="customer-management.html"><i class="fas fa-users"></i> Müşteri Yönetimi</a></li>
             <li><a href="system-logs.html"><i class="fas fa-terminal"></i> Sistem Logları</a></li>
         </ul>
@@ -37,6 +34,12 @@
             </div>
             <button style="width: auto; padding: 12px 25px;"><i class="fas fa-search"></i> Cihaz Bul</button>
         </section>
+
+        <!-- TABLO BAŞLIĞI VE BUTON -->
+        <div class="table-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+            <h3>Tesis Listesi</h3>
+            <button id="openFactoryModalBtn" style="width: auto; padding: 10px 20px;">+ Yeni Fabrika Ekle</button>
+        </div>
 
         <!-- Detaylı Sayaç Tablosu -->
         <section class="data-table-section">
@@ -60,6 +63,29 @@
             </div>
         </section>
     </main>
+
+    <!-- YENİ FABRİKA EKLEME MODALI -->
+    <div id="addFactoryModal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close-btn" id="closeModalBtn">&times;</span>
+            <h3 style="margin-bottom: 20px;">Yeni Fabrika Tanımla</h3>
+            <form id="newFactoryForm">
+                <div class="input-group">
+                    <label>Fabrika/Firma Adı</label>
+                    <input type="text" id="newFacName" required autocomplete="off">
+                </div>
+                <div class="input-group">
+                    <label>Modem IP Adresi</label>
+                    <input type="text" id="newFacIp" placeholder="Örn: 195.175.x.x" required>
+                </div>
+                <div class="input-group">
+                    <label>Pano Sayaç Adedi</label>
+                    <input type="number" id="newFacCount" required>
+                </div>
+                <button type="submit">Sisteme Kaydet</button>
+            </form>
+        </div>
+    </div>
     
     <script src="factories.js"></script>
 </body>
