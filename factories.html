@@ -9,7 +9,6 @@
 </head>
 <body class="dashboard-body">
 
-    <!-- Sol Menü -->
     <aside class="sidebar">
         <div class="logo">EnerjiPanel</div>
         <ul class="nav-links">
@@ -27,51 +26,25 @@
             <div class="user-info">Hoş geldin, <span id="adminName">Yetkili</span></div>
         </header>
 
-        <!-- Filtreleme ve Arama Çubuğu -->
-        <section style="background-color: var(--surface-color); padding: 15px; border-radius: 8px; border: 1px solid #333; margin-bottom: 20px; display: flex; gap: 15px; align-items: center;">
-            <div class="input-group" style="margin-bottom: 0; flex: 1;">
-                <input type="text" id="searchInput" placeholder="Fabrika Adı, IP Adresi veya Sayaç ID ara..." style="width: 100%; border-color: #444;">
-            </div>
-            <button style="width: auto; padding: 12px 25px;"><i class="fas fa-search"></i> Cihaz Bul</button>
-        </section>
-
-        <!-- TABLO BAŞLIĞI VE BUTON -->
-        <div class="table-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-            <h3>Tesis Listesi</h3>
+        <div class="table-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+            <h3>Kayıtlı Fabrikalar</h3>
             <button id="openFactoryModalBtn" style="width: auto; padding: 10px 20px;">+ Yeni Fabrika Ekle</button>
         </div>
 
-        <!-- Detaylı Sayaç Tablosu -->
-        <section class="data-table-section">
-            <div class="table-container">
-                <table id="metersTable">
-                    <thead>
-                        <tr>
-                            <th>Tesis Adı</th>
-                            <th>Sayaç ID (Seri No)</th>
-                            <th>Modem IP</th>
-                            <th>Sinyal (4G)</th>
-                            <th>Son Okuma</th>
-                            <th>Durum</th>
-                            <th>İşlem</th>
-                        </tr>
-                    </thead>
-                    <tbody id="metersTableBody">
-                        <!-- JavaScript ile veriler buraya dolacak -->
-                    </tbody>
-                </table>
-            </div>
+        <!-- Fabrika Kartlarının Listeleneceği Alan -->
+        <section id="factoryList" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;">
+            <!-- JS ile dolacak -->
         </section>
     </main>
 
-    <!-- YENİ FABRİKA EKLEME MODALI -->
+    <!-- Yeni Fabrika Ekleme Modalı -->
     <div id="addFactoryModal" class="modal hidden">
         <div class="modal-content">
             <span class="close-btn" id="closeModalBtn">&times;</span>
             <h3 style="margin-bottom: 20px;">Yeni Fabrika Tanımla</h3>
             <form id="newFactoryForm">
                 <div class="input-group">
-                    <label>Fabrika/Firma Adı</label>
+                    <label>Fabrika Adı</label>
                     <input type="text" id="newFacName" required autocomplete="off">
                 </div>
                 <div class="input-group">
@@ -79,11 +52,22 @@
                     <input type="text" id="newFacIp" placeholder="Örn: 195.175.x.x" required>
                 </div>
                 <div class="input-group">
-                    <label>Pano Sayaç Adedi</label>
+                    <label>Toplam Sayaç Adedi</label>
                     <input type="number" id="newFacCount" required>
                 </div>
                 <button type="submit">Sisteme Kaydet</button>
             </form>
+        </div>
+    </div>
+
+    <!-- Fabrika Detay (Sayaçlar) Modalı -->
+    <div id="factoryDetailModal" class="modal hidden">
+        <div class="modal-content" style="max-width: 600px;">
+            <span class="close-btn" id="closeDetailBtn">&times;</span>
+            <h2 id="modalFactoryName" style="color: var(--accent-color); margin-bottom: 20px;">Fabrika Adı</h2>
+            <div id="meterListContainer">
+                <!-- JS ile sayaçlar buraya dolacak -->
+            </div>
         </div>
     </div>
     
