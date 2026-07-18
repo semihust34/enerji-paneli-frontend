@@ -477,6 +477,6 @@ tbody tr:hover {
 
 /* Input kutularının bulunduğu kapsayıcıyı (login-box) genişletelim */
 .login-box {
-    width: 350px;      /* Kutu genişliğini burada ayarlayabilirsin, 350px idealdir */
+    width: 500px;      /* Kutu genişliğini burada ayarlayabilirsin, 350px idealdir */
     padding: 40px;     /* Kutu içindeki boşlukları artırarak daha heybetli durmasını sağlar */
 }
