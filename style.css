@@ -20,11 +20,16 @@
 body {
     background-color: var(--bg-color);
     color: var(--text-primary);
+    min-height: 100vh;
+    padding: 20px;
+}
+
+/* Sadece giriş sayfası için kilitli ekran ayarı */
+body.login-page {
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 100vh;
-    padding: 20px;
+    overflow: hidden; /* İşte bu kısım mobildeki kaymayı engeller */
 }
 
 /* --- GİRİŞ EKRANI STİLLERİ --- */
@@ -384,4 +389,11 @@ tbody tr:hover {
     .chart-section {
         height: 300px;
     }
+}
+
+/* Logo boyutunu burada 350px olarak büyüttük */
+.login-logo {
+    max-width: 350px; 
+    width: 100%;
+    height: auto;
 }
