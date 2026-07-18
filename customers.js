@@ -8,7 +8,7 @@ if (currentUserRole === 'CUSTOMER') {
     window.location.href = 'customer-dashboard.html';
 }
 
-// Global olarak tüm kullanıcı verilerini tutacağımız dizi (Düzenleme ekranına verileri çekmek için)
+// Global olarak tüm kullanıcı verilerini tutacağımız dizi
 let globalUsersData = [];
 
 // 2. Kullanıcıları Listeleme Fonksiyonu
@@ -18,7 +18,7 @@ async function loadCustomers() {
         const result = await response.json();
         
         if (result.success) {
-            globalUsersData = result.customers; // Verileri global'e kopyala
+            globalUsersData = result.customers;
             const tbody = document.getElementById('customerTableBody');
             tbody.innerHTML = '';
             
@@ -36,10 +36,8 @@ async function loadCustomers() {
                 let canEditAndDelete = false;
                 
                 if (currentUserRole === 'SUPERADMIN') {
-                    // Yönetici herkesi düzenleyebilir/silebilir
                     canEditAndDelete = true;
                 } else if (currentUserRole === 'ADMIN') {
-                    // Personel, SUPERADMIN HARİÇ herkesi düzenleyebilir/silebilir
                     if (user.role !== 'SUPERADMIN') {
                         canEditAndDelete = true;
                     }
@@ -97,24 +95,40 @@ window.deleteUser = async function(userId) {
 
 // 4. Düzenleme Modalını Açma Fonksiyonu
 window.openEditModal = function(userId) {
-    // Tıklanan kullanıcıyı global diziden bul
     const userToEdit = globalUsersData.find(u => u.id === userId);
     if (!userToEdit) return;
 
-    // Form inputlarını kullanıcının mevcut bilgileriyle doldur
     document.getElementById('editUserId').value = userToEdit.id;
     document.getElementById('editCustName').value = userToEdit.company_name;
     document.getElementById('editCustUsername').value = userToEdit.username;
     document.getElementById('editCustPassword').value = userToEdit.password;
     document.getElementById('editCustRole').value = userToEdit.role;
 
-    // Modalı ekranda göster
     document.getElementById('editCustomerModal').classList.remove('hidden');
 };
 
 // 5. Olay Dinleyicileri (Sayfa Yüklendiğinde)
 document.addEventListener('DOMContentLoaded', () => {
     loadCustomers();
+
+    // =========================================================================
+    // YENİ EKLENEN GÜVENLİK KATI: Personel ise SUPERADMIN seçeneğini DOM'dan sil
+    // =========================================================================
+    if (currentUserRole !== 'SUPERADMIN') {
+        const custRoleSelect = document.getElementById('custRole');
+        const editCustRoleSelect = document.getElementById('editCustRole');
+        
+        if (custRoleSelect) {
+            const superAdminOption = custRoleSelect.querySelector('option[value="SUPERADMIN"]');
+            if (superAdminOption) superAdminOption.remove();
+        }
+        
+        if (editCustRoleSelect) {
+            const superAdminOption = editCustRoleSelect.querySelector('option[value="SUPERADMIN"]');
+            if (superAdminOption) superAdminOption.remove();
+        }
+    }
+    // =========================================================================
 
     // Yeni Kullanıcı Ekleme Modal İşlemleri
     const addModal = document.getElementById('customerModal');
