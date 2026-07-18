@@ -429,19 +429,30 @@ tbody tr:hover {
     }
 } 
 
+/* Ana kapsayıcıyı biraz daha esnetelim ki elemanlar nefes alsın */
 .login-container {
     display: flex;
-    flex-direction: column; /* Elemanları alt alta dizer */
-    align-items: center;    /* Yatayda ortalar */
+    flex-direction: column;
+    align-items: center;
     justify-content: center;
     min-height: 100vh;
+    padding: 20px;
 }
 
+/* Logo container'ı yukarıda tutacak boşluk */
 .logo-container {
-    margin-bottom: 25px;    /* Logo ile kutu arasına mesafe koyar */
+    margin-bottom: 40px; /* Buradaki değeri artırırsan logo daha yukarı çıkar */
 }
 
+/* Logonun boyutunu biraz daha makul seviyeye çekelim */
 .login-logo {
-    max-width: 300px;       /* Logonu biraz büyütebilirsin */
+    max-width: 250px; 
     height: auto;
+}
+
+/* Form kutusunun üstten biraz daha aşağıda durmasını sağlar */
+.login-box {
+    margin-top: 0;
+    /* Kutunun boyutları zaten bellidir, CSS'inde başka bir 'margin-top' 
+       veya 'position' değeri varsa onları temizle. */
 }
