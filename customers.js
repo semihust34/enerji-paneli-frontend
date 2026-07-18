@@ -1,3 +1,21 @@
+// Modal açma/kapama işlemleri
+const modal = document.getElementById('customerModal');
+const openBtn = document.getElementById('openCustomerModalBtn');
+const closeBtn = document.getElementById('closeCustomerModalBtn');
+
+openBtn.addEventListener('click', () => {
+    modal.classList.remove('hidden'); // hidden sınıfını kaldırarak görünür yap
+});
+
+closeBtn.addEventListener('click', () => {
+    modal.classList.add('hidden'); // hidden sınıfını ekleyerek gizle
+});
+
+// Modal dışına tıklayınca kapatma
+window.addEventListener('click', (e) => {
+    if (e.target == modal) modal.classList.add('hidden');
+});
+
 document.addEventListener('DOMContentLoaded', () => {
     const customerForm = document.getElementById('newCustomerForm');
 
