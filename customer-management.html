@@ -53,7 +53,7 @@
         </section>
     </main>
 
-    <!-- Yeni Kullanıcı Ekleme Formu (Modal) -->
+    <!-- 1. YENİ KULLANICI EKLEME MODALI -->
     <div id="customerModal" class="modal hidden">
         <div class="modal-content" style="max-width: 600px;">
             <span class="close-btn" id="closeCustomerModalBtn">&times;</span>
@@ -62,13 +62,13 @@
             <form id="newCustomerForm">
                 <div class="input-group">
                     <label>Firma / Personel Ad Soyad</label>
-                    <input type="text" id="custName" placeholder="Örn: ABC Lojistik veya Ahmet Yılmaz" required autocomplete="off">
+                    <input type="text" id="custName" required autocomplete="off">
                 </div>
                 
                 <div style="display: flex; gap: 15px; flex-wrap: wrap;">
                     <div class="input-group" style="flex: 1; min-width: 150px;">
                         <label>Sistem Kullanıcı Adı</label>
-                        <input type="text" id="custUsername" placeholder="Örn: ahmet_user" required>
+                        <input type="text" id="custUsername" required>
                     </div>
                     <div class="input-group" style="flex: 1; min-width: 150px;">
                         <label>Şifre</label>
@@ -76,27 +76,54 @@
                     </div>
                     <div class="input-group" style="flex: 1; min-width: 150px;">
                         <label>Hesap Türü</label>
-                        <select id="custRole" required style="width: 100%; padding: 12px; border: 1px solid #333; border-radius: 6px; background-color: #2c2c2c; color: white; outline: none;">
+                        <select id="custRole" required style="width: 100%; padding: 12px; border: 1px solid #333; border-radius: 6px; background-color: #2c2c2c; color: white;">
                             <option value="CUSTOMER">Müşteri</option>
                             <option value="ADMIN">Personel</option>
+                            <option value="SUPERADMIN">Yönetici</option>
                         </select>
-                    </div>
-                </div>
-                
-                <!-- Fabrika Atama Alanı -->
-                <div class="input-group" style="background-color: #2c2c2c; padding: 15px; border-radius: 6px; border: 1px solid #333;">
-                    <label style="color: var(--accent-color); font-weight: bold; margin-bottom: 10px;"><i class="fas fa-building"></i> Görüntüleyebileceği Fabrikalar (Sadece Müşteriler İçin)</label>
-                    <div style="display: flex; flex-direction: column; gap: 10px;">
-                        <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
-                            <input type="checkbox" name="factories" value="Plastik Enjeksiyon A.Ş."> Plastik Enjeksiyon A.Ş.
-                        </label>
-                        <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
-                            <input type="checkbox" name="factories" value="Demir Döküm Fabrikası"> Demir Döküm Fabrikası
-                        </label>
                     </div>
                 </div>
 
                 <button type="submit" style="margin-top: 15px;">Hesabı Aktifleştir</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 2. KULLANICI DÜZENLEME MODALI -->
+    <div id="editCustomerModal" class="modal hidden">
+        <div class="modal-content" style="max-width: 600px;">
+            <span class="close-btn" id="closeEditModalBtn">&times;</span>
+            <h3 style="margin-bottom: 20px;"><i class="fas fa-user-edit"></i> Hesabı Düzenle</h3>
+            
+            <form id="editCustomerForm">
+                <!-- Hangi kullanıcıyı güncelleyeceğimizi bilmek için ID tutucu -->
+                <input type="hidden" id="editUserId">
+
+                <div class="input-group">
+                    <label>Firma / Personel Ad Soyad</label>
+                    <input type="text" id="editCustName" required autocomplete="off">
+                </div>
+                
+                <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                    <div class="input-group" style="flex: 1; min-width: 150px;">
+                        <label>Sistem Kullanıcı Adı</label>
+                        <input type="text" id="editCustUsername" required>
+                    </div>
+                    <div class="input-group" style="flex: 1; min-width: 150px;">
+                        <label>Şifre</label>
+                        <input type="text" id="editCustPassword" required>
+                    </div>
+                    <div class="input-group" style="flex: 1; min-width: 150px;">
+                        <label>Hesap Türü</label>
+                        <select id="editCustRole" required style="width: 100%; padding: 12px; border: 1px solid #333; border-radius: 6px; background-color: #2c2c2c; color: white;">
+                            <option value="CUSTOMER">Müşteri</option>
+                            <option value="ADMIN">Personel</option>
+                            <option value="SUPERADMIN">Yönetici</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button type="submit" style="margin-top: 15px; background-color: #4cd137;">Değişiklikleri Kaydet</button>
             </form>
         </div>
     </div>

@@ -3,10 +3,13 @@
 // 1. GÜVENLİK: Aktif kullanıcının rolünü al
 const currentUserRole = localStorage.getItem('userRole');
 
-// Eğer giren kişi CUSTOMER ise bu sayfadan zorla ana sayfaya at
+// Müşterilerin bu sayfaya girmesini engelle
 if (currentUserRole === 'CUSTOMER') {
     window.location.href = 'customer-dashboard.html';
 }
+
+// Global olarak tüm kullanıcı verilerini tutacağımız dizi (Düzenleme ekranına verileri çekmek için)
+let globalUsersData = [];
 
 // 2. Kullanıcıları Listeleme Fonksiyonu
 async function loadCustomers() {
@@ -15,51 +18,54 @@ async function loadCustomers() {
         const result = await response.json();
         
         if (result.success) {
+            globalUsersData = result.customers; // Verileri global'e kopyala
             const tbody = document.getElementById('customerTableBody');
-            tbody.innerHTML = ''; // Tabloyu temizle
+            tbody.innerHTML = '';
             
             result.customers.forEach(user => {
                 // --- A. ŞİFRE GÖSTERİM MANTIĞI ---
                 let displayPassword = "*****";
-                
                 if (currentUserRole === 'SUPERADMIN') {
-                    // Yönetici herkesin düz şifresini görür
                     displayPassword = user.password; 
                 } else if (currentUserRole === 'ADMIN') {
-                    // Personel, Yönetici'nin şifresini göremez, diğerlerini görür
-                    if (user.role === 'SUPERADMIN') {
-                        displayPassword = '<span style="color: var(--error-color);">GİZLİ</span>';
-                    } else {
-                        displayPassword = user.password;
+                    if (user.role === 'SUPERADMIN') displayPassword = '<span style="color: var(--error-color);">GİZLİ</span>';
+                    else displayPassword = user.password;
+                }
+
+                // --- B. YETKİ MANTIĞI: KİM KİMİ DÜZENLEYEBİLİR VE SİLEBİLİR? ---
+                let canEditAndDelete = false;
+                
+                if (currentUserRole === 'SUPERADMIN') {
+                    // Yönetici herkesi düzenleyebilir/silebilir
+                    canEditAndDelete = true;
+                } else if (currentUserRole === 'ADMIN') {
+                    // Personel, SUPERADMIN HARİÇ herkesi düzenleyebilir/silebilir
+                    if (user.role !== 'SUPERADMIN') {
+                        canEditAndDelete = true;
                     }
                 }
 
-                // --- B. SİLME YETKİSİ MANTIĞI ---
                 let actionHtml = '';
-                if (currentUserRole === 'SUPERADMIN') {
-                    // Sadece SUPERADMIN silebilir
-                    actionHtml = `<button class="action-btn" onclick="deleteUser(${user.id})" style="border-color: var(--error-color); color: var(--error-color);"><i class="fas fa-trash"></i> Sil</button>`;
+                if (canEditAndDelete) {
+                    actionHtml = `
+                        <button class="action-btn" onclick="openEditModal(${user.id})" style="border-color: #f6e58d; color: #f6e58d; margin-right: 5px;"><i class="fas fa-edit"></i> Düzenle</button>
+                        <button class="action-btn" onclick="deleteUser(${user.id})" style="border-color: var(--error-color); color: var(--error-color);"><i class="fas fa-trash"></i> Sil</button>
+                    `;
                 } else {
-                    // Personel silemez
                     actionHtml = `<span style="color: #555; font-size: 0.8rem;"><i class="fas fa-lock"></i> Yetki Yok</span>`;
                 }
 
                 // --- C. ROL ETİKETLERİ ---
                 let roleBadge = '';
-                if (user.role === 'SUPERADMIN') {
-                    roleBadge = '<span class="badge" style="background: rgba(255, 215, 0, 0.2); color: #ffd700;">Yönetici</span>';
-                } else if (user.role === 'ADMIN') {
-                    roleBadge = '<span class="badge danger">Personel</span>';
-                } else {
-                    roleBadge = '<span class="badge success">Müşteri</span>';
-                }
+                if (user.role === 'SUPERADMIN') roleBadge = '<span class="badge" style="background: rgba(255, 215, 0, 0.2); color: #ffd700;">Yönetici</span>';
+                else if (user.role === 'ADMIN') roleBadge = '<span class="badge danger">Personel</span>';
+                else roleBadge = '<span class="badge success">Müşteri</span>';
 
-                // Tabloya HTML olarak ekle
                 tbody.innerHTML += `
                     <tr>
                         <td>${user.company_name}</td>
                         <td>${user.username}</td>
-                        <td style="font-family: monospace; letter-spacing: 1px; color: var(--accent-color);">${displayPassword}</td>
+                        <td style="font-family: monospace; color: var(--accent-color);">${displayPassword}</td>
                         <td>Tüm Tesisler</td>
                         <td>${roleBadge}</td>
                         <td>${actionHtml}</td>
@@ -72,61 +78,78 @@ async function loadCustomers() {
     }
 }
 
-// 3. Kullanıcı Silme İşlemi (Global Fonksiyon)
+// 3. Silme Fonksiyonu
 window.deleteUser = async function(userId) {
-    if (!confirm("Bu kullanıcıyı sistemden kalıcı olarak silmek istediğinize emin misiniz?")) return;
+    if (!confirm("Bu kullanıcıyı kalıcı olarak silmek istediğinize emin misiniz?")) return;
 
     try {
-        const response = await fetch(`http://127.0.0.1:5000/api/customers/${userId}`, {
-            method: 'DELETE'
-        });
+        const response = await fetch(`http://127.0.0.1:5000/api/customers/${userId}`, { method: 'DELETE' });
         const result = await response.json();
-
         if (response.ok && result.success) {
-            alert(result.message);
-            loadCustomers(); // Silme sonrası tabloyu yenile
+            loadCustomers();
         } else {
             alert("Hata: " + (result.message || 'Silinemedi.'));
         }
     } catch (error) {
-        alert("Bağlantı hatası. Python sunucusu çalışıyor mu?");
+        alert("Bağlantı hatası.");
     }
 };
 
-// 4. Sayfa Yüklendiğinde Çalışacak Olaylar
-document.addEventListener('DOMContentLoaded', () => {
-    const modal = document.getElementById('customerModal');
-    const openBtn = document.getElementById('openCustomerModalBtn');
-    const closeBtn = document.getElementById('closeCustomerModalBtn');
-    const customerForm = document.getElementById('newCustomerForm');
-    const logoutBtn = document.getElementById('logoutBtn');
+// 4. Düzenleme Modalını Açma Fonksiyonu
+window.openEditModal = function(userId) {
+    // Tıklanan kullanıcıyı global diziden bul
+    const userToEdit = globalUsersData.find(u => u.id === userId);
+    if (!userToEdit) return;
 
-    // Sayfa açılışında verileri yükle
+    // Form inputlarını kullanıcının mevcut bilgileriyle doldur
+    document.getElementById('editUserId').value = userToEdit.id;
+    document.getElementById('editCustName').value = userToEdit.company_name;
+    document.getElementById('editCustUsername').value = userToEdit.username;
+    document.getElementById('editCustPassword').value = userToEdit.password;
+    document.getElementById('editCustRole').value = userToEdit.role;
+
+    // Modalı ekranda göster
+    document.getElementById('editCustomerModal').classList.remove('hidden');
+};
+
+// 5. Olay Dinleyicileri (Sayfa Yüklendiğinde)
+document.addEventListener('DOMContentLoaded', () => {
     loadCustomers();
 
-    // Çıkış Yapma Mantığı
+    // Yeni Kullanıcı Ekleme Modal İşlemleri
+    const addModal = document.getElementById('customerModal');
+    const openAddBtn = document.getElementById('openCustomerModalBtn');
+    const closeAddBtn = document.getElementById('closeCustomerModalBtn');
+    
+    if (openAddBtn) openAddBtn.addEventListener('click', () => addModal.classList.remove('hidden'));
+    if (closeAddBtn) closeAddBtn.addEventListener('click', () => addModal.classList.add('hidden'));
+
+    // Düzenleme Modal İşlemleri
+    const editModal = document.getElementById('editCustomerModal');
+    const closeEditBtn = document.getElementById('closeEditModalBtn');
+    if (closeEditBtn) closeEditBtn.addEventListener('click', () => editModal.classList.add('hidden'));
+
+    // Modalların Dışına Tıklayınca Kapatma
+    window.addEventListener('click', (e) => {
+        if (e.target === addModal) addModal.classList.add('hidden');
+        if (e.target === editModal) editModal.classList.add('hidden');
+    });
+
+    // Çıkış Yap
+    const logoutBtn = document.getElementById('logoutBtn');
     if (logoutBtn) {
         logoutBtn.addEventListener('click', () => {
-            localStorage.removeItem('userToken');
-            localStorage.removeItem('userRole');
+            localStorage.clear();
             window.location.href = 'index.html';
         });
     }
 
-    // Modal Aç/Kapat Mantığı
-    if (openBtn) openBtn.addEventListener('click', () => modal.classList.remove('hidden'));
-    if (closeBtn) closeBtn.addEventListener('click', () => modal.classList.add('hidden'));
-    window.addEventListener('click', (e) => {
-        if (e.target === modal) modal.classList.add('hidden');
-    });
-
-    // Form Gönderimi (Yeni Kullanıcı Ekleme)
-    if (customerForm) {
-        customerForm.addEventListener('submit', async (e) => {
+    // A. YENİ KULLANICI KAYIT İŞLEMİ (POST)
+    const newCustomerForm = document.getElementById('newCustomerForm');
+    if (newCustomerForm) {
+        newCustomerForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-
-            // Formdaki tüm verileri al (Seçilen Rol Dahil)
-            const customerData = {
+            const data = {
                 company_name: document.getElementById('custName').value,
                 username: document.getElementById('custUsername').value,
                 password: document.getElementById('custPassword').value,
@@ -137,22 +160,54 @@ document.addEventListener('DOMContentLoaded', () => {
                 const response = await fetch('http://127.0.0.1:5000/api/customers', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(customerData)
+                    body: JSON.stringify(data)
                 });
-                
                 const result = await response.json();
 
                 if (response.ok && result.success) {
-                    alert('Başarılı: ' + result.message);
-                    customerForm.reset();
-                    modal.classList.add('hidden');
-                    loadCustomers(); // Kayıt sonrası tabloyu anında yenile
+                    newCustomerForm.reset();
+                    addModal.classList.add('hidden');
+                    loadCustomers();
                 } else {
-                    alert('Hata: ' + (result.message || 'Bir hata oluştu.'));
+                    alert('Hata: ' + result.message);
                 }
             } catch (error) {
-                console.error('Bağlantı Hatası:', error);
-                alert('Sunucuya ulaşılamadı. Python sunucusunun çalıştığını kontrol edin!');
+                alert('Bağlantı Hatası!');
+            }
+        });
+    }
+
+    // B. KULLANICI DÜZENLEME İŞLEMİ (PUT)
+    const editCustomerForm = document.getElementById('editCustomerForm');
+    if (editCustomerForm) {
+        editCustomerForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const userId = document.getElementById('editUserId').value;
+            const data = {
+                company_name: document.getElementById('editCustName').value,
+                username: document.getElementById('editCustUsername').value,
+                password: document.getElementById('editCustPassword').value,
+                role: document.getElementById('editCustRole').value 
+            };
+
+            try {
+                const response = await fetch(`http://127.0.0.1:5000/api/customers/${userId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                const result = await response.json();
+
+                if (response.ok && result.success) {
+                    editCustomerForm.reset();
+                    editModal.classList.add('hidden');
+                    loadCustomers();
+                } else {
+                    alert('Hata: ' + result.message);
+                }
+            } catch (error) {
+                alert('Bağlantı Hatası!');
             }
         });
     }
