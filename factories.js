@@ -1,4 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
+    if (!requireRole(['ADMIN', 'SUPERADMIN'])) return;
+
     console.log("Panel başlatılıyor...");
     loadFactories();
 
@@ -78,6 +80,19 @@ function ensureMeterStyles() {
         .fl-body strong { font-size: 0.92rem; color: var(--mv-text); overflow-wrap: anywhere; }
         .fl-meta { font-size: 0.74rem; color: var(--mv-accent); margin-top: 2px; }
         .fl-chevron { color: var(--mv-text-dim); font-size: 0.8rem; flex-shrink: 0; }
+        .fl-delete {
+            flex-shrink: 0;
+            width: 30px; height: 30px;
+            border-radius: 8px;
+            border: 1px solid transparent;
+            background: transparent;
+            color: var(--mv-text-dim);
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer;
+            transition: background .15s ease, color .15s ease, border-color .15s ease;
+        }
+        .fl-delete:hover { background: var(--mv-warn-bg); border-color: var(--mv-warn-border); color: var(--mv-warn); }
+        .fl-delete:focus-visible { outline: 2px solid var(--mv-warn); outline-offset: 2px; }
 
         /* ---------- Paylaşılan bileşenler (rozet, ikon rozeti) ---------- */
         .meter-panel .badge {
@@ -268,13 +283,20 @@ async function loadFactories() {
     list.innerHTML = '<p class="fl-loading">Yükleniyor...</p>';
 
     try {
-        const res = await fetch('https://web-production-388bad.up.railway.app/api/factories');
+        const res = await fetch(`${API_BASE}/factories`, { headers: authHeaders() });
+        if (handleAuthFailure(res)) return;
         const data = await res.json();
 
         // Veri yapısı kontrolü: Railway bazen "factories" bazen direkt liste dönebilir
         const factories = data.factories || data || [];
 
         list.innerHTML = '';
+
+        if (!factories.length) {
+            list.innerHTML = '<p class="fl-loading">Henüz kayıtlı fabrika yok. "Yeni Fabrika" ile ekleyebilirsiniz.</p>';
+            return;
+        }
+
         factories.forEach(f => {
             const btn = document.createElement('div');
             btn.className = 'fl-item';
@@ -286,6 +308,9 @@ async function loadFactories() {
                     <strong>${f.name}</strong>
                     <span class="fl-meta">${f.meterCount || 0} Sayaç</span>
                 </div>
+                <button type="button" class="fl-delete" title="Fabrikayı Sil" aria-label="Fabrikayı Sil">
+                    <i class="fas fa-trash"></i>
+                </button>
                 <i class="fas fa-chevron-right fl-chevron"></i>
             `;
 
@@ -294,6 +319,7 @@ async function loadFactories() {
             btn.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); btn.click(); }
             });
+            btn.querySelector('.fl-delete').addEventListener('click', (evt) => deleteFactory(f.id, f.name, evt));
             list.appendChild(btn);
         });
     } catch (err) {
@@ -301,6 +327,42 @@ async function loadFactories() {
         list.innerHTML = '<p class="fl-error">Fabrikalar yüklenemedi.</p>';
     }
 }
+
+// ---------------------------------------------------------------------
+// Fabrika silme
+// ---------------------------------------------------------------------
+window.deleteFactory = async function (factoryId, factoryName, evt) {
+    if (evt) evt.stopPropagation(); // fl-item'ın kendi tıklama olayını tetiklemesin
+
+    if (!confirm(`"${factoryName}" fabrikasını kalıcı olarak silmek istediğinize emin misiniz?`)) return;
+
+    try {
+        const res = await fetch(`${API_BASE}/factories/${factoryId}`, {
+            method: 'DELETE',
+            headers: authHeaders()
+        });
+        if (handleAuthFailure(res)) return;
+        const result = await res.json();
+
+        if (res.ok && result.success) {
+            // Silinen fabrika o an açık detay panelindeyse temizle
+            const detailTitle = document.getElementById('detailTitle');
+            if (detailTitle && detailTitle.innerText === factoryName) {
+                detailTitle.innerText = 'Bir fabrika seçin';
+                document.getElementById('meterDisplay').innerHTML = `
+                    <div class="fp-empty-state">
+                        <i class="fas fa-hand-pointer"></i>
+                        <p>Detayları görüntülemek için soldaki listeden bir fabrika seçin.</p>
+                    </div>`;
+            }
+            await loadFactories();
+        } else {
+            alert('Hata: ' + (result.message || 'Fabrika silinemedi.'));
+        }
+    } catch (err) {
+        alert('Bağlantı hatası. Sunucuya ulaşılamadı.');
+    }
+};
 
 // showDetails artık global olarak tanımlı, sorunsuz çalışmalı
 window.showDetails = function(f) {
@@ -564,5 +626,46 @@ window.showMeterData = function(meterName, factoryName) {
 
 async function handleFormSubmit(e) {
     e.preventDefault();
-    // ... (form gönderme mantığı öncekiyle aynı)
+
+    const nameInput = document.getElementById('newFacName');
+    const ipInput = document.getElementById('newFacIp');
+    const countInput = document.getElementById('newFacCount');
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+
+    const payload = {
+        name: nameInput.value.trim(),
+        ip: ipInput.value.trim(),
+        meterCount: parseInt(countInput.value, 10) || 0
+    };
+
+    const originalBtnHtml = submitBtn ? submitBtn.innerHTML : '';
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Kaydediliyor...';
+    }
+
+    try {
+        const res = await fetch(`${API_BASE}/factories`, {
+            method: 'POST',
+            headers: authHeaders({ 'Content-Type': 'application/json' }),
+            body: JSON.stringify(payload)
+        });
+        if (handleAuthFailure(res)) return;
+        const result = await res.json();
+
+        if (res.ok && result.success) {
+            e.target.reset();
+            document.getElementById('addFactoryModal').classList.add('hidden');
+            await loadFactories();
+        } else {
+            alert('Hata: ' + (result.message || 'Fabrika eklenemedi.'));
+        }
+    } catch (err) {
+        alert('Bağlantı hatası. Sunucuya ulaşılamadı.');
+    } finally {
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalBtnHtml;
+        }
+    }
 }
