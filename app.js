@@ -1,9 +1,24 @@
 // app.js
+
+// 1. YENİ EKLENEN KISIM: Sayfa yüklendiğinde "Beni Hatırla" kontrolü yap
+document.addEventListener("DOMContentLoaded", function() {
+    const usernameInput = document.getElementById("username");
+    const rememberMeCheckbox = document.getElementById("rememberMe");
+
+    // Eğer daha önce kaydedilmiş bir kullanıcı adı varsa, input'a yazdır ve kutucuğu işaretle
+    if (localStorage.getItem("rememberedUsername")) {
+        usernameInput.value = localStorage.getItem("rememberedUsername");
+        rememberMeCheckbox.checked = true;
+    }
+});
+
+// VAR OLAN GİRİŞ İŞLEMİ
 document.getElementById('loginForm').addEventListener('submit', async function(event) {
     event.preventDefault(); // Sayfanın yenilenmesini durdur
 
     const usernameInput = document.getElementById('username').value;
     const passwordInput = document.getElementById('password').value;
+    const rememberMeCheckbox = document.getElementById('rememberMe'); // Yeni eklendi
     const errorDiv = document.getElementById('errorMessage');
     
     errorDiv.classList.add('hidden'); // Her denemede hatayı gizle
@@ -22,6 +37,13 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
         const responseData = await response.json();
         
         if (response.ok && responseData.success) {
+            // 2. YENİ EKLENEN KISIM: Giriş başarılıysa Beni Hatırla durumunu kontrol et
+            if (rememberMeCheckbox.checked) {
+                localStorage.setItem("rememberedUsername", usernameInput);
+            } else {
+                localStorage.removeItem("rememberedUsername");
+            }
+
             // Başarılı giriş: Token, rol ve (müşteriyse) erişebileceği
             // fabrika bilgilerini LocalStorage'a kaydet
             localStorage.setItem('userToken', responseData.token);
