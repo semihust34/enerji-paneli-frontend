@@ -915,7 +915,3 @@ tbody tr:hover {
     .nav-links li a:hover { transform: none; }
     button:hover { transform: none; }
 }
-/* Açık tema aktifken koyu renkli logoyu çağır */
-[data-theme="light"] .login-logo {
-    content: url("logo-light.png");
-}
