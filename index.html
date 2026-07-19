@@ -5,7 +5,7 @@
         // Kayıtlı tema tercihini sayfa çizilmeden önce uygula (ani renk çakması olmasın)
         (function () {
             try {
-                var t = localStorage.getItem('theme') || 'dark';
+                var t = localStorage.getItem('theme') || 'light';
                 document.documentElement.setAttribute('data-theme', t);
             } catch (e) {}
         })();
