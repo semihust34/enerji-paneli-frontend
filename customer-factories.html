@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <script>
+        (function () {
+            try {
+                var t = localStorage.getItem('theme') || 'dark';
+                document.documentElement.setAttribute('data-theme', t);
+            } catch (e) {}
+        })();
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tesislerim ve Sayaçlar - Enerji Panel</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="factories-page.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="dashboard-body">
+
+    <div class="mobile-topbar">
+        <button id="sidebarToggleBtn" class="hamburger-btn" aria-label="Menüyü aç/kapat"><i class="fas fa-bars"></i></button>
+        <span class="logo">EnerjiPanel</span>
+    </div>
+    <div id="sidebarOverlay" class="sidebar-overlay"></div>
+
+    <aside class="sidebar">
+        <div class="logo">EnerjiPanel</div>
+        <ul class="nav-links">
+            <li><a href="customer-dashboard.html"><i class="fas fa-chart-line"></i> Genel Bakış</a></li>
+            <li><a href="customer-factories.html" class="active"><i class="fas fa-industry"></i> Tesislerim & Sayaçlar</a></li>
+        </ul>
+        <button type="button" class="theme-toggle-btn" data-theme-toggle><i class="fas fa-moon"></i> <span class="theme-toggle-label">Karanlık Mod</span></button>
+        <button id="logoutBtn" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Çıkış Yap</button>
+    </aside>
+
+    <main class="main-content">
+        <div class="fp-main">
+            <div class="fp-header">
+                <div>
+                    <h2>Tesislerim ve Sayaçlar</h2>
+                    <p class="fp-subtitle">Size tanımlı tesisleri görüntüleyin ve ölçüm noktalarınızı detaylı inceleyin.</p>
+                </div>
+            </div>
+
+            <div class="fp-layout">
+                <!-- Sol: Fabrika Listesi -->
+                <section class="card fp-list-card">
+                    <div class="fp-card-header">
+                        <h3><i class="fas fa-industry"></i> Tesis Listesi</h3>
+                        <span class="fp-count" id="factoryCount">0</span>
+                    </div>
+                    <div class="fp-search">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="factorySearchInput" placeholder="Tesis ara...">
+                    </div>
+                    <div id="factoryList"></div>
+                </section>
+
+                <!-- Sağ: Detay Paneli (Seçili Fabrika) -->
+                <section id="detailPanel" class="card fp-detail-card">
+                    <div class="fp-card-header">
+                        <h3><i class="fas fa-bolt"></i> <span id="detailTitle">Bir tesis seçin</span></h3>
+                    </div>
+                    <div id="meterDisplay">
+                        <div class="fp-empty-state">
+                            <i class="fas fa-hand-pointer"></i>
+                            <p>Detayları görüntülemek için soldaki listeden bir tesis seçin.</p>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <script src="auth.js"></script>
+    <script src="ui.js"></script>
+    <script src="customer-factories.js"></script>
+    <script>
+        (function () {
+            const listEl = document.getElementById('factoryList');
+            const countEl = document.getElementById('factoryCount');
+            const searchEl = document.getElementById('factorySearchInput');
+            if (!listEl) return;
+
+            const updateCount = () => {
+                if (countEl) countEl.textContent = listEl.querySelectorAll('.fl-item').length;
+            };
+            new MutationObserver(updateCount).observe(listEl, { childList: true });
+            updateCount();
+
+            if (searchEl) {
+                searchEl.addEventListener('input', () => {
+                    const q = searchEl.value.trim().toLocaleLowerCase('tr');
+                    listEl.querySelectorAll('.fl-item').forEach((item) => {
+                        const name = (item.querySelector('strong')?.textContent || '').toLocaleLowerCase('tr');
+                        item.style.display = name.includes(q) ? '' : 'none';
+                    });
+                });
+            }
+        })();
+    </script>
+</body>
+</html>
