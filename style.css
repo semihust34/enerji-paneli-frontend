@@ -367,8 +367,8 @@ button:active {
     padding: 10px 14px;
     background-color: var(--surface-color);
     background-image: none;
-    /* Kenarlığı hafif yeşil (marka renginin %50 saydam hali) yaptık: */
-    border: 1px solid color-mix(in srgb, var(--accent-color) 50%, transparent);
+    /* Kalınlık 2px yapıldı ve yeşil renk daha belirgin hale getirildi (80%) */
+    border: 2px solid color-mix(in srgb, var(--accent-color) 80%, transparent);
     color: var(--text-secondary);
     border-radius: 30px;
     display: flex;
