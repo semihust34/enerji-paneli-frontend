@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fabrikalar ve Sayaçlar - Enerji İzleme</title>
+    <title>Fabrika Yönetimi - Enerji Panel</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -13,53 +13,46 @@
         <div class="logo">EnerjiPanel</div>
         <ul class="nav-links">
             <li><a href="admin-dashboard.html"><i class="fas fa-chart-line"></i> Genel Bakış</a></li>
-            <li><a href="factories.html" class="active"><i class="fas fa-industry"></i> Fabrikalar & Sayaçlar</a></li>
-            <li><a href="customer-management.html"><i class="fas fa-users"></i> Müşteri Yönetimi</a></li>
-            <li><a href="system-logs.html"><i class="fas fa-terminal"></i> Sistem Logları</a></li>
+            <li><a href="factories.html" class="active"><i class="fas fa-industry"></i> Fabrikalar</a></li>
+            <li><a href="customer-management.html"><i class="fas fa-users"></i> Müşteriler</a></li>
+            <li><a href="system-logs.html"><i class="fas fa-terminal"></i> Loglar</a></li>
         </ul>
         <button id="logoutBtn" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Çıkış Yap</button>
     </aside>
 
-    <main class="main-content">
-        <header>
-            <h2>Tesis ve Cihaz Yönetimi</h2>
-            <div class="user-info">Hoş geldin, <span id="adminName">Yetkili</span></div>
-        </header>
+    <main class="main-content" style="display: flex; gap: 20px; padding: 30px;">
+        <!-- Sol: Fabrika Listesi -->
+        <section style="flex: 1; max-width: 400px;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+                <h3>Fabrikalar</h3>
+                <button id="openFactoryModalBtn" style="width: auto; padding: 5px 15px;">+ Ekle</button>
+            </div>
+            <div id="factoryList" style="display: flex; flex-direction: column; gap: 10px;"></div>
+        </section>
 
-        <div class="table-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
-            <h3>Kayıtlı Fabrikalar</h3>
-            <button id="openFactoryModalBtn" style="width: auto; padding: 10px 20px;">+ Yeni Fabrika Ekle</button>
-        </div>
-
-        <!-- Akordeon listesinin tutulacağı yer -->
-        <div id="factoryAccordion" style="display: flex; flex-direction: column; gap: 10px;">
-            <!-- JS ile fabrikalar buraya eklenecek -->
-        </div>
+        <!-- Sağ: Detay Paneli (Seçili Fabrika) -->
+        <section id="detailPanel" style="flex: 2; background: var(--surface-color); padding: 25px; border-radius: 8px; border: 1px solid #333;">
+            <h2 id="detailTitle">Bir fabrika seçin</h2>
+            <hr style="border: 0; border-top: 1px solid #333; margin: 20px 0;">
+            <div id="meterDisplay">
+                <p style="color: var(--text-secondary);">Detayları görüntülemek için sol taraftan bir fabrika seçiniz.</p>
+            </div>
+        </section>
     </main>
 
-    <!-- Yeni Fabrika Ekleme Modalı -->
+    <!-- Modal aynı -->
     <div id="addFactoryModal" class="modal hidden">
         <div class="modal-content">
             <span class="close-btn" id="closeModalBtn">&times;</span>
-            <h3 style="margin-bottom: 20px;">Yeni Fabrika Tanımla</h3>
+            <h3>Yeni Fabrika Tanımla</h3>
             <form id="newFactoryForm">
-                <div class="input-group">
-                    <label>Fabrika Adı</label>
-                    <input type="text" id="newFacName" required autocomplete="off">
-                </div>
-                <div class="input-group">
-                    <label>Modem IP Adresi</label>
-                    <input type="text" id="newFacIp" placeholder="Örn: 195.175.x.x" required>
-                </div>
-                <div class="input-group">
-                    <label>Toplam Sayaç Adedi</label>
-                    <input type="number" id="newFacCount" required>
-                </div>
-                <button type="submit">Sisteme Kaydet</button>
+                <div class="input-group"><label>Fabrika Adı</label><input type="text" id="newFacName" required></div>
+                <div class="input-group"><label>Modem IP</label><input type="text" id="newFacIp" required></div>
+                <div class="input-group"><label>Sayaç Adedi</label><input type="number" id="newFacCount" required></div>
+                <button type="submit">Kaydet</button>
             </form>
         </div>
     </div>
-    
     <script src="factories.js"></script>
 </body>
 </html>
