@@ -1,14 +1,28 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
+    <script>
+        // Kayıtlı tema tercihini sayfa çizilmeden önce uygula (ani renk çakması olmasın)
+        (function () {
+            try {
+                var t = localStorage.getItem('theme') || 'dark';
+                document.documentElement.setAttribute('data-theme', t);
+            } catch (e) {}
+        })();
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Enerji Takip - Giriş</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body class="login-page">
     <div class="login-container">
-        
+
+        <button type="button" class="theme-toggle-standalone" data-theme-toggle title="Görünümü değiştir">
+            <i class="fas fa-moon"></i> <span class="theme-toggle-label">Karanlık Mod</span>
+        </button>
+
         <!-- LOGO ARTIK KUTUNUN DIŞINDA VE ÜSTÜNDE -->
         <div class="logo-container">
             <img src="logo.png" alt="BUL Mühendislik Logo" class="login-logo">
@@ -36,6 +50,7 @@
             </form>
         </div>
     </div>
+    <script src="ui.js"></script>
     <script src="app.js"></script>
 </body>
 </html>
