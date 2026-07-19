@@ -297,6 +297,19 @@ tbody tr:hover {
     color: var(--error-color);
 }
 
+.badge.neutral {
+    background-color: rgba(160, 160, 160, 0.15);
+    color: var(--text-secondary);
+}
+
+.table-loading,
+.table-error {
+    text-align: center;
+    padding: 20px;
+    color: var(--text-secondary);
+}
+.table-error { color: var(--error-color); }
+
 .action-btn {
     padding: 6px 12px;
     background-color: transparent;
