@@ -825,6 +825,16 @@ body.sidebar-locked {
         max-width: 300px;
         min-width: 0;
         height: 100vh;
+        /* 100dvh, mobil tarayıcının adres çubuğu/gezinme çubuğu yüzünden
+           değişen gerçek görünür yüksekliği kullanır; sabit 100vh bazen
+           gerçek ekrandan uzun sayılıp en alttaki çıkış butonunu görünür
+           alanın dışında bırakıyordu. Desteklemeyen tarayıcılarda üstteki
+           100vh geçerli kalır. */
+        height: 100dvh;
+        /* iPhone'larda alttaki home indicator şeridinin üstüne biraz
+           daha boşluk ekleyerek çıkış butonunun ona takılmamasını sağlar */
+        padding-bottom: max(12px, env(safe-area-inset-bottom));
+        overflow-y: auto;
         transform: translateX(-100%);
         transition: transform 0.28s ease;
         z-index: 2000;
@@ -859,6 +869,13 @@ body.sidebar-locked {
     }
     .modal-content {
         padding: 22px;
+    }
+
+    /* Çıkış Yap butonunu ekranın en dibinden biraz yukarı çeker,
+       böylece mobil tarayıcı arayüzünün/home indicator'ın arkasında
+       kalıp görünmez olmaz. */
+    .logout-btn {
+        margin-bottom: 28px;
     }
 }
 
