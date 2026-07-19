@@ -1,0 +1,169 @@
+/* =======================================================================
+   factories-page.css
+   Adds ONLY what style.css does not already provide for this page: the
+   two-column layout, the search box, the empty state, and a small
+   sizing helper for an inline button.
+
+   Everything else — button, .modal, .modal-content, .close-btn,
+   .input-group, .badge — is left completely alone and inherited as-is
+   from style.css, using the exact same tokens (--bg-color, --surface-color,
+   --text-primary, --text-secondary, --accent-color, --accent-hover,
+   --error-color) as every other page, so this page can't drift from
+   the shared theme.
+   ======================================================================= */
+
+.fp-main {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+}
+
+/* ---------- Page header ---------- */
+.fp-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 14px;
+}
+.fp-header h2 { margin: 0; }
+.fp-subtitle {
+    margin: 6px 0 0;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    max-width: 46ch;
+}
+
+/* style.css's global `button` rule is width:100% by design (it's built
+   for the login form / modal submit). This lets a button sit inline in
+   a header instead, without touching any of its colors, radius, or
+   hover state — those still come straight from style.css. */
+.btn-inline {
+    width: auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+}
+
+/* ---------- Two-column layout ---------- */
+.fp-layout {
+    display: grid;
+    grid-template-columns: minmax(280px, 360px) 1fr;
+    align-items: start;
+    gap: 20px;
+}
+@media (max-width: 860px) {
+    .fp-layout { grid-template-columns: 1fr; }
+}
+
+/* .card already gives the surface/border/radius look site-wide;
+   these just fine-tune sizing inside the grid. */
+.fp-list-card, .fp-detail-card { min-width: 0; }
+.fp-detail-card { min-height: 460px; }
+
+.fp-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 16px;
+}
+.fp-card-header h3 {
+    margin: 0;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+.fp-card-header h3 i { color: var(--accent-color); font-size: 0.9rem; flex-shrink: 0; }
+
+.fp-count {
+    flex-shrink: 0;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--text-secondary);
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid #333;
+    padding: 3px 10px;
+    border-radius: 20px;
+}
+
+/* ---------- Search box above the factory list ---------- */
+.fp-search { position: relative; margin-bottom: 14px; }
+.fp-search i {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+}
+.fp-search input {
+    width: 100%;
+    padding: 10px 12px 10px 32px;
+    background-color: #2c2c2c;
+    border: 1px solid #333;
+    border-radius: 6px;
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    outline: none;
+    transition: border-color 0.3s;
+}
+.fp-search input:focus { border-color: var(--accent-color); }
+.fp-search input::placeholder { color: var(--text-secondary); }
+
+#factoryList {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-height: 560px;
+    overflow-y: auto;
+    padding-right: 2px;
+}
+#factoryList::-webkit-scrollbar { width: 6px; }
+#factoryList::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
+
+/* ---------- Detail panel empty state ---------- */
+.fp-empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 12px;
+    min-height: 360px;
+    color: var(--text-secondary);
+}
+.fp-empty-state i {
+    font-size: 1.8rem;
+    color: var(--accent-color);
+    background: rgba(0, 173, 181, 0.12);
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.fp-empty-state p { margin: 0; font-size: 0.88rem; max-width: 280px; }
+
+/* ---------- Tiny additions inside the existing modal/input-group ---------- */
+#addFactoryModal h3 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+#addFactoryModal h3 i,
+#addFactoryModal .input-group label i { color: var(--accent-color); }
+#addFactoryModal .input-group label {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
+
+@media (max-width: 480px) {
+    .fp-header { flex-direction: column; align-items: stretch; }
+}
