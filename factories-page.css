@@ -25,6 +25,20 @@
     justify-content: space-between;
     flex-wrap: wrap;
     gap: 14px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border-color);
+    position: relative;
+}
+/* diğer sayfalardaki <header> alt çizgisiyle aynı sessiz imza çizgisi */
+.fp-header::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -1px;
+    height: 2px;
+    width: 84px;
+    max-width: 40%;
+    background: linear-gradient(90deg, var(--accent-color), transparent);
 }
 .fp-header h2 { margin: 0; }
 .fp-subtitle {
@@ -44,6 +58,8 @@
     align-items: center;
     gap: 8px;
     padding: 10px 18px;
+    border-radius: 10px;
+    flex-shrink: 0;
 }
 
 /* ---------- Two-column layout ---------- */
@@ -77,6 +93,13 @@
     gap: 9px;
     min-width: 0;
     overflow-wrap: anywhere;
+    /* style.css'teki .card h3 kuralı (büyük harf, ikincil renk) bir istatistik
+       kartı etiketi için düşünüldü; burası gerçek bir bölüm başlığı olduğundan
+       normale döndürüyoruz. */
+    text-transform: none;
+    letter-spacing: normal;
+    font-weight: 700;
+    color: var(--text-primary);
 }
 .fp-card-header h3 i { color: var(--accent-color); font-size: 0.9rem; flex-shrink: 0; }
 
@@ -106,13 +129,16 @@
     padding: 10px 12px 10px 32px;
     background-color: var(--surface-alt-color);
     border: 1px solid var(--border-color);
-    border-radius: 6px;
+    border-radius: 10px;
     color: var(--text-primary);
     font-size: 0.9rem;
     outline: none;
-    transition: border-color 0.3s, background-color 0.25s ease;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.25s ease;
 }
-.fp-search input:focus { border-color: var(--accent-color); }
+.fp-search input:focus {
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-color) 20%, transparent);
+}
 .fp-search input::placeholder { color: var(--text-secondary); }
 
 #factoryList {
@@ -124,7 +150,7 @@
     padding-right: 2px;
 }
 #factoryList::-webkit-scrollbar { width: 6px; }
-#factoryList::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 10px; }
+#factoryList::-webkit-scrollbar-thumb { background: color-mix(in srgb, var(--accent-color) 30%, var(--border-color)); border-radius: 10px; }
 
 @media (max-width: 860px) {
     #factoryList { max-height: 320px; }
@@ -145,7 +171,7 @@
 .fp-empty-state i {
     font-size: 1.8rem;
     color: var(--accent-color);
-    background: rgba(0, 173, 181, 0.12);
+    background: color-mix(in srgb, var(--accent-color) 14%, transparent);
     width: 60px;
     height: 60px;
     border-radius: 50%;

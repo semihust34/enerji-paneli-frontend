@@ -30,9 +30,9 @@ document.addEventListener('DOMContentLoaded', () => {
         // Cümle içindeki anahtar kelimeye göre renk belirle
         let color = "var(--accent-color)"; // Default Turkuaz
         if (message.includes("[HATA]")) color = "var(--error-color)"; // Kırmızı
-        else if (message.includes("[UYARI]")) color = "#f6e58d"; // Sarı
+        else if (message.includes("[UYARI]")) color = "var(--warning-color)"; // Sarı
         else if (message.includes("[SİSTEM]")) color = "var(--text-secondary)"; // Gri
-        else if (message.includes("[BAŞARILI]")) color = "#4cd137"; // Yeşil
+        else if (message.includes("[BAŞARILI]")) color = "var(--success-color)"; // Yeşil
 
         const logLine = document.createElement('div');
         logLine.style.marginBottom = "5px";

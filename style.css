@@ -1,43 +1,73 @@
+/* =======================================================================
+   style.css — EnerjiPanel tasarım sistemi
+   -----------------------------------------------------------------------
+   Palet: zümrüt yeşili (marka/aksiyon rengi) + beyaz/kömür nötrler.
+   Logodaki gerçek sarı (#FFE100) marka rengi olarak DEĞİL, logonun kendi
+   vurgusu olarak korunuyor: "Yönetici" rozetinde ve giriş sayfasındaki
+   logo parıltısında --gold-color üzerinden gerçek logoyla birebir bağ
+   kuruyor. Böylece yeşil ağırlıklı yeni kimlik, logoyu görmezden gelmek
+   yerine onunla konuşuyor.
+
+   Marka rengi (zümrüt) her iki modda da AYNI kalır (aşağıdaki not gibi,
+   orijinal tasarımdaki kuralı koruyoruz); yüzey/metin/durum renkleri
+   kontrast için mod bazında ayarlanıyor.
+   ======================================================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap');
+
 :root {
     /* Karanlık mod (varsayılan) */
-    --bg-color: #121212;
-    --surface-color: #1e1e1e;
-    --surface-alt-color: #2c2c2c;
-    --border-color: #333333;
-    --hover-color: #252525;
-    --text-primary: #ffffff;
-    --text-secondary: #a0a0a0;
-    --accent-color: #00adb5;
-    --accent-hover: #008c9e;
-    --error-color: #cf6679;
-    --success-color: #4cd137;
-    --warning-color: #f6e58d;
-    --gold-color: #ffd700;
-    --shadow-color: rgba(0, 0, 0, 0.5);
-    --overlay-color: rgba(0, 0, 0, 0.7);
+    --bg-color: #0a120d;
+    --surface-color: #101d16;
+    --surface-alt-color: #17281f;
+    --border-color: #223529;
+    --hover-color: #1b2c22;
+    --text-primary: #eef6f0;
+    --text-secondary: #8fa799;
+
+    /* Marka rengi (zümrüt yeşili) — her iki modda da aynı kalır */
+    --accent-color: #189a5c;
+    --accent-hover: #127a48;
+
+    --error-color: #e5636b;
+    --success-color: #3ecf7e;
+    --warning-color: #f2c744;
+    --gold-color: #ffd93d;   /* logonun gerçek sarısına (#FFE100) en yakın, okunaklı ton */
+
+    --shadow-color: rgba(0, 0, 0, 0.55);
+    --overlay-color: rgba(4, 12, 8, 0.72);
+
+    /* Sadece dekoratif amaçlı: logodaki gerçek sarı, iki modda da sabit */
+    --logo-glow-color: #ffe100;
+
+    /* Tipografi */
+    --font-display: 'Space Grotesk', 'Manrope', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    --font-body: 'Manrope', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', 'Cascadia Mono', 'Roboto Mono', Consolas, monospace;
 
     color-scheme: dark;
 }
 
-/* Aydınlık mod: <html data-theme="light"> ayarlandığında devreye girer.
-   Marka rengi (turkuaz) her iki modda da aynı kalır; sadece yüzey,
-   metin ve durum renkleri kontrast için ayarlanır. */
+/* Aydınlık mod: <html data-theme="light"> ayarlandığında devreye girer. */
 html[data-theme="light"] {
-    --bg-color: #f2f4f6;
+    --bg-color: #f2f7f3;
     --surface-color: #ffffff;
-    --surface-alt-color: #eef1f3;
-    --border-color: #dde2e6;
-    --hover-color: #f3f5f7;
-    --text-primary: #1a1d21;
-    --text-secondary: #5b6570;
-    --accent-color: #00adb5;
-    --accent-hover: #008c9e;
-    --error-color: #c23a52;
-    --success-color: #2f9e44;
-    --warning-color: #b8860b;
-    --gold-color: #a6790a;
-    --shadow-color: rgba(20, 30, 40, 0.12);
-    --overlay-color: rgba(20, 25, 30, 0.45);
+    --surface-alt-color: #edf4ef;
+    --border-color: #d7e4dc;
+    --hover-color: #eef7f1;
+    --text-primary: #12201a;
+    --text-secondary: #55695d;
+
+    --accent-color: #189a5c;
+    --accent-hover: #127a48;
+
+    --error-color: #c23a42;
+    --success-color: #238c4e;
+    --warning-color: #a3760a;
+    --gold-color: #b4900a;
+
+    --shadow-color: rgba(18, 40, 28, 0.12);
+    --overlay-color: rgba(14, 28, 20, 0.45);
 
     color-scheme: light;
 }
@@ -46,11 +76,17 @@ html[data-theme="light"] {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: var(--font-body);
 }
 
 html {
     background-color: var(--bg-color);
+    scroll-behavior: smooth;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+    letter-spacing: -0.01em;
 }
 
 body,
@@ -68,6 +104,24 @@ button,
     transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease;
 }
 
+::selection {
+    background-color: color-mix(in srgb, var(--accent-color) 35%, transparent);
+    color: var(--text-primary);
+}
+
+:focus-visible {
+    outline: 2px solid var(--accent-color);
+    outline-offset: 2px;
+    border-radius: 2px;
+}
+
+input[type="checkbox"] {
+    accent-color: var(--accent-color);
+}
+
+/* =======================================================================
+   GİRİŞ SAYFASI
+   ======================================================================= */
 body.login-page {
     background-color: var(--bg-color);
     color: var(--text-primary);
@@ -76,11 +130,16 @@ body.login-page {
     align-items: center;
     min-height: 100vh;
     width: 100vw;
-}
-
-body:not(.login-page) {
-    background-color: var(--bg-color);
-    color: var(--text-primary);
+    position: relative;
+    overflow-x: hidden;
+    /* İnce bir "mühendislik krokisi" ızgarası — çok düşük opaklıkta */
+    background-image:
+        radial-gradient(circle at 18% 20%, color-mix(in srgb, var(--logo-glow-color) 10%, transparent) 0%, transparent 38%),
+        radial-gradient(circle at 82% 78%, color-mix(in srgb, var(--accent-color) 14%, transparent) 0%, transparent 42%),
+        linear-gradient(color-mix(in srgb, var(--text-secondary) 10%, transparent) 1px, transparent 1px),
+        linear-gradient(90deg, color-mix(in srgb, var(--text-secondary) 10%, transparent) 1px, transparent 1px);
+    background-size: auto, auto, 44px 44px, 44px 44px;
+    background-position: center;
 }
 
 .login-container {
@@ -94,30 +153,74 @@ body:not(.login-page) {
 }
 
 .logo-container {
-    margin-bottom: 40px;
+    margin-bottom: 44px;
     text-align: center;
+    position: relative;
+    z-index: 0;
+}
+
+/* Logonun kendi sarısıyla nazik bir parıltı — paletin logoya gerçek bağı */
+.logo-container::before {
+    content: "";
+    position: absolute;
+    inset: -34px -10% auto -10%;
+    height: 150px;
+    background: radial-gradient(ellipse at center, color-mix(in srgb, var(--logo-glow-color) 30%, transparent) 0%, transparent 72%);
+    filter: blur(10px);
+    z-index: -1;
+    pointer-events: none;
 }
 
 .login-logo {
     max-width: 350px;
     width: 100%;
     height: auto;
+    position: relative;
 }
 
 .login-box {
     background-color: var(--surface-color);
-    padding: 40px;
-    border-radius: 12px;
-    box-shadow: 0 8px 24px var(--shadow-color);
+    padding: 44px 40px 40px;
+    border-radius: 20px;
+    box-shadow: 0 24px 60px var(--shadow-color), 0 2px 0 color-mix(in srgb, var(--accent-color) 25%, transparent);
     width: 90%;
     max-width: 450px;
     box-sizing: border-box;
     border: 1px solid var(--border-color);
+    position: relative;
+}
+
+/* İmza öğesi: bir enerji darbe/nabız çizgisi — osiloskopta okunan bir AC
+   sinyali gibi. Bu sayfanın "kahraman" anı: elektrik izleme temasının
+   kendi görsel malzemesinden (dalga formu) doğan tek belirgin risk. */
+.login-box::before {
+    content: "";
+    position: absolute;
+    top: -13px;
+    left: 36px;
+    right: 36px;
+    height: 24px;
+    background-color: var(--accent-color);
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 24' preserveAspectRatio='none'%3E%3Cpath d='M0 12 H128 L142 3 L156 21 L170 3 L184 12 H400' fill='none' stroke='%23000' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 100% 100% no-repeat;
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 24' preserveAspectRatio='none'%3E%3Cpath d='M0 12 H128 L142 3 L156 21 L170 3 L184 12 H400' fill='none' stroke='%23000' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 100% 100% no-repeat;
+    opacity: 0.85;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .login-box::before {
+        animation: pulseGlow 2.6s ease-in-out infinite;
+    }
+}
+
+@keyframes pulseGlow {
+    0%, 100% { opacity: 0.55; }
+    50% { opacity: 1; }
 }
 
 h2 {
     text-align: center;
     margin-bottom: 5px;
+    font-weight: 600;
 }
 
 .subtitle {
@@ -127,6 +230,9 @@ h2 {
     font-size: 0.9rem;
 }
 
+/* =======================================================================
+   FORM ELEMANLARI
+   ======================================================================= */
 .input-group {
     margin-bottom: 20px;
 }
@@ -134,20 +240,21 @@ h2 {
 .input-group label {
     display: block;
     margin-bottom: 8px;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
+    font-weight: 600;
     color: var(--text-secondary);
 }
 
 .input-group input {
     width: 100%;
-    padding: 15px;
+    padding: 14px 16px;
     font-size: 16px;
     border: 1px solid var(--border-color);
-    border-radius: 6px;
+    border-radius: 10px;
     background-color: var(--surface-alt-color);
     color: var(--text-primary);
     outline: none;
-    transition: border-color 0.3s;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
     box-sizing: border-box;
 }
 
@@ -156,46 +263,57 @@ h2 {
     height: 16px;
     padding: 0;
     flex-shrink: 0;
+    border-radius: 4px;
 }
 
 .input-group input:focus {
     border-color: var(--accent-color);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-color) 20%, transparent);
 }
 
 .input-group select {
     width: 100%;
-    padding: 15px;
+    padding: 14px 16px;
     font-size: 16px;
     border: 1px solid var(--border-color);
-    border-radius: 6px;
+    border-radius: 10px;
     background-color: var(--surface-alt-color);
     color: var(--text-primary);
     outline: none;
-    transition: border-color 0.3s;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
     box-sizing: border-box;
     cursor: pointer;
 }
 
 .input-group select:focus {
     border-color: var(--accent-color);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-color) 20%, transparent);
 }
 
 button {
     width: 100%;
     padding: 15px;
-    background-color: var(--accent-color);
-    color: #fff;
+    background: linear-gradient(135deg, var(--accent-color), var(--accent-hover));
+    color: #ffffff;
     border: none;
-    border-radius: 6px;
+    border-radius: 10px;
     font-size: 1rem;
     cursor: pointer;
-    font-weight: bold;
-    transition: background-color 0.3s;
+    font-weight: 700;
+    font-family: var(--font-display);
+    letter-spacing: 0.01em;
+    transition: filter 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
     min-height: 48px;
 }
 
 button:hover {
-    background-color: var(--accent-hover);
+    filter: brightness(1.08);
+    transform: translateY(-1px);
+    box-shadow: 0 8px 20px color-mix(in srgb, var(--accent-color) 35%, transparent);
+}
+
+button:active {
+    transform: translateY(0);
 }
 
 .error-text {
@@ -216,9 +334,10 @@ button:hover {
     width: calc(100% - 40px);
     margin: 0 20px 14px 20px;
     background-color: var(--surface-alt-color);
+    background-image: none;
     border: 1px solid var(--border-color);
     color: var(--text-primary);
-    border-radius: 6px;
+    border-radius: 10px;
     padding: 10px;
     display: flex;
     align-items: center;
@@ -226,12 +345,17 @@ button:hover {
     gap: 8px;
     font-size: 0.85rem;
     font-weight: 600;
+    font-family: var(--font-body);
     flex-shrink: 0;
+    box-shadow: none;
 }
 .theme-toggle-btn:hover {
     background-color: var(--hover-color);
     border-color: var(--accent-color);
     color: var(--accent-color);
+    filter: none;
+    transform: none;
+    box-shadow: none;
 }
 .theme-toggle-btn i { color: var(--accent-color); }
 
@@ -242,6 +366,7 @@ button:hover {
     width: auto;
     padding: 10px 14px;
     background-color: var(--surface-color);
+    background-image: none;
     border: 1px solid var(--border-color);
     color: var(--text-secondary);
     border-radius: 30px;
@@ -250,13 +375,21 @@ button:hover {
     gap: 6px;
     font-size: 0.8rem;
     font-weight: 600;
+    font-family: var(--font-body);
     box-shadow: 0 4px 14px var(--shadow-color);
+    z-index: 2;
 }
 .theme-toggle-standalone:hover {
     color: var(--accent-color);
     border-color: var(--accent-color);
+    filter: none;
+    transform: none;
+    box-shadow: 0 4px 14px var(--shadow-color);
 }
 
+/* =======================================================================
+   PANEL DÜZENİ (Sidebar + Ana İçerik)
+   ======================================================================= */
 .dashboard-body {
     display: flex;
     justify-content: flex-start;
@@ -271,58 +404,90 @@ button:hover {
     flex-shrink: 0;
     height: 100vh;
     background-color: var(--surface-color);
-    padding: 20px 0;
+    padding: 24px 0;
     display: flex;
     flex-direction: column;
     border-right: 1px solid var(--border-color);
 }
 
 .sidebar .logo {
-    font-size: 1.5rem;
-    font-weight: bold;
+    font-family: var(--font-display);
+    font-size: 1.4rem;
+    font-weight: 700;
     color: var(--accent-color);
     text-align: center;
-    margin-bottom: 40px;
+    margin-bottom: 36px;
+    letter-spacing: -0.02em;
 }
 
 .nav-links {
     list-style: none;
     flex-grow: 1;
+    padding: 0 12px;
+}
+
+.nav-links li {
+    margin-bottom: 4px;
 }
 
 .nav-links li a {
-    display: block;
-    padding: 15px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    border-radius: 10px;
     color: var(--text-secondary);
     text-decoration: none;
-    transition: 0.3s;
+    font-weight: 500;
+    font-size: 0.94rem;
+    transition: background-color 0.2s ease, color 0.2s ease, transform 0.15s ease;
 }
 
-.nav-links li a:hover, .nav-links li a.active {
-    background-color: var(--surface-alt-color);
-    color: var(--text-primary);
-    border-left: 4px solid var(--accent-color);
+.nav-links li a i {
+    width: 18px;
+    text-align: center;
+    flex-shrink: 0;
+    font-size: 0.95rem;
 }
+
+.nav-links li a:hover {
+    background-color: var(--hover-color);
+    color: var(--text-primary);
+    transform: translateX(2px);
+}
+
+.nav-links li a.active {
+    background-color: color-mix(in srgb, var(--accent-color) 15%, transparent);
+    color: var(--accent-color);
+    font-weight: 700;
+}
+.nav-links li a.active i { color: var(--accent-color); }
 
 .logout-btn {
     width: calc(100% - 40px);
     margin: auto 20px 20px 20px;
-    background-color: transparent;
+    background: transparent;
+    background-image: none;
     border: 1px solid var(--error-color);
     color: var(--error-color);
-    border-radius: 6px;
+    border-radius: 10px;
     padding: 10px;
     flex-shrink: 0;
+    box-shadow: none;
 }
 
 .logout-btn:hover {
     background-color: var(--error-color);
+    background-image: none;
     color: #fff;
+    filter: none;
+    transform: none;
+    box-shadow: none;
 }
 
 .main-content {
     flex-grow: 1;
-    padding: 30px;
+    padding: 32px 34px;
     height: 100vh;
     overflow-y: auto;
     min-width: 0;
@@ -333,12 +498,38 @@ header {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 30px;
-    padding-bottom: 15px;
+    padding-bottom: 16px;
     border-bottom: 1px solid var(--border-color);
     flex-wrap: wrap;
     gap: 10px;
+    position: relative;
 }
 
+/* Sayfa üstlüklerinin altında sessiz bir marka yankısı: giriş sayfasındaki
+   darbe motifinin küçük, sakin bir tekrarı — burada gösteriş değil imza. */
+header::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -1px;
+    height: 2px;
+    width: 84px;
+    max-width: 40%;
+    background: linear-gradient(90deg, var(--accent-color), transparent);
+}
+
+.user-info {
+    color: var(--text-secondary);
+    font-size: 0.92rem;
+}
+.user-info span {
+    color: var(--text-primary);
+    font-weight: 700;
+}
+
+/* =======================================================================
+   KARTLAR VE İSTATİSTİKLER
+   ======================================================================= */
 .content-cards {
     display: flex;
     gap: 20px;
@@ -347,20 +538,32 @@ header {
 
 .card {
     background-color: var(--surface-color);
-    padding: 20px;
-    border-radius: 8px;
+    padding: 22px 22px 20px;
+    border-radius: 14px;
     flex: 1;
     border: 1px solid var(--border-color);
+    border-top: 3px solid color-mix(in srgb, var(--accent-color) 55%, transparent);
     min-width: 0;
+}
+
+.card h3 {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
 }
 
 .card.warning {
     border-color: var(--error-color);
+    border-top-color: var(--error-color);
 }
 
 .big-number {
+    font-family: var(--font-display);
+    font-variant-numeric: tabular-nums;
     font-size: 2.5rem;
-    font-weight: bold;
+    font-weight: 700;
     color: var(--accent-color);
     margin-top: 10px;
 }
@@ -370,13 +573,16 @@ header {
     padding: 50px 20px;
     text-align: center;
     color: var(--text-secondary);
-    border-radius: 8px;
+    border-radius: 12px;
     border: 1px dashed var(--border-color);
 }
 
+/* =======================================================================
+   TABLOLAR
+   ======================================================================= */
 .table-container {
     background-color: var(--surface-color);
-    border-radius: 8px;
+    border-radius: 14px;
     padding: 15px;
     border: 1px solid var(--border-color);
     overflow-x: auto;
@@ -395,14 +601,18 @@ thead tr {
 th {
     padding: 12px 15px;
     color: var(--text-secondary);
-    font-weight: 600;
+    font-weight: 700;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
     white-space: nowrap;
 }
 
 td {
-    padding: 12px 15px;
+    padding: 13px 15px;
     border-bottom: 1px solid var(--surface-alt-color);
     color: var(--text-primary);
+    font-size: 0.93rem;
 }
 
 tbody tr:hover {
@@ -410,20 +620,21 @@ tbody tr:hover {
 }
 
 .badge {
-    padding: 5px 10px;
+    padding: 5px 12px;
     border-radius: 20px;
-    font-size: 0.8rem;
-    font-weight: bold;
+    font-size: 0.76rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
     display: inline-block;
 }
 
 .badge.success {
-    background-color: color-mix(in srgb, var(--accent-color) 20%, transparent);
-    color: var(--accent-color);
+    background-color: color-mix(in srgb, var(--success-color) 18%, transparent);
+    color: var(--success-color);
 }
 
 .badge.danger {
-    background-color: color-mix(in srgb, var(--error-color) 20%, transparent);
+    background-color: color-mix(in srgb, var(--error-color) 18%, transparent);
     color: var(--error-color);
 }
 
@@ -441,20 +652,32 @@ tbody tr:hover {
 .table-error { color: var(--error-color); }
 
 .action-btn {
-    padding: 6px 12px;
+    padding: 6px 13px;
     background-color: transparent;
+    background-image: none;
     border: 1px solid var(--text-secondary);
     color: var(--text-secondary);
-    border-radius: 4px;
+    border-radius: 8px;
     cursor: pointer;
-    transition: 0.3s;
+    font-weight: 600;
+    font-size: 0.85rem;
+    width: auto;
+    min-height: 0;
+    transition: 0.2s ease;
+    box-shadow: none;
 }
 
 .action-btn:hover {
     border-color: var(--accent-color);
     color: var(--accent-color);
+    filter: none;
+    transform: none;
+    box-shadow: none;
 }
 
+/* =======================================================================
+   MODALLAR
+   ======================================================================= */
 .modal {
     position: fixed;
     top: 0;
@@ -466,7 +689,7 @@ tbody tr:hover {
     justify-content: center;
     align-items: center;
     z-index: 3000;
-    backdrop-filter: blur(3px);
+    backdrop-filter: blur(4px);
     padding: 20px;
 }
 
@@ -476,14 +699,14 @@ tbody tr:hover {
 
 .modal-content {
     background-color: var(--surface-color);
-    padding: 30px;
-    border-radius: 12px;
+    padding: 32px;
+    border-radius: 16px;
     width: 90%;
     max-width: 450px;
     max-height: 90vh;
     overflow-y: auto;
     position: relative;
-    box-shadow: 0 10px 30px var(--shadow-color);
+    box-shadow: 0 20px 50px var(--shadow-color);
     border: 1px solid var(--border-color);
 }
 
@@ -494,7 +717,7 @@ tbody tr:hover {
     font-size: 1.8rem;
     color: var(--text-secondary);
     cursor: pointer;
-    transition: 0.3s;
+    transition: 0.2s ease;
 }
 
 .close-btn:hover {
@@ -543,8 +766,9 @@ tbody tr:hover {
         padding: 14px 16px;
     }
     .mobile-topbar .logo {
-        font-size: 1.2rem;
-        font-weight: bold;
+        font-family: var(--font-display);
+        font-size: 1.15rem;
+        font-weight: 700;
         color: var(--accent-color);
     }
     .hamburger-btn {
@@ -553,18 +777,23 @@ tbody tr:hover {
         min-height: 42px;
         flex-shrink: 0;
         background-color: var(--surface-alt-color);
+        background-image: none;
         border: 1px solid var(--border-color);
         color: var(--text-primary);
-        border-radius: 8px;
+        border-radius: 10px;
         font-size: 1.1rem;
         display: flex;
         align-items: center;
         justify-content: center;
         padding: 0;
+        box-shadow: none;
     }
     .hamburger-btn:hover {
         border-color: var(--accent-color);
         color: var(--accent-color);
+        filter: none;
+        transform: none;
+        box-shadow: none;
     }
 
     .sidebar {
@@ -594,7 +823,7 @@ tbody tr:hover {
     }
 
     .main-content {
-        padding: 15px;
+        padding: 16px;
         width: 100%;
         height: auto;
     }
@@ -608,7 +837,7 @@ tbody tr:hover {
         font-size: 1.2rem;
     }
     .modal-content {
-        padding: 20px;
+        padding: 22px;
     }
 }
 
@@ -633,7 +862,7 @@ tbody tr:hover {
     table tr {
         margin-bottom: 12px;
         border: 1px solid var(--border-color);
-        border-radius: 8px;
+        border-radius: 12px;
         padding: 6px 0;
         background-color: var(--surface-alt-color);
     }
@@ -678,4 +907,11 @@ tbody tr:hover {
         align-self: center;
     }
     .login-container { padding-top: 10px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .login-box::before { animation: none; }
+    .nav-links li a:hover { transform: none; }
+    button:hover { transform: none; }
 }

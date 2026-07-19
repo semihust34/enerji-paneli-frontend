@@ -29,7 +29,7 @@ function ensureMeterStyles() {
             /* Bu paneldeki tüm renkler artık style.css'teki paylaşılan
                tema değişkenlerine bağlı: karanlık/aydınlık mod değiştiğinde
                ve mobilde otomatik olarak uyumlu kalır. */
-            --mv-accent: var(--accent-color, #00adb5);
+            --mv-accent: var(--accent-color, #189a5c);
             --mv-accent-bg: color-mix(in srgb, var(--accent-color) 12%, transparent);
             --mv-accent-border: color-mix(in srgb, var(--accent-color) 35%, transparent);
             --mv-bg: var(--surface-color, #17191c);
@@ -43,7 +43,7 @@ function ensureMeterStyles() {
             --mv-good: var(--success-color, #35d48a);
             --mv-good-bg: color-mix(in srgb, var(--success-color) 12%, transparent);
             --mv-good-border: color-mix(in srgb, var(--success-color) 35%, transparent);
-            --mv-mono: ui-monospace, 'SF Mono', 'Cascadia Mono', 'Roboto Mono', Consolas, monospace;
+            --mv-mono: var(--font-mono, 'JetBrains Mono'), ui-monospace, 'SF Mono', 'Cascadia Mono', 'Roboto Mono', Consolas, monospace;
         }
 
         /* Taşmaları önlemek için: tüm kutular kendi padding'ini genişlik içine alsın */
@@ -143,7 +143,7 @@ function ensureMeterStyles() {
             margin-bottom: 28px;
             transition: background .15s ease, transform .15s ease;
         }
-        .mp-ana:hover { background: rgba(0, 173, 181, 0.18); transform: translateY(-1px); }
+        .mp-ana:hover { background: color-mix(in srgb, var(--mv-accent) 18%, transparent); transform: translateY(-1px); }
         .mp-ana:focus-visible { outline: 2px solid var(--mv-accent); outline-offset: 2px; }
         .mp-ana-left { display: flex; align-items: center; gap: 12px; min-width: 0; }
         .mp-ana-left strong { font-size: 1rem; color: var(--mv-text); overflow-wrap: anywhere; }
