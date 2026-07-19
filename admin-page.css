@@ -1,0 +1,20 @@
+/* =======================================================================
+   admin-page.css
+   Only what style.css doesn't already provide for this page:
+   a neutral badge variant (for fields we don't have real data for yet)
+   and loading/error states for the factory table.
+   Reuses --text-secondary / --error-color, same as everywhere else.
+   ======================================================================= */
+
+.badge.neutral {
+    background-color: rgba(160, 160, 160, 0.15);
+    color: var(--text-secondary);
+}
+
+.table-loading,
+.table-error {
+    text-align: center;
+    padding: 20px;
+    color: var(--text-secondary);
+}
+.table-error { color: var(--error-color); }
