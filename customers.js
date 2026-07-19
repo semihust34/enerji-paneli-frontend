@@ -2,15 +2,18 @@
 
 const currentUserRole = localStorage.getItem('userRole');
 
-if (currentUserRole === 'CUSTOMER') {
-    window.location.href = 'customer-dashboard.html';
+// Token yoksa veya rol ADMIN/SUPERADMIN değilse login'e at
+if (!requireRole(['ADMIN', 'SUPERADMIN'])) {
+    // requireRole zaten yönlendirdi; bu dosyanın geri kalanı çalışmasın
+    throw new Error('Yetkisiz erişim, yönlendiriliyor.');
 }
 
 let globalUsersData = [];
 
 async function loadCustomers() {
     try {
-        const response = await fetch('https://web-production-388bad.up.railway.app/api/customers');
+        const response = await fetch(`${API_BASE}/customers`, { headers: authHeaders() });
+        if (handleAuthFailure(response)) return;
         const result = await response.json();
         
         if (result.success) {
@@ -79,7 +82,11 @@ window.deleteUser = async function(userId) {
     if (!confirm("Bu kullanıcıyı kalıcı olarak silmek istediğinize emin misiniz?")) return;
 
     try {
-        const response = await fetch(`https://web-production-388bad.up.railway.app/api/customers/${userId}`, { method: 'DELETE' });
+        const response = await fetch(`${API_BASE}/customers/${userId}`, {
+            method: 'DELETE',
+            headers: authHeaders()
+        });
+        if (handleAuthFailure(response)) return;
         const result = await response.json();
         if (response.ok && result.success) {
             loadCustomers();
@@ -124,6 +131,9 @@ window.openEditModal = function(userId) {
 };
 
 document.addEventListener('DOMContentLoaded', () => {
+    const adminNameEl = document.getElementById('adminName');
+    if (adminNameEl) adminNameEl.textContent = localStorage.getItem('userCompany') || 'Yetkili';
+
     loadCustomers();
 
     if (currentUserRole !== 'SUPERADMIN') {
@@ -224,14 +234,12 @@ document.addEventListener('DOMContentLoaded', () => {
             };
 
             try {
-                const response = await fetch('https://web-production-388bad.up.railway.app/api/customers', {
+                const response = await fetch(`${API_BASE}/customers`, {
                     method: 'POST',
-                    headers: { 
-                        'Content-Type': 'application/json',
-                        'ngrok-skip-browser-warning': 'true'
-                    },
+                    headers: authHeaders({ 'Content-Type': 'application/json' }),
                     body: JSON.stringify(data)
                 });
+                if (handleAuthFailure(response)) return;
                 const result = await response.json();
 
                 if (response.ok && result.success) {
@@ -271,14 +279,12 @@ document.addEventListener('DOMContentLoaded', () => {
             };
 
             try {
-                const response = await fetch(`https://web-production-388bad.up.railway.app/api/customers/${userId}`, {
+                const response = await fetch(`${API_BASE}/customers/${userId}`, {
                     method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'ngrok-skip-browser-warning': 'true'
-                    },
+                    headers: authHeaders({ 'Content-Type': 'application/json' }),
                     body: JSON.stringify(data)
                 });
+                if (handleAuthFailure(response)) return;
                 const result = await response.json();
 
                 if (response.ok && result.success) {
