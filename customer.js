@@ -1,62 +1,67 @@
 // customer.js
 
-// Sadece bu müşteriye ait olduğunu varsaydığımız sahte veriler
-const mockMyFacilities = [
-    {
-        id: 101,
-        name: "Gebze Üretim Bandı",
-        meterCount: 5,
-        lastSeen: "3 dk önce",
-        status: "Normal",
-        isWarning: false
-    },
-    {
-        id: 102,
-        name: "Tuzla Depo Alanı",
-        meterCount: 2,
-        lastSeen: "12 dk önce",
-        status: "Sınırda (%19)",
-        isWarning: true
-    }
-];
+document.addEventListener('DOMContentLoaded', async () => {
+    // Token yoksa veya rol CUSTOMER değilse login'e at
+    if (!requireRole(['CUSTOMER'])) return;
 
-function loadCustomerData() {
-    const tableBody = document.getElementById('customerTableBody');
-    tableBody.innerHTML = '';
+    const nameEl = document.getElementById('customerName');
+    if (nameEl) nameEl.textContent = localStorage.getItem('userCompany') || 'Sayın Müşterimiz';
 
-    mockMyFacilities.forEach(facility => {
-        const badgeClass = facility.isWarning ? 'badge danger' : 'badge success';
-        
-        const row = `
-            <tr>
-                <td>${facility.name}</td>
-                <td>${facility.meterCount}</td>
-                <td>${facility.lastSeen}</td>
-                <td><span class="${badgeClass}">${facility.status}</span></td>
-            </tr>
-        `;
-        
-        tableBody.innerHTML += row;
-    });
-}
+    await loadMyFacilities();
 
-document.addEventListener('DOMContentLoaded', () => {
-    // 1. Güvenlik Kontrolü (Sadece Müşteriler girebilir)
-    const userRole = localStorage.getItem('userRole');
-    
-    if (userRole !== 'CUSTOMER') {
-        alert("Yetkisiz erişim! Müşteri girişine yönlendiriliyorsunuz.");
-        window.location.href = 'index.html'; 
-        return;
-    }
-
-    // 2. Tabloyu Doldur
-    loadCustomerData();
-
-    // 3. Çıkış Yapma İşlemi
     document.getElementById('logoutBtn').addEventListener('click', () => {
-        localStorage.removeItem('userToken');
-        localStorage.removeItem('userRole');
+        localStorage.clear();
         window.location.href = 'index.html';
     });
 });
+
+// ---------------------------------------------------------------------
+// Gerçek veri: /api/factories, CUSTOMER rolü için backend tarafında
+// zaten sadece bu kullanıcıya tanımlı fabrikaları döndürüyor (bkz.
+// app.py -> get_factories, token içindeki accessible_factories'e göre
+// filtreleniyor). Burada ayrıca bir filtre yapmaya gerek yok.
+//
+// Not: "Son Veri Güncelleme" ve "Durum" için henüz gerçek modem verisi
+// yok, bu yüzden admin panelindeki tabloyla tutarlı şekilde dürüstçe
+// "—" / "Bilinmiyor" gösteriyoruz — sahte sayı üretmiyoruz. Modem API'si
+// bağlandığında bu iki hücreyi gerçek veriyle değiştirmek yeterli olacak.
+// ---------------------------------------------------------------------
+async function loadMyFacilities() {
+    const tableBody = document.getElementById('customerTableBody');
+    const statCountEl = document.getElementById('statMyFacilities');
+
+    if (tableBody) {
+        tableBody.innerHTML = '<tr><td colspan="4" class="table-loading">Yükleniyor...</td></tr>';
+    }
+
+    try {
+        const res = await fetch(`${API_BASE}/factories`, { headers: authHeaders() });
+        if (handleAuthFailure(res)) return;
+        const data = await res.json();
+        const facilities = data.factories || data || [];
+
+        if (statCountEl) statCountEl.textContent = facilities.length;
+
+        if (!tableBody) return;
+
+        if (!facilities.length) {
+            tableBody.innerHTML = '<tr><td colspan="4" class="table-loading">Size tanımlı bir tesis bulunmuyor. Lütfen yöneticinizle iletişime geçin.</td></tr>';
+            return;
+        }
+
+        tableBody.innerHTML = facilities.map(f => `
+            <tr>
+                <td>${f.name || '-'}</td>
+                <td>${f.meterCount ?? '-'}</td>
+                <td>—</td>
+                <td><span class="badge neutral">Bilinmiyor</span></td>
+            </tr>
+        `).join('');
+    } catch (err) {
+        console.error('Tesis verileri yüklenemedi:', err);
+        if (statCountEl) statCountEl.textContent = '—';
+        if (tableBody) {
+            tableBody.innerHTML = '<tr><td colspan="4" class="table-error">Tesis verileri yüklenemedi.</td></tr>';
+        }
+    }
+}
