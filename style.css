@@ -1,169 +1,394 @@
-/* =======================================================================
-   factories-page.css
-   Adds ONLY what style.css does not already provide for this page: the
-   two-column layout, the search box, the empty state, and a small
-   sizing helper for an inline button.
+:root {
+    --bg-color: #121212;
+    --surface-color: #1e1e1e;
+    --text-primary: #ffffff;
+    --text-secondary: #a0a0a0;
+    --accent-color: #00adb5;
+    --accent-hover: #008c9e;
+    --error-color: #cf6679;
+}
 
-   Everything else — button, .modal, .modal-content, .close-btn,
-   .input-group, .badge — is left completely alone and inherited as-is
-   from style.css, using the exact same tokens (--bg-color, --surface-color,
-   --text-primary, --text-secondary, --accent-color, --accent-hover,
-   --error-color) as every other page, so this page can't drift from
-   the shared theme.
-   ======================================================================= */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
 
-.fp-main {
+/* Sadece Giriş Sayfası İçin Sabitleme */
+body.login-page {
+    background-color: var(--bg-color);
+    color: var(--text-primary);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden; /* Sayfanın kaymasını kesin olarak engeller */
+}
+
+/* Normal Sayfalar (Dashboard) İçin */
+body:not(.login-page) {
+    background-color: var(--bg-color);
+    color: var(--text-primary);
+}
+
+/* --- GİRİŞ EKRANI STİLLERİ --- */
+.login-container {
     display: flex;
     flex-direction: column;
-    gap: 22px;
-}
-
-/* ---------- Page header ---------- */
-.fp-header {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 14px;
-}
-.fp-header h2 { margin: 0; }
-.fp-subtitle {
-    margin: 6px 0 0;
-    color: var(--text-secondary);
-    font-size: 0.9rem;
-    max-width: 46ch;
-}
-
-/* style.css's global `button` rule is width:100% by design (it's built
-   for the login form / modal submit). This lets a button sit inline in
-   a header instead, without touching any of its colors, radius, or
-   hover state — those still come straight from style.css. */
-.btn-inline {
-    width: auto;
-    display: inline-flex;
     align-items: center;
-    gap: 8px;
-    padding: 10px 18px;
-}
-
-/* ---------- Two-column layout ---------- */
-.fp-layout {
-    display: grid;
-    grid-template-columns: minmax(280px, 360px) 1fr;
-    align-items: start;
-    gap: 20px;
-}
-@media (max-width: 860px) {
-    .fp-layout { grid-template-columns: 1fr; }
-}
-
-/* .card already gives the surface/border/radius look site-wide;
-   these just fine-tune sizing inside the grid. */
-.fp-list-card, .fp-detail-card { min-width: 0; }
-.fp-detail-card { min-height: 460px; }
-
-.fp-card-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-    margin-bottom: 16px;
-}
-.fp-card-header h3 {
-    margin: 0;
-    font-size: 1rem;
-    display: flex;
-    align-items: center;
-    gap: 9px;
-    min-width: 0;
-    overflow-wrap: anywhere;
-}
-.fp-card-header h3 i { color: var(--accent-color); font-size: 0.9rem; flex-shrink: 0; }
-
-.fp-count {
-    flex-shrink: 0;
-    font-size: 0.72rem;
-    font-weight: 700;
-    color: var(--text-secondary);
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid #333;
-    padding: 3px 10px;
-    border-radius: 20px;
-}
-
-/* ---------- Search box above the factory list ---------- */
-.fp-search { position: relative; margin-bottom: 14px; }
-.fp-search i {
-    position: absolute;
-    left: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--text-secondary);
-    font-size: 0.8rem;
-}
-.fp-search input {
+    justify-content: center;
     width: 100%;
-    padding: 10px 12px 10px 32px;
-    background-color: #2c2c2c;
+    padding: 20px;
+}
+
+.logo-container {
+    margin-bottom: 40px;
+    text-align: center;
+}
+
+.login-logo {
+    max-width: 350px; /* Logon burada büyütüldü */
+    width: 100%;
+    height: auto;
+}
+
+.login-box {
+    background-color: var(--surface-color);
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+    width: 90%;
+    max-width: 450px;
+    box-sizing: border-box;
+}
+
+h2 {
+    text-align: center;
+    margin-bottom: 5px;
+}
+
+.subtitle {
+    text-align: center;
+    color: var(--text-secondary);
+    margin-bottom: 30px;
+    font-size: 0.9rem;
+}
+
+.input-group {
+    margin-bottom: 20px;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.input-group input {
+    width: 100%;
+    padding: 15px;
+    font-size: 16px;
     border: 1px solid #333;
     border-radius: 6px;
+    background-color: #2c2c2c;
     color: var(--text-primary);
-    font-size: 0.9rem;
     outline: none;
     transition: border-color 0.3s;
+    box-sizing: border-box;
 }
-.fp-search input:focus { border-color: var(--accent-color); }
-.fp-search input::placeholder { color: var(--text-secondary); }
 
-#factoryList {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    max-height: 560px;
-    overflow-y: auto;
-    padding-right: 2px;
+.input-group input:focus {
+    border-color: var(--accent-color);
 }
-#factoryList::-webkit-scrollbar { width: 6px; }
-#factoryList::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
 
-/* ---------- Detail panel empty state ---------- */
-.fp-empty-state {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+button {
+    width: 100%;
+    padding: 15px;
+    background-color: var(--accent-color);
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: var(--accent-hover);
+}
+
+.error-text {
+    color: var(--error-color);
+    font-size: 0.85rem;
     text-align: center;
-    gap: 12px;
-    min-height: 360px;
-    color: var(--text-secondary);
+    margin-bottom: 15px;
 }
-.fp-empty-state i {
-    font-size: 1.8rem;
+
+.hidden {
+    display: none;
+}
+
+/* --- DASHBOARD STİLLERİ --- */
+.dashboard-body {
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    height: 100vh;
+    background-color: var(--bg-color);
+}
+
+.sidebar {
+    width: 250px;
+    min-width: 250px;
+    flex-shrink: 0;
+    height: 100vh;
+    background-color: var(--surface-color);
+    padding: 20px 0;
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid #333;
+}
+
+.sidebar .logo {
+    font-size: 1.5rem;
+    font-weight: bold;
     color: var(--accent-color);
-    background: rgba(0, 173, 181, 0.12);
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.nav-links {
+    list-style: none;
+    flex-grow: 1;
+}
+
+.nav-links li a {
+    display: block;
+    padding: 15px 20px;
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+.nav-links li a:hover, .nav-links li a.active {
+    background-color: #2c2c2c;
+    color: var(--text-primary);
+    border-left: 4px solid var(--accent-color);
+}
+
+.logout-btn {
+    width: calc(100% - 40px);
+    margin: auto 20px 20px 20px;
+    background-color: transparent;
+    border: 1px solid var(--error-color);
+    color: var(--error-color);
+    border-radius: 6px;
+    padding: 10px;
+    flex-shrink: 0;
+}
+
+.logout-btn:hover {
+    background-color: var(--error-color);
+    color: #fff;
+}
+
+.main-content {
+    flex-grow: 1;
+    padding: 30px;
+    height: 100vh;
+    overflow-y: auto;
+}
+
+header {
     display: flex;
+    justify-content: space-between;
     align-items: center;
+    margin-bottom: 30px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #333;
+}
+
+.content-cards {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.card {
+    background-color: var(--surface-color);
+    padding: 20px;
+    border-radius: 8px;
+    flex: 1;
+    border: 1px solid #333;
+}
+
+.card.warning {
+    border-color: var(--error-color);
+}
+
+.big-number {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: var(--accent-color);
+    margin-top: 10px;
+}
+
+.placeholder-box {
+    background-color: #2c2c2c;
+    padding: 50px;
+    text-align: center;
+    color: var(--text-secondary);
+    border-radius: 8px;
+    border: 1px dashed #555;
+}
+
+.table-container {
+    background-color: var(--surface-color);
+    border-radius: 8px;
+    padding: 15px;
+    border: 1px solid #333;
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+thead tr {
+    border-bottom: 2px solid #444;
+}
+
+th {
+    padding: 12px 15px;
+    color: var(--text-secondary);
+    font-weight: 600;
+}
+
+td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #2c2c2c;
+    color: var(--text-primary);
+}
+
+tbody tr:hover {
+    background-color: #252525;
+}
+
+.badge {
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+
+.badge.success {
+    background-color: rgba(0, 173, 181, 0.2);
+    color: var(--accent-color);
+}
+
+.badge.danger {
+    background-color: rgba(207, 102, 121, 0.2);
+    color: var(--error-color);
+}
+
+.action-btn {
+    padding: 6px 12px;
+    background-color: transparent;
+    border: 1px solid var(--text-secondary);
+    color: var(--text-secondary);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.action-btn:hover {
+    border-color: var(--accent-color);
+    color: var(--accent-color);
+}
+
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
     justify-content: center;
-}
-.fp-empty-state p { margin: 0; font-size: 0.88rem; max-width: 280px; }
-
-/* ---------- Tiny additions inside the existing modal/input-group ---------- */
-#addFactoryModal h3 {
-    display: flex;
     align-items: center;
-    gap: 10px;
-}
-#addFactoryModal h3 i,
-#addFactoryModal .input-group label i { color: var(--accent-color); }
-#addFactoryModal .input-group label {
-    display: flex;
-    align-items: center;
-    gap: 7px;
+    z-index: 1000;
+    backdrop-filter: blur(3px);
 }
 
-@media (max-width: 480px) {
-    .fp-header { flex-direction: column; align-items: stretch; }
+.modal.hidden {
+    display: none;
+}
+
+.modal-content {
+    background-color: var(--surface-color);
+    padding: 30px;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 450px;
+    position: relative;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+    border: 1px solid #333;
+}
+
+.close-btn {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 1.8rem;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.close-btn:hover {
+    color: var(--error-color);
+}
+
+.chart-section {
+    height: 350px;
+}
+
+@media (max-width: 768px) {
+    .dashboard-body {
+        flex-direction: column;
+        height: auto;
+    }
+    .sidebar {
+        width: 100%;
+        height: auto;
+        min-height: auto;
+        min-width: 100%;
+        padding: 15px 0;
+        border-right: none;
+        border-bottom: 1px solid #333;
+    }
+    .nav-links {
+        display: flex;
+        overflow-x: auto;
+        white-space: nowrap;
+        padding-bottom: 10px;
+        margin: 0 10px;
+    }
+    .main-content {
+        padding: 15px;
+        width: 100%;
+        height: auto;
+    }
+    .content-cards {
+        flex-direction: column;
+    }
+    .chart-section {
+        height: 300px;
+    }
 }
