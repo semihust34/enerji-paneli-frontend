@@ -1,6 +1,8 @@
 // logs.js
 
 document.addEventListener('DOMContentLoaded', () => {
+    if (!requireRole(['ADMIN', 'SUPERADMIN'])) return;
+
     const logOutput = document.getElementById('logOutput');
     const clearBtn = document.getElementById('clearLogsBtn');
 
