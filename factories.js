@@ -417,59 +417,59 @@ window.showDetails = function(f) {
 function getMeterData(meterName, factoryName) {
     return {
         abone: {
-            "Abone Ad": "x",
-            "Abone No": "10000400158",
-            "Sayaç Seri No": "50672742",
-            "Sayaç Tanım": "50672742",
+            "Abone Ad": "-",
+            "Abone No": "0",
+            "Sayaç Seri No": "0",
+            "Sayaç Tanım": "0",
             "Abone Tip": "-",
-            "Sözleşme Gücü": "240,00 kW",
-            "Çarpan": "1000",
+            "Sözleşme Gücü": "0,00 kW",
+            "Çarpan": "1",
             "Etso Kod": "-",
             "Ölçüm Noktası Id": "-",
-            "Eposta": "x",
-            "Abo. Bas. Tarih": "23.09.2020",
-            "San.Sic.Bel.Tarih": "17.08.2020",
-            "San.Sic.Bel.Bitiş": "17.08.2022",
+            "Eposta": "-",
+            "Abo. Bas. Tarih": "-",
+            "San.Sic.Bel.Tarih": "-",
+            "San.Sic.Bel.Bitiş": "-",
             "Kalan Süre": "0 gün"
         },
         endeks: {
             rows: [
-                ["Okuma Zamanı", "01.07.2026 00:00:00", "19.07.2026 03:06:36"],
-                ["Aktif Enerji (kW) (1.8.0)", "828.776", "931.602"],
-                ["Gündüz (kW) (1.8.1)", "404.792", "456.589"],
-                ["Puant (kW) (1.8.2)", "161.864", "181.16"],
-                ["Gece (kW) (1.8.3)", "262.12", "293.853"],
-                ["End. Reak. En. (kVARh) (5.8.0)", "32.931", "34.957"],
-                ["Kap. Reak. En. (kVARh) (8.8.0)", "84.987", "88.941"],
-                ["Maks. Demand (kW) (1.6.0)", "0.425", "0.42"]
+                ["Okuma Zamanı", "-", "-"],
+                ["Aktif Enerji (kW) (1.8.0)", "0", "0"],
+                ["Gündüz (kW) (1.8.1)", "0", "0"],
+                ["Puant (kW) (1.8.2)", "0", "0"],
+                ["Gece (kW) (1.8.3)", "0", "0"],
+                ["End. Reak. En. (kVARh) (5.8.0)", "0", "0"],
+                ["Kap. Reak. En. (kVARh) (8.8.0)", "0", "0"],
+                ["Maks. Demand (kW) (1.6.0)", "0", "0"]
             ],
             note: "* Burada görüntülenen değerler sayaç üzerinde görülen çarpansız değerlerdir."
         },
         ceza: {
             alinanEnerji: {
-                "Aktif Enerji": "102,83",
-                "End. Reak. Enerji": "2,03",
-                "Kap. Reak. Enerji": "3,95"
+                "Aktif Enerji": "0,00",
+                "End. Reak. Enerji": "0,00",
+                "Kap. Reak. Enerji": "0,00"
             },
             reaktifCeza: {
-                "Endüktif Oran (%20)": "1,97",
-                "Kapasitif Oran (%15)": "3,85",
+                "Endüktif Oran (%20)": "0,00",
+                "Kapasitif Oran (%15)": "0,00",
                 "Kapasitif Üretim (%20)": "0,00"
             },
             sozlesmeGucu: {
-                asildiMi: "Evet",
-                asimMiktari: "180,00"
+                asildiMi: "Hayır",
+                asimMiktari: "0,00"
             }
         },
         tuketim: {
-            "Son Okuma Zamanı": "19.07.2026 03:06:36",
-            "Aktif Enerji (1.8.0)": "102.826,00",
-            "Gündüz (1.8.1)": "51.797,00",
-            "Puant (1.8.2)": "19.296,00",
-            "Gece (1.8.3)": "31.733,00",
-            "End. Reak. En. (5.8.0)": "2.026,00",
-            "Kap. Reak. En. (8.8.0)": "3.954,00",
-            "Maks. Demand (1.6.0)": "420,00",
+            "Son Okuma Zamanı": "-",
+            "Aktif Enerji (1.8.0)": "0,00",
+            "Gündüz (1.8.1)": "0,00",
+            "Puant (1.8.2)": "0,00",
+            "Gece (1.8.3)": "0,00",
+            "End. Reak. En. (5.8.0)": "0,00",
+            "Kap. Reak. En. (8.8.0)": "0,00",
+            "Maks. Demand (1.6.0)": "0,00",
             note: "* Burada görüntülenen değerler sayaç çarpanı ile çarpılmış değerlerdir."
         }
     };
