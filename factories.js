@@ -13,6 +13,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Form gönderimi
     document.getElementById('newFactoryForm').addEventListener('submit', handleFormSubmit);
+
+    // Çıkış Yap Butonu (EKLENEN KISIM)
+    const logoutBtn = document.getElementById('logoutBtn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', () => {
+            localStorage.clear();
+            window.location.href = 'index.html';
+        });
+    }
 });
 
 // ---------------------------------------------------------------------
