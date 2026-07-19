@@ -1,269 +1,114 @@
-/* =======================================================================
-   factories-page.css
-   Page-specific layout & polish for factories.html.
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fabrika Yönetimi - Enerji Panel</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="factories-page.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="dashboard-body">
+    <aside class="sidebar">
+        <div class="logo">EnerjiPanel</div>
+        <ul class="nav-links">
+            <li><a href="admin-dashboard.html"><i class="fas fa-chart-line"></i> Genel Bakış</a></li>
+            <li><a href="factories.html" class="active"><i class="fas fa-industry"></i> Fabrikalar</a></li>
+            <li><a href="customer-management.html"><i class="fas fa-users"></i> Müşteriler</a></li>
+            <li><a href="system-logs.html"><i class="fas fa-terminal"></i> Loglar</a></li>
+        </ul>
+        <button id="logoutBtn" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Çıkış Yap</button>
+    </aside>
 
-   Deliberately does NOT touch .sidebar, .nav-links, .logout-btn or the
-   generic .modal/.input-group rules that presumably live in style.css and
-   are shared with the other pages (admin-dashboard, customer-management,
-   system-logs) — so this file only adds to this page, it never overrides
-   the shared chrome those pages rely on.
+    <main class="main-content">
+        <div class="fp-main">
+            <div class="fp-header">
+                <div>
+                    <h2>Fabrikalar</h2>
+                    <p class="fp-subtitle">Bağlı fabrikaları görüntüleyin, sayaçlarını takip edin ve yenilerini tanımlayın.</p>
+                </div>
+                <button id="openFactoryModalBtn" class="fp-btn-primary"><i class="fas fa-plus"></i> Yeni Fabrika</button>
+            </div>
 
-   Colors are pulled from the --mv-* custom properties that factories.js
-   already defines on :root via ensureMeterStyles(). Fallback literals
-   mirror those values exactly, so this still looks right on first paint,
-   before the script runs.
-   ======================================================================= */
+            <div class="fp-layout">
+                <!-- Sol: Fabrika Listesi -->
+                <section class="fp-card fp-list-card">
+                    <div class="fp-card-header">
+                        <h3><i class="fas fa-industry"></i> Fabrika Listesi</h3>
+                        <span class="fp-count" id="factoryCount">0</span>
+                    </div>
+                    <div class="fp-search">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="factorySearchInput" placeholder="Fabrika ara...">
+                    </div>
+                    <div id="factoryList"></div>
+                </section>
 
-.fp-main {
-    display: flex;
-    flex-direction: column;
-    gap: 22px;
-}
+                <!-- Sağ: Detay Paneli (Seçili Fabrika) -->
+                <section id="detailPanel" class="fp-card fp-detail-card">
+                    <div class="fp-card-header">
+                        <h3><i class="fas fa-bolt"></i> <span id="detailTitle">Bir fabrika seçin</span></h3>
+                    </div>
+                    <div id="meterDisplay">
+                        <div class="fp-empty-state">
+                            <i class="fas fa-hand-pointer"></i>
+                            <p>Detayları görüntülemek için soldaki listeden bir fabrika seçin.</p>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
 
-/* ---------- Page header ---------- */
-.fp-header {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 14px;
-}
+    <!-- Yeni Fabrika Modalı -->
+    <div id="addFactoryModal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close-btn" id="closeModalBtn">&times;</span>
+            <h3><i class="fas fa-industry"></i> Yeni Fabrika Tanımla</h3>
+            <form id="newFactoryForm">
+                <div class="input-group">
+                    <label for="newFacName"><i class="fas fa-tag"></i> Fabrika Adı</label>
+                    <input type="text" id="newFacName" placeholder="Örn. ESAN Akümülatör" required>
+                </div>
+                <div class="input-group">
+                    <label for="newFacIp"><i class="fas fa-network-wired"></i> Modem IP</label>
+                    <input type="text" id="newFacIp" placeholder="Örn. 192.168.1.10" required>
+                </div>
+                <div class="input-group">
+                    <label for="newFacCount"><i class="fas fa-microchip"></i> Sayaç Adedi</label>
+                    <input type="number" id="newFacCount" placeholder="Örn. 4" min="0" required>
+                </div>
+                <button type="submit"><i class="fas fa-save"></i> Kaydet</button>
+            </form>
+        </div>
+    </div>
 
-.fp-header h2 {
-    margin: 0;
-    font-size: 1.4rem;
-    color: var(--mv-text, #edf0f2);
-}
+    <script src="factories.js"></script>
+    <script>
+        // Küçük, sayfaya özel eklentiler — factories.js dosyasına dokunmadan:
+        // fabrika sayacı rozeti ve canlı arama filtresi.
+        (function () {
+            const listEl = document.getElementById('factoryList');
+            const countEl = document.getElementById('factoryCount');
+            const searchEl = document.getElementById('factorySearchInput');
+            if (!listEl) return;
 
-.fp-subtitle {
-    margin: 6px 0 0;
-    font-size: 0.85rem;
-    color: var(--mv-text-dim, #90979e);
-    max-width: 46ch;
-}
+            const updateCount = () => {
+                if (countEl) countEl.textContent = listEl.querySelectorAll('.fl-item').length;
+            };
+            new MutationObserver(updateCount).observe(listEl, { childList: true });
+            updateCount();
 
-.fp-btn-primary {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    width: auto;
-    padding: 10px 18px;
-    background: var(--mv-accent, #00adb5);
-    color: #0b1011;
-    font-weight: 700;
-    font-size: 0.85rem;
-    border: none;
-    border-radius: 9px;
-    cursor: pointer;
-    transition: transform .15s ease, box-shadow .15s ease;
-}
-.fp-btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(0, 173, 181, 0.28); }
-.fp-btn-primary:focus-visible { outline: 2px solid var(--mv-accent, #00adb5); outline-offset: 2px; }
-
-/* ---------- Two-column layout ---------- */
-.fp-layout {
-    display: grid;
-    grid-template-columns: minmax(280px, 360px) 1fr;
-    align-items: start;
-    gap: 20px;
-}
-@media (max-width: 860px) {
-    .fp-layout { grid-template-columns: 1fr; }
-}
-
-.fp-card {
-    min-width: 0;
-    background: var(--mv-bg-alt, #1e2124);
-    border: 1px solid var(--mv-border, #2b2f34);
-    border-radius: 14px;
-    padding: 20px 22px;
-    animation: fpFadeIn .35s ease both;
-}
-@media (prefers-reduced-motion: reduce) {
-    .fp-card { animation: none; }
-}
-@keyframes fpFadeIn {
-    from { opacity: 0; transform: translateY(6px); }
-    to { opacity: 1; transform: none; }
-}
-
-.fp-card-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-    margin-bottom: 16px;
-}
-.fp-card-header h3 {
-    margin: 0;
-    font-size: 0.95rem;
-    color: var(--mv-text, #edf0f2);
-    display: flex;
-    align-items: center;
-    gap: 9px;
-    min-width: 0;
-    overflow-wrap: anywhere;
-}
-.fp-card-header h3 i { color: var(--mv-accent, #00adb5); font-size: 0.9rem; flex-shrink: 0; }
-
-.fp-count {
-    flex-shrink: 0;
-    font-size: 0.72rem;
-    font-weight: 700;
-    color: var(--mv-text-dim, #90979e);
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid var(--mv-border, #2b2f34);
-    padding: 3px 10px;
-    border-radius: 20px;
-}
-
-/* ---------- Search box above the factory list ---------- */
-.fp-search {
-    position: relative;
-    margin-bottom: 14px;
-}
-.fp-search i {
-    position: absolute;
-    left: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--mv-text-dim, #90979e);
-    font-size: 0.8rem;
-}
-.fp-search input {
-    width: 100%;
-    padding: 9px 12px 9px 32px;
-    background: var(--mv-bg, #17191c);
-    border: 1px solid var(--mv-border, #2b2f34);
-    border-radius: 9px;
-    color: var(--mv-text, #edf0f2);
-    font-size: 0.85rem;
-}
-.fp-search input:focus { outline: none; border-color: var(--mv-accent, #00adb5); }
-.fp-search input::placeholder { color: var(--mv-text-dim, #90979e); }
-
-#factoryList {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    max-height: 560px;
-    overflow-y: auto;
-    padding-right: 2px;
-}
-#factoryList::-webkit-scrollbar { width: 6px; }
-#factoryList::-webkit-scrollbar-thumb { background: var(--mv-border, #2b2f34); border-radius: 10px; }
-
-/* ---------- Detail panel empty state ---------- */
-.fp-detail-card { min-height: 460px; }
-
-.fp-empty-state {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    gap: 12px;
-    min-height: 360px;
-    color: var(--mv-text-dim, #90979e);
-}
-.fp-empty-state i {
-    font-size: 1.8rem;
-    color: var(--mv-accent, #00adb5);
-    background: var(--mv-accent-bg, rgba(0, 173, 181, 0.12));
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-.fp-empty-state p { margin: 0; font-size: 0.88rem; max-width: 280px; }
-
-/* ---------- Bugfix: JS renders a "badge success" class that
-   ensureMeterStyles() never defines (only .warning / .good exist),
-   so it was rendering unstyled. Adding it here, matching the same
-   green used for .good, keeps every "Aktif" tag consistent. ---------- */
-.meter-panel .badge.success {
-    background: var(--mv-good-bg, rgba(53, 212, 138, 0.12));
-    color: var(--mv-good, #35d48a);
-    border: 1px solid var(--mv-good-border, rgba(53, 212, 138, 0.35));
-}
-
-/* ---------- Modal polish (scoped to #addFactoryModal so it never
-   leaks into shared .modal styling used on other pages) ---------- */
-#addFactoryModal.modal {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: rgba(10, 12, 14, 0.6);
-    backdrop-filter: blur(3px);
-}
-#addFactoryModal.modal.hidden { display: none !important; }
-
-#addFactoryModal .modal-content {
-    background: var(--mv-bg-alt, #1e2124);
-    border: 1px solid var(--mv-border, #2b2f34);
-    border-radius: 14px;
-    padding: 26px 28px;
-    width: min(420px, 92vw);
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
-}
-#addFactoryModal h3 {
-    margin: 0 0 20px;
-    color: var(--mv-text, #edf0f2);
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 1.05rem;
-}
-#addFactoryModal h3 i { color: var(--mv-accent, #00adb5); }
-#addFactoryModal .close-btn {
-    color: var(--mv-text-dim, #90979e);
-    cursor: pointer;
-    transition: color .15s ease;
-}
-#addFactoryModal .close-btn:hover { color: var(--mv-warn, #ff6b5e); }
-
-#addFactoryModal .input-group { margin-bottom: 16px; }
-#addFactoryModal .input-group label {
-    display: flex;
-    align-items: center;
-    gap: 7px;
-    margin-bottom: 6px;
-    font-size: 0.78rem;
-    color: var(--mv-text-dim, #90979e);
-}
-#addFactoryModal .input-group label i { color: var(--mv-accent, #00adb5); font-size: 0.75rem; }
-#addFactoryModal .input-group input {
-    width: 100%;
-    padding: 10px 12px;
-    background: var(--mv-bg, #17191c);
-    border: 1px solid var(--mv-border, #2b2f34);
-    border-radius: 9px;
-    color: var(--mv-text, #edf0f2);
-    font-size: 0.88rem;
-}
-#addFactoryModal .input-group input:focus { outline: none; border-color: var(--mv-accent, #00adb5); }
-
-#addFactoryModal form button[type="submit"] {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    width: 100%;
-    padding: 11px;
-    margin-top: 6px;
-    background: var(--mv-accent, #00adb5);
-    color: #0b1011;
-    font-weight: 700;
-    border: none;
-    border-radius: 9px;
-    cursor: pointer;
-    transition: transform .15s ease;
-}
-#addFactoryModal form button[type="submit"]:hover { transform: translateY(-1px); }
-
-@media (max-width: 480px) {
-    .fp-header { flex-direction: column; align-items: stretch; }
-    .fp-btn-primary { justify-content: center; }
-}
+            if (searchEl) {
+                searchEl.addEventListener('input', () => {
+                    const q = searchEl.value.trim().toLocaleLowerCase('tr');
+                    listEl.querySelectorAll('.fl-item').forEach((item) => {
+                        const name = (item.querySelector('strong')?.textContent || '').toLocaleLowerCase('tr');
+                        item.style.display = name.includes(q) ? '' : 'none';
+                    });
+                });
+            }
+        })();
+    </script>
+</body>
+</html>
