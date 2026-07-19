@@ -26,20 +26,23 @@ function ensureMeterStyles() {
     style.id = 'meterPanelStyles';
     style.textContent = `
         :root {
+            /* Bu paneldeki tüm renkler artık style.css'teki paylaşılan
+               tema değişkenlerine bağlı: karanlık/aydınlık mod değiştiğinde
+               ve mobilde otomatik olarak uyumlu kalır. */
             --mv-accent: var(--accent-color, #00adb5);
-            --mv-accent-bg: rgba(0, 173, 181, 0.12);
-            --mv-accent-border: rgba(0, 173, 181, 0.35);
-            --mv-bg: #17191c;
-            --mv-bg-alt: #1e2124;
-            --mv-border: #2b2f34;
-            --mv-text: #edf0f2;
+            --mv-accent-bg: color-mix(in srgb, var(--accent-color) 12%, transparent);
+            --mv-accent-border: color-mix(in srgb, var(--accent-color) 35%, transparent);
+            --mv-bg: var(--surface-color, #17191c);
+            --mv-bg-alt: var(--surface-alt-color, #1e2124);
+            --mv-border: var(--border-color, #2b2f34);
+            --mv-text: var(--text-primary, #edf0f2);
             --mv-text-dim: var(--text-secondary, #90979e);
-            --mv-warn: #ff6b5e;
-            --mv-warn-bg: rgba(255, 107, 94, 0.12);
-            --mv-warn-border: rgba(255, 107, 94, 0.35);
-            --mv-good: #35d48a;
-            --mv-good-bg: rgba(53, 212, 138, 0.12);
-            --mv-good-border: rgba(53, 212, 138, 0.35);
+            --mv-warn: var(--error-color, #ff6b5e);
+            --mv-warn-bg: color-mix(in srgb, var(--error-color) 12%, transparent);
+            --mv-warn-border: color-mix(in srgb, var(--error-color) 35%, transparent);
+            --mv-good: var(--success-color, #35d48a);
+            --mv-good-bg: color-mix(in srgb, var(--success-color) 12%, transparent);
+            --mv-good-border: color-mix(in srgb, var(--success-color) 35%, transparent);
             --mv-mono: ui-monospace, 'SF Mono', 'Cascadia Mono', 'Roboto Mono', Consolas, monospace;
         }
 
@@ -206,7 +209,7 @@ function ensureMeterStyles() {
         .mv-kpi-icon {
             flex-shrink: 0; width: 38px; height: 38px; border-radius: 10px;
             display: flex; align-items: center; justify-content: center;
-            background: rgba(255,255,255,0.06);
+            background: color-mix(in srgb, var(--mv-text) 6%, transparent);
             color: var(--mv-accent); font-size: 15px;
         }
         .mv-kpi.warn .mv-kpi-icon { color: var(--mv-warn); }
