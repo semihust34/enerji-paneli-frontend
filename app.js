@@ -22,9 +22,12 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
         const responseData = await response.json();
         
         if (response.ok && responseData.success) {
-            // Başarılı giriş: Token ve rolü LocalStorage'a kaydet
+            // Başarılı giriş: Token, rol ve (müşteriyse) erişebileceği
+            // fabrika bilgilerini LocalStorage'a kaydet
             localStorage.setItem('userToken', responseData.token);
             localStorage.setItem('userRole', responseData.role);
+            localStorage.setItem('userCompany', responseData.companyName || '');
+            localStorage.setItem('userFactories', responseData.factories || '');
             
             // ROLE KONTROLÜ VE YÖNLENDİRME (SUPERADMIN VE ADMIN AYNI PANELE GİDER)
             if(responseData.role === 'ADMIN' || responseData.role === 'SUPERADMIN') {
