@@ -15,6 +15,21 @@
     <title>Enerji Takip - Giriş</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* Tema geçişine göre logo gösterimi */
+        .logo-dark, .logo-light {
+            display: none;
+        }
+
+        [data-theme="dark"] .logo-dark {
+            display: block;
+        }
+
+        [data-theme="light"] .logo-light {
+            display: block;
+        }
+    </style>
 </head>
 <body class="login-page">
     <div class="login-container">
@@ -25,7 +40,8 @@
 
         <!-- LOGO ARTIK KUTUNUN DIŞINDA VE ÜSTÜNDE -->
         <div class="logo-container">
-            <img src="logo.png" alt="BUL Mühendislik Logo" class="login-logo">
+            <img src="logo.png" alt="BUL Mühendislik Logo" class="login-logo logo-dark">
+            <img src="logo-light.png" alt="BUL Mühendislik Logo" class="login-logo logo-light">
         </div>
 
         <!-- login-box artık logonun altında başlıyor -->
