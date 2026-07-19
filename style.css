@@ -128,10 +128,18 @@ body.login-page {
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 100vh;
-    width: 100vw;
-    position: relative;
+    /* min-height:100vh yerine position:fixed + inset:0 kullanıyoruz:
+       body'yi doğrudan görünür alana (viewport) sabitliyor. Böylece
+       mobilde adres çubuğunun kayması veya "rubber-band" (esneme)
+       efektiyle sayfa yukarı/aşağı kaymıyor. overflow-y:auto sadece
+       çok kısa ekranlarda / klavye açıkken içerik gerçekten sığmazsa
+       devreye giriyor, aksi halde hiç kaydırma olmuyor. */
+    position: fixed;
+    inset: 0;
+    overflow-y: auto;
     overflow-x: hidden;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
     /* İnce bir "mühendislik krokisi" ızgarası — çok düşük opaklıkta */
     background-image:
         radial-gradient(circle at 18% 20%, color-mix(in srgb, var(--logo-glow-color) 10%, transparent) 0%, transparent 38%),
