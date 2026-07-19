@@ -142,14 +142,18 @@ function ensureMeterStyles() {
         .mp-section-title i { color: var(--mv-accent); }
 
         /* Üstteki "Ana Giriş + Alt Sayaçlar" bloğunu tek bir kutu olarak
-           çerçeveler; alttaki sayaç detay raporundan (.mv-panel) net
-           şekilde ayrılsın diye kendi arkaplanı ve kenarlığı var. */
+           çerçeveler. NOT: bu paneli saran .fp-detail-card zaten
+           var(--surface-color) (=var(--mv-bg)) kullanıyor; bu kutuya da
+           aynı rengi verirsek kutu görünmez olur. Bu yüzden bilerek
+           var(--mv-bg-alt) (farklı bir ton) + gölge kullanıyoruz ki kutu
+           gerçekten ayrı bir yüzey gibi görünsün. */
         .mp-box-top {
-            background: var(--mv-bg);
+            background: var(--mv-bg-alt);
             border: 1px solid var(--mv-border);
             border-radius: 16px;
             padding: 20px 20px 22px;
             margin-bottom: 26px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
         }
 
         .mp-ana {
@@ -177,7 +181,7 @@ function ensureMeterStyles() {
         }
         .mp-tile {
             min-width: 0;
-            background: var(--mv-bg-alt);
+            background: var(--mv-bg);
             border: 1px solid var(--mv-border);
             border-radius: 10px;
             padding: 14px 10px;
@@ -185,7 +189,7 @@ function ensureMeterStyles() {
             cursor: pointer;
             transition: border-color .15s ease, transform .15s ease, background .15s ease;
         }
-        .mp-tile:hover { border-color: var(--mv-accent); background: var(--mv-bg); transform: translateY(-2px); }
+        .mp-tile:hover { border-color: var(--mv-accent); background: var(--mv-accent-bg); transform: translateY(-2px); }
         .mp-tile:focus-visible { outline: 2px solid var(--mv-accent); outline-offset: 2px; }
         .mp-tile i { color: var(--mv-accent); font-size: 1.1rem; }
         .mp-tile small { display: block; margin-top: 6px; color: var(--mv-text-dim); font-size: 0.75rem; overflow-wrap: anywhere; }
@@ -199,10 +203,6 @@ function ensureMeterStyles() {
             border: 1px solid var(--mv-border);
             border-radius: 16px;
             padding: 22px 22px 24px;
-            /* Sabit (sticky) mobil üst çubuğun altında kalmasın diye
-               kaydırma hedefine pay bırakır (scrollToMeterPanel bunu
-               JS'de manuel de hesaplıyor, bu ekstra bir güvence). */
-            scroll-margin-top: 84px;
         }
         @keyframes mvFadeIn {
             from { opacity: 0; transform: translateY(8px); }
@@ -221,6 +221,11 @@ function ensureMeterStyles() {
             flex-wrap: wrap; gap: 12px;
             padding-bottom: 16px; margin-bottom: 20px;
             border-bottom: 1px solid var(--mv-border);
+            /* Kaydırma hedefi tam burası: "Fabrika Adı · Sayaç #X" satırı.
+               scroll-margin-top, mobildeki sabit (sticky) üst çubuğun
+               altında kalmamasını sağlıyor. JS tarafında bu değer, gerçek
+               üst çubuk yüksekliğine göre --mv-scroll-offset ile güncelleniyor. */
+            scroll-margin-top: var(--mv-scroll-offset, 84px);
         }
         .mv-header-left { display: flex; align-items: center; gap: 12px; min-width: 0; }
         .mv-header-left h3 { margin: 0; font-size: 1.15rem; color: var(--mv-text); overflow-wrap: anywhere; }
@@ -233,7 +238,7 @@ function ensureMeterStyles() {
         .mv-kpi {
             flex: 1 1 190px; min-width: 0;
             display: flex; align-items: center; gap: 12px;
-            background: var(--mv-bg-alt);
+            background: var(--mv-bg);
             border: 1px solid var(--mv-border);
             border-radius: 12px;
             padding: 14px 16px;
@@ -262,7 +267,7 @@ function ensureMeterStyles() {
         .mv-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 18px; }
         .mv-card {
             min-width: 0;
-            background: var(--mv-bg-alt);
+            background: var(--mv-bg);
             border: 1px solid var(--mv-border);
             border-left: 3px solid var(--mv-accent);
             border-radius: 14px;
@@ -298,7 +303,7 @@ function ensureMeterStyles() {
         .mv-subgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
         .mv-subblock {
             min-width: 0;
-            background: var(--mv-bg);
+            background: var(--mv-bg-alt);
             border: 1px solid var(--mv-border);
             border-radius: 10px;
             padding: 14px 16px;
@@ -664,42 +669,27 @@ window.showMeterData = function(meterName, factoryName) {
 };
 
 // ---------------------------------------------------------------------
-// Sayaca tıklanınca detay panelinin başına kaydırır. Basit
-// panel.scrollIntoView() burada yanlış yere kayıyordu çünkü mobildeki
-// sabit (sticky) üst çubuğu (.mobile-topbar) hesaba katmıyordu ve hangi
-// elemanın gerçekten kaydığını (masaüstünde .main-content, mobilde
-// sayfanın kendisi) ayırt etmiyordu. Bu fonksiyon ikisini de doğru
-// hesaplayıp üst çubuğun altında kalmayacak şekilde kaydırıyor.
-function getScrollParent(el) {
-    let node = el.parentElement;
-    while (node) {
-        const style = getComputedStyle(node);
-        if (/(auto|scroll)/.test(style.overflowY) && node.scrollHeight > node.clientHeight + 1) {
-            return node;
-        }
-        node = node.parentElement;
-    }
-    return document.scrollingElement || document.documentElement;
-}
-
+// Sayaca tıklanınca detay panelinin başlık satırına ("Fabrika · Sayaç #X")
+// kaydırır. Önceki manuel hesaplama (panel.getBoundingClientRect ile
+// elle scroll konumu hesaplamak) yanlış noktaya kayıyordu. Bunun yerine
+// tarayıcının kendi scrollIntoView + scroll-margin-top mekanizmasını
+// kullanıyoruz: bu, hem masaüstünde (.main-content kendi içinde kayıyor)
+// hem mobilde (sayfanın kendisi kayıyor) doğru kaydırma konteynerini
+// otomatik olarak bulur — biz sadece sticky üst çubuğun gerçek
+// yüksekliğini --mv-scroll-offset değişkenine yazıyoruz.
 function scrollToMeterPanel(panel) {
-    const scrollParent = getScrollParent(panel);
-    const isDocument = scrollParent === document.scrollingElement || scrollParent === document.documentElement;
+    const header = panel.querySelector('.mv-header') || panel;
 
     const topbar = document.querySelector('.mobile-topbar');
     const topbarVisible = topbar && getComputedStyle(topbar).display !== 'none';
-    const stickyOffset = (topbarVisible ? topbar.getBoundingClientRect().height : 0) + 16;
+    const offset = (topbarVisible ? topbar.getBoundingClientRect().height : 0) + 16;
+    document.documentElement.style.setProperty('--mv-scroll-offset', offset + 'px');
 
-    const panelRect = panel.getBoundingClientRect();
-    const parentTop = isDocument ? 0 : scrollParent.getBoundingClientRect().top;
-    const currentScroll = isDocument ? window.scrollY : scrollParent.scrollTop;
-    const targetScroll = Math.max(0, currentScroll + (panelRect.top - parentTop) - stickyOffset);
-
-    if (isDocument) {
-        window.scrollTo({ top: targetScroll, behavior: 'smooth' });
-    } else {
-        scrollParent.scrollTo({ top: targetScroll, behavior: 'smooth' });
-    }
+    // Bir sonraki frame'de kaydır: stil/offset güncellemesinin ve yeni
+    // eklenen içeriğin layout'a yansımasını garanti eder.
+    requestAnimationFrame(() => {
+        header.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
 }
 
 async function handleFormSubmit(e) {
