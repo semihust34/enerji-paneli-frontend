@@ -20,37 +20,62 @@ function showDetails(f) {
     document.getElementById('detailTitle').innerText = f.name;
     const container = document.getElementById('meterDisplay');
     
-    // 1. ANA SAYAÇ BÖLÜMÜ
-    let html = `
+    container.innerHTML = `
         <h4 style="margin-bottom: 10px;"><i class="fas fa-server"></i> ANA GİRİŞ SAYACI</h4>
-        <div onclick="openMeterDetails('Ana Sayaç', '${f.name}')" 
+        <div onclick="showMeterData('ANA SAYAÇ', '${f.name}')" 
              style="background: #00adb522; padding: 15px; border-radius: 6px; border: 1px solid var(--accent-color); cursor: pointer; margin-bottom: 30px;">
             <div style="display: flex; justify-content: space-between;">
-                <span><strong>${f.name} - Ana Enerji Girişi</strong></span>
+                <span><strong>${f.name} - Ana Giriş</strong></span>
                 <span class="badge success">Aktif</span>
             </div>
         </div>
         
         <h4>Alt Sayaçlar (${f.meterCount} Adet)</h4>
         <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; margin-top: 15px;">
+            ${Array.from({length: f.meterCount}, (_, i) => `
+                <div onclick="showMeterData('Sayaç #${i+1}', '${f.name}')" 
+                     style="background: #2c2c2c; padding: 12px; border-radius: 4px; text-align: center; border: 1px solid #444; cursor: pointer;">
+                    <i class="fas fa-microchip"></i><br>
+                    <small>Sayaç #${i+1}</small>
+                </div>
+            `).join('')}
+        </div>
+        
+        <!-- Veri Paneli Buraya Gelecek -->
+        <div id="meterDataPanel" style="margin-top: 40px;"></div>
     `;
-
-    // 2. ALT SAYAÇLAR (Tıklanabilir)
-    for(let i = 1; i <= f.meterCount; i++) {
-        html += `
-            <div onclick="openMeterDetails('Sayaç #${i}', '${f.name}')" 
-                 style="background: #2c2c2c; padding: 12px; border-radius: 4px; text-align: center; border: 1px solid #444; cursor: pointer; transition: 0.3s;">
-                <i class="fas fa-microchip"></i><br>
-                <small>Sayaç #${i}</small>
-            </div>
-        `;
-    }
-    html += `</div>`;
-    container.innerHTML = html;
 }
 
-// Sayaç detay sayfası (Yönlendirme veya yeni bir panel)
-window.openMeterDetails = function(meterName, factoryName) {
-    alert(`Açılıyor: ${factoryName} - ${meterName} Detay Sayfası...`);
-    // İleride buraya: window.location.href = 'meter-detail.html?meter=' + meterName; yazabilirsin.
+window.showMeterData = function(meterName, factoryName) {
+    const panel = document.getElementById('meterDataPanel');
+    panel.innerHTML = `
+        <h3 style="margin-bottom: 20px; border-bottom: 2px solid var(--accent-color); padding-bottom: 10px;">
+            ${factoryName} - ${meterName} Detay Paneli
+        </h3>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+            <div style="background: #1e1e1e; padding: 15px; border-radius: 8px; border: 1px solid #333;">
+                <h4><i class="fas fa-user"></i> Abone Bilgileri</h4>
+                <p><strong>Abone Ad:</strong> ${factoryName}</p>
+                <p><strong>Sayaç:</strong> ${meterName}</p>
+                <p><strong>Sözleşme Gücü:</strong> 1,920.00 kW</p>
+            </div>
+            <div style="background: #1e1e1e; padding: 15px; border-radius: 8px; border: 1px solid #333;">
+                <h4><i class="fas fa-list"></i> Endeks Bilgileri</h4>
+                <p><strong>Aktif Enerji (1.8.0):</strong> 56027.639</p>
+                <p><strong>End. Reak. En. (5.8.0):</strong> 2603.521</p>
+            </div>
+            <div style="background: #1e1e1e; padding: 15px; border-radius: 8px; border: 1px solid #333;">
+                <h4><i class="fas fa-exclamation-triangle"></i> Ceza Durumu</h4>
+                <p><strong>Endüktif Oran:</strong> %1.43</p>
+                <p><strong>Kapasitif Oran:</strong> %1.90</p>
+            </div>
+            <div style="background: #1e1e1e; padding: 15px; border-radius: 8px; border: 1px solid #333;">
+                <h4><i class="fas fa-bolt"></i> Tüketim Bilgileri</h4>
+                <p><strong>Son Okuma:</strong> 19.07.2026</p>
+                <p><strong>Aktif Enerji:</strong> 396.710</p>
+            </div>
+        </div>
+    `;
+    // Paneli görünür yapmak için aşağı kaydır
+    panel.scrollIntoView({ behavior: 'smooth' });
 };
