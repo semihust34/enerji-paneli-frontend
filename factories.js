@@ -13,9 +13,259 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('newFactoryForm').addEventListener('submit', handleFormSubmit);
 });
 
+// ---------------------------------------------------------------------
+// Ortak stil enjeksiyonu — sayfaya sadece bir kez eklenir (tekrar tekrar
+// render edildiğinde <style> birikmesin diye id kontrolü yapılıyor).
+// ---------------------------------------------------------------------
+function ensureMeterStyles() {
+    if (document.getElementById('meterPanelStyles')) return;
+
+    const style = document.createElement('style');
+    style.id = 'meterPanelStyles';
+    style.textContent = `
+        :root {
+            --mv-accent: var(--accent-color, #00adb5);
+            --mv-accent-bg: rgba(0, 173, 181, 0.12);
+            --mv-accent-border: rgba(0, 173, 181, 0.35);
+            --mv-bg: #17191c;
+            --mv-bg-alt: #1e2124;
+            --mv-border: #2b2f34;
+            --mv-text: #edf0f2;
+            --mv-text-dim: var(--text-secondary, #90979e);
+            --mv-warn: #ff6b5e;
+            --mv-warn-bg: rgba(255, 107, 94, 0.12);
+            --mv-warn-border: rgba(255, 107, 94, 0.35);
+            --mv-good: #35d48a;
+            --mv-good-bg: rgba(53, 212, 138, 0.12);
+            --mv-good-border: rgba(53, 212, 138, 0.35);
+            --mv-mono: ui-monospace, 'SF Mono', 'Cascadia Mono', 'Roboto Mono', Consolas, monospace;
+        }
+
+        /* Taşmaları önlemek için: tüm kutular kendi padding'ini genişlik içine alsın */
+        #factoryList, #factoryList *,
+        .meter-panel, .meter-panel *, .meter-panel *::before, .meter-panel *::after {
+            box-sizing: border-box;
+        }
+
+        /* ---------- Fabrika listesi ---------- */
+        .fl-loading, .fl-error { color: var(--mv-text-dim); font-size: 0.85rem; padding: 10px 2px; }
+        .fl-error { color: var(--mv-warn); }
+        .fl-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 0;
+            padding: 13px 14px;
+            background: var(--mv-bg-alt);
+            border: 1px solid var(--mv-border);
+            border-radius: 10px;
+            cursor: pointer;
+            margin-bottom: 10px;
+            transition: border-color .15s ease, transform .15s ease, background .15s ease;
+        }
+        .fl-item:hover { border-color: var(--mv-accent); background: var(--mv-bg); transform: translateX(2px); }
+        .fl-item:focus-visible { outline: 2px solid var(--mv-accent); outline-offset: 2px; }
+        .fl-icon {
+            flex-shrink: 0;
+            width: 34px; height: 34px;
+            border-radius: 9px;
+            display: flex; align-items: center; justify-content: center;
+            background: var(--mv-accent-bg);
+            color: var(--mv-accent);
+            font-size: 13px;
+        }
+        .fl-body { min-width: 0; flex: 1 1 auto; display: flex; flex-direction: column; }
+        .fl-body strong { font-size: 0.92rem; color: var(--mv-text); overflow-wrap: anywhere; }
+        .fl-meta { font-size: 0.74rem; color: var(--mv-accent); margin-top: 2px; }
+        .fl-chevron { color: var(--mv-text-dim); font-size: 0.8rem; flex-shrink: 0; }
+
+        /* ---------- Paylaşılan bileşenler (rozet, ikon rozeti) ---------- */
+        .meter-panel .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+            white-space: nowrap;
+        }
+        .meter-panel .badge.warning { background: var(--mv-warn-bg); color: var(--mv-warn); border: 1px solid var(--mv-warn-border); }
+        .meter-panel .badge.good { background: var(--mv-good-bg); color: var(--mv-good); border: 1px solid var(--mv-good-border); }
+
+        .meter-panel .icon-badge {
+            flex-shrink: 0;
+            width: 36px; height: 36px;
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            background: var(--mv-accent-bg);
+            color: var(--mv-accent);
+            font-size: 14px;
+        }
+        .meter-panel .icon-badge.lg { width: 44px; height: 44px; font-size: 17px; }
+        .meter-panel .icon-badge.warn { background: var(--mv-warn-bg); color: var(--mv-warn); }
+
+        /* ---------- Ana giriş sayacı & alt sayaç kutuları ---------- */
+        .mp-section-title {
+            display: flex; align-items: center; gap: 8px;
+            font-size: 0.8rem; letter-spacing: 0.4px;
+            color: var(--mv-text-dim); font-weight: 600;
+            margin: 0 0 14px 0;
+        }
+        .mp-section-title i { color: var(--mv-accent); }
+
+        .mp-ana {
+            display: flex; align-items: center; justify-content: space-between; gap: 14px;
+            min-width: 0;
+            background: var(--mv-accent-bg);
+            border: 1px solid var(--mv-accent-border);
+            border-radius: 12px;
+            padding: 16px 18px;
+            cursor: pointer;
+            margin-bottom: 28px;
+            transition: background .15s ease, transform .15s ease;
+        }
+        .mp-ana:hover { background: rgba(0, 173, 181, 0.18); transform: translateY(-1px); }
+        .mp-ana:focus-visible { outline: 2px solid var(--mv-accent); outline-offset: 2px; }
+        .mp-ana-left { display: flex; align-items: center; gap: 12px; min-width: 0; }
+        .mp-ana-left strong { font-size: 1rem; color: var(--mv-text); overflow-wrap: anywhere; }
+        .mp-ana-tag { display: block; font-size: 0.75rem; color: var(--mv-text-dim); margin-top: 2px; }
+
+        .mp-tiles {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 10px;
+            margin-top: 14px;
+        }
+        .mp-tile {
+            min-width: 0;
+            background: var(--mv-bg-alt);
+            border: 1px solid var(--mv-border);
+            border-radius: 10px;
+            padding: 14px 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color .15s ease, transform .15s ease, background .15s ease;
+        }
+        .mp-tile:hover { border-color: var(--mv-accent); background: var(--mv-bg); transform: translateY(-2px); }
+        .mp-tile:focus-visible { outline: 2px solid var(--mv-accent); outline-offset: 2px; }
+        .mp-tile i { color: var(--mv-accent); font-size: 1.1rem; }
+        .mp-tile small { display: block; margin-top: 6px; color: var(--mv-text-dim); font-size: 0.75rem; overflow-wrap: anywhere; }
+
+        /* ---------- Sayaç detay paneli ---------- */
+        .mv-panel { animation: mvFadeIn .35s ease both; }
+        @keyframes mvFadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: none; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .mv-panel { animation: none; }
+        }
+
+        .mv-datapanel { margin-top: 36px; }
+
+        .mv-header {
+            display: flex; align-items: flex-start; justify-content: space-between;
+            flex-wrap: wrap; gap: 12px;
+            padding-bottom: 16px; margin-bottom: 20px;
+            border-bottom: 1px solid var(--mv-border);
+        }
+        .mv-header-left { display: flex; align-items: center; gap: 12px; min-width: 0; }
+        .mv-header-left h3 { margin: 0; font-size: 1.15rem; color: var(--mv-text); overflow-wrap: anywhere; }
+        .mv-header-sep { color: var(--mv-text-dim); margin: 0 2px; }
+        .mv-header-sub { margin: 2px 0 0; font-size: 0.8rem; color: var(--mv-text-dim); }
+        .mv-header-right { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+        .mv-header-updated { font-size: 0.75rem; color: var(--mv-text-dim); font-family: var(--mv-mono); white-space: nowrap; }
+
+        .mv-kpis { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 24px; }
+        .mv-kpi {
+            flex: 1 1 190px; min-width: 0;
+            display: flex; align-items: center; gap: 12px;
+            background: var(--mv-bg-alt);
+            border: 1px solid var(--mv-border);
+            border-radius: 12px;
+            padding: 14px 16px;
+        }
+        .mv-kpi.warn { background: var(--mv-warn-bg); border-color: var(--mv-warn-border); }
+        .mv-kpi.good { background: var(--mv-good-bg); border-color: var(--mv-good-border); }
+        .mv-kpi-icon {
+            flex-shrink: 0; width: 38px; height: 38px; border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            background: rgba(255,255,255,0.06);
+            color: var(--mv-accent); font-size: 15px;
+        }
+        .mv-kpi.warn .mv-kpi-icon { color: var(--mv-warn); }
+        .mv-kpi.good .mv-kpi-icon { color: var(--mv-good); }
+        .mv-kpi-body { min-width: 0; display: flex; flex-direction: column; }
+        .mv-kpi-label { font-size: 0.72rem; color: var(--mv-text-dim); letter-spacing: 0.3px; }
+        .mv-kpi-value {
+            font-family: var(--mv-mono); font-variant-numeric: tabular-nums;
+            font-size: 1.05rem; font-weight: 700; color: var(--mv-text);
+            overflow-wrap: anywhere;
+        }
+        .mv-kpi.warn .mv-kpi-value { color: var(--mv-warn); }
+        .mv-kpi.good .mv-kpi-value { color: var(--mv-good); }
+        .mv-kpi-sub { font-size: 0.7rem; color: var(--mv-text-dim); margin-top: 1px; overflow-wrap: anywhere; }
+
+        .mv-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 18px; }
+        .mv-card {
+            min-width: 0;
+            background: var(--mv-bg-alt);
+            border: 1px solid var(--mv-border);
+            border-left: 3px solid var(--mv-accent);
+            border-radius: 14px;
+            padding: 18px 20px;
+        }
+        .mv-card.warn { border-left-color: var(--mv-warn); }
+        .mv-card.full { grid-column: 1 / -1; }
+        .mv-card-head { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
+        .mv-card-head h4 {
+            margin: 0; font-size: 0.85rem; letter-spacing: 0.3px;
+            color: var(--mv-text); font-weight: 700; flex: 1 1 auto; min-width: 0;
+        }
+
+        .kv-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); column-gap: 22px; }
+        .kv-grid-compare { grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+        .kv-row {
+            display: flex; align-items: baseline; justify-content: space-between; gap: 12px;
+            min-width: 0; padding: 8px 0; border-bottom: 1px solid var(--mv-border);
+        }
+        .kv-label { min-width: 0; color: var(--mv-text-dim); font-size: 0.85rem; overflow-wrap: anywhere; }
+        .kv-value {
+            min-width: 0; color: var(--mv-text); font-weight: 600;
+            font-family: var(--mv-mono); font-variant-numeric: tabular-nums;
+            text-align: right; overflow-wrap: anywhere;
+        }
+        .kv-compare .kv-value { display: flex; align-items: baseline; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+        .kv-old { color: var(--mv-text-dim); font-weight: 500; font-size: 0.85em; }
+        .kv-arrow { color: var(--mv-text-dim); font-size: 0.7em; }
+        .kv-new { color: var(--mv-text); font-weight: 700; }
+
+        .mv-note { margin: 12px 0 0; font-size: 0.75rem; color: var(--mv-text-dim); font-style: italic; }
+
+        .mv-subgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
+        .mv-subblock {
+            min-width: 0;
+            background: var(--mv-bg);
+            border: 1px solid var(--mv-border);
+            border-radius: 10px;
+            padding: 14px 16px;
+        }
+        .mv-subblock.warn { border-color: var(--mv-warn-border); background: var(--mv-warn-bg); }
+        .mv-subblock h5 { margin: 0 0 8px; font-size: 0.75rem; letter-spacing: 0.3px; color: var(--mv-text-dim); font-weight: 700; }
+        .mv-subblock .kv-grid { grid-template-columns: 1fr; }
+
+        @media (max-width: 480px) {
+            .mv-header-right { align-items: flex-start; }
+        }
+    `;
+    document.head.appendChild(style);
+}
+
 async function loadFactories() {
     const list = document.getElementById('factoryList');
-    list.innerHTML = 'Yükleniyor...';
+    ensureMeterStyles();
+    list.innerHTML = '<p class="fl-loading">Yükleniyor...</p>';
 
     try {
         const res = await fetch('https://web-production-388bad.up.railway.app/api/factories');
@@ -27,45 +277,70 @@ async function loadFactories() {
         list.innerHTML = '';
         factories.forEach(f => {
             const btn = document.createElement('div');
-            btn.style.cssText = "padding: 15px; background: #1e1e1e; border: 1px solid #333; border-radius: 6px; cursor: pointer; margin-bottom: 10px;";
-            btn.innerHTML = `<strong>${f.name}</strong><br><small style="color: var(--accent-color)">${f.meterCount || 0} Sayaç</small>`;
+            btn.className = 'fl-item';
+            btn.setAttribute('tabindex', '0');
+            btn.setAttribute('role', 'button');
+            btn.innerHTML = `
+                <span class="fl-icon"><i class="fas fa-industry"></i></span>
+                <div class="fl-body">
+                    <strong>${f.name}</strong>
+                    <span class="fl-meta">${f.meterCount || 0} Sayaç</span>
+                </div>
+                <i class="fas fa-chevron-right fl-chevron"></i>
+            `;
 
             // Fonksiyonu burada doğrudan çağırıyoruz
             btn.onclick = () => showDetails(f);
+            btn.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); btn.click(); }
+            });
             list.appendChild(btn);
         });
     } catch (err) {
         console.error("Yükleme hatası:", err);
-        list.innerHTML = 'Fabrikalar yüklenemedi.';
+        list.innerHTML = '<p class="fl-error">Fabrikalar yüklenemedi.</p>';
     }
 }
 
 // showDetails artık global olarak tanımlı, sorunsuz çalışmalı
 window.showDetails = function(f) {
+    ensureMeterStyles();
     document.getElementById('detailTitle').innerText = f.name;
     const container = document.getElementById('meterDisplay');
 
     container.innerHTML = `
-        <h4 style="margin-bottom: 15px;"><i class="fas fa-server"></i> ANA GİRİŞ SAYACI</h4>
-        <div onclick="showMeterData('ANA SAYAÇ', '${f.name}')" 
-             style="background: #00adb522; padding: 15px; border-radius: 6px; border: 1px solid var(--accent-color); cursor: pointer; margin-bottom: 30px;">
-            <div style="display: flex; justify-content: space-between;">
-                <span><strong>${f.name} - Ana Giriş</strong></span>
+        <div class="meter-panel">
+            <h4 class="mp-section-title"><i class="fas fa-server"></i> ANA GİRİŞ SAYACI</h4>
+            <div class="mp-ana" tabindex="0" role="button"
+                 onclick="showMeterData('ANA SAYAÇ', '${f.name}')"
+                 onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); showMeterData('ANA SAYAÇ','${f.name}')}">
+                <div class="mp-ana-left">
+                    <span class="icon-badge lg"><i class="fas fa-bolt"></i></span>
+                    <div>
+                        <strong>${f.name} - Ana Giriş</strong>
+                        <span class="mp-ana-tag">Toplam tüketim ölçüm noktası</span>
+                    </div>
+                </div>
                 <span class="badge success">Aktif</span>
             </div>
+
+            <h4 class="mp-section-title"><i class="fas fa-microchip"></i> Alt Sayaçlar (${f.meterCount || 0} Adet)</h4>
+            <div class="mp-tiles" id="subMetersGrid"></div>
+            <div class="mv-datapanel" id="meterDataPanel"></div>
         </div>
-        
-        <h4>Alt Sayaçlar (${f.meterCount || 0} Adet)</h4>
-        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; margin-top: 15px;" id="subMetersGrid"></div>
-        <div id="meterDataPanel" style="margin-top: 40px;"></div>
     `;
 
     const grid = document.getElementById('subMetersGrid');
-    for(let i = 1; i <= (f.meterCount || 0); i++) {
+    for (let i = 1; i <= (f.meterCount || 0); i++) {
         const div = document.createElement('div');
-        div.style.cssText = "background: #2c2c2c; padding: 12px; border-radius: 4px; text-align: center; border: 1px solid #444; cursor: pointer;";
+        div.className = 'mp-tile';
+        div.setAttribute('tabindex', '0');
+        div.setAttribute('role', 'button');
         div.innerHTML = `<i class="fas fa-microchip"></i><br><small>Sayaç #${i}</small>`;
         div.onclick = () => showMeterData(`Sayaç #${i}`, f.name);
+        div.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); div.click(); }
+        });
         grid.appendChild(div);
     }
 };
@@ -74,7 +349,8 @@ window.showDetails = function(f) {
 // Sayaç detay verileri
 // Not: Şu an tüm sayaçlar için sabit örnek veri gösteriliyor.
 // Gerçek API bağlandığında burası meterName/factoryName'e göre
-// fetch edilen veriyle değiştirilebilir.
+// fetch edilen veriyle değiştirilebilir; alt taraftaki render kodu
+// aynı kalabilir.
 // ---------------------------------------------------------------------
 function getMeterData(meterName, factoryName) {
     return {
@@ -95,7 +371,6 @@ function getMeterData(meterName, factoryName) {
             "Kalan Süre": "0 gün"
         },
         endeks: {
-            header: ["", "İlk Endeks", "Son Endeks"],
             rows: [
                 ["Okuma Zamanı", "01.07.2026 00:00:00", "19.07.2026 03:06:36"],
                 ["Aktif Enerji (kW) (1.8.0)", "828.776", "931.602"],
@@ -115,13 +390,13 @@ function getMeterData(meterName, factoryName) {
                 "Kap. Reak. Enerji": "3,95"
             },
             reaktifCeza: {
-                "Endüktif Oran (% 20)": "1,97",
-                "Kapasitif Oran (% 15)": "3,85",
-                "Kapasitif (Üretim) (% 20)": "0,00"
+                "Endüktif Oran (%20)": "1,97",
+                "Kapasitif Oran (%15)": "3,85",
+                "Kapasitif Üretim (%20)": "0,00"
             },
             sozlesmeGucu: {
-                "Aşıldı mı?": "Evet",
-                "Aşım miktarı": "180,00"
+                asildiMi: "Evet",
+                asimMiktari: "180,00"
             }
         },
         tuketim: {
@@ -138,179 +413,149 @@ function getMeterData(meterName, factoryName) {
     };
 }
 
-function buildKVTable(dataObj) {
+// ---------------------------------------------------------------------
+// Küçük render yardımcıları (hepsi flex tabanlı — dar kartlarda bile
+// taşma yapmaz, tablo genişlik hesaplama tuhaflıklarına takılmaz)
+// ---------------------------------------------------------------------
+function kvRow(label, value) {
+    return `
+        <div class="kv-row">
+            <span class="kv-label">${label}</span>
+            <span class="kv-value">${value}</span>
+        </div>`;
+}
+
+function kvGrid(dataObj, extraClass = '') {
     let rows = '';
     for (const [label, value] of Object.entries(dataObj)) {
         if (label === 'note') continue;
-        rows += `
-            <tr>
-                <td class="mv-label">${label}</td>
-                <td class="mv-value">${value}</td>
-            </tr>`;
+        rows += kvRow(label, value);
     }
-    return `<table class="mv-table"><tbody>${rows}</tbody></table>`;
+    return `<div class="kv-grid ${extraClass}">${rows}</div>`;
+}
+
+function compareRow(label, ilk, son) {
+    return `
+        <div class="kv-row kv-compare">
+            <span class="kv-label">${label}</span>
+            <span class="kv-value">
+                <span class="kv-old">${ilk}</span>
+                <i class="fas fa-arrow-right kv-arrow"></i>
+                <span class="kv-new">${son}</span>
+            </span>
+        </div>`;
+}
+
+function kpiCard(icon, label, value, state = '', sub = '') {
+    return `
+        <div class="mv-kpi ${state}">
+            <div class="mv-kpi-icon"><i class="fas ${icon}"></i></div>
+            <div class="mv-kpi-body">
+                <span class="mv-kpi-label">${label}</span>
+                <span class="mv-kpi-value">${value}</span>
+                ${sub ? `<span class="mv-kpi-sub">${sub}</span>` : ''}
+            </div>
+        </div>`;
 }
 
 window.showMeterData = function(meterName, factoryName) {
+    ensureMeterStyles();
     const panel = document.getElementById('meterDataPanel');
     const d = getMeterData(meterName, factoryName);
 
-    // Endeks tablosu (iki sütunlu: ilk / son)
-    let endeksRows = '';
-    d.endeks.rows.forEach(([label, ilk, son]) => {
-        endeksRows += `
-            <tr>
-                <td class="mv-label">${label}</td>
-                <td class="mv-value">${ilk}</td>
-                <td class="mv-value">${son}</td>
-            </tr>`;
-    });
-    const endeksTable = `
-        <table class="mv-table">
-            <thead>
-                <tr>
-                    <th></th>
-                    <th>İlk Endeks</th>
-                    <th>Son Endeks</th>
-                </tr>
-            </thead>
-            <tbody>${endeksRows}</tbody>
-        </table>`;
+    // Türetilmiş durumlar — veri değiştiğinde renklendirme otomatik güncellenir
+    const asimVar = d.ceza.sozlesmeGucu.asildiMi === 'Evet';
+    const kalanGun = parseInt(d.abone["Kalan Süre"], 10) || 0;
+    const sertifikaDoldu = kalanGun <= 0;
+    const aktifRow = d.endeks.rows.find(r => r[0].startsWith('Aktif Enerji'));
+    const aktifSon = aktifRow ? aktifRow[2] : '-';
+
+    const endeksRows = d.endeks.rows.map(([label, ilk, son]) => compareRow(label, ilk, son)).join('');
+
+    const kpis = [
+        kpiCard('fa-plug', 'Sözleşme Gücü', d.abone["Sözleşme Gücü"]),
+        kpiCard('fa-exclamation-triangle', 'Güç Aşımı',
+            asimVar ? `${d.ceza.sozlesmeGucu.asimMiktari} kW` : 'Aşım yok',
+            asimVar ? 'warn' : 'good'),
+        kpiCard('fa-tachometer-alt', 'Aktif Enerji (Son Endeks)', `${aktifSon} kW`),
+        kpiCard('fa-shield-alt', 'Kalibrasyon Belgesi',
+            sertifikaDoldu ? 'Süresi doldu' : `${kalanGun} gün kaldı`,
+            sertifikaDoldu ? 'warn' : 'good',
+            sertifikaDoldu ? `${d.abone["San.Sic.Bel.Bitiş"]} tarihinde bitti` : '')
+    ].join('');
 
     panel.innerHTML = `
-        <style>
-            .mv-header {
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-                border-bottom: 2px solid var(--accent-color);
-                padding-bottom: 12px;
-                margin-bottom: 25px;
-            }
-            .mv-header h3 { margin: 0; font-size: 1.25rem; }
-            .mv-grid {
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-                gap: 20px;
-                margin-bottom: 20px;
-            }
-            @media (max-width: 900px) {
-                .mv-grid { grid-template-columns: 1fr; }
-            }
-            .mv-card {
-                background: #1e1e1e;
-                border: 1px solid #333;
-                border-radius: 10px;
-                padding: 18px 20px;
-                overflow: hidden;
-            }
-            .mv-card.full { grid-column: 1 / -1; }
-            .mv-card h4 {
-                margin: 0 0 14px 0;
-                font-size: 0.95rem;
-                color: var(--accent-color);
-                display: flex;
-                align-items: center;
-                gap: 8px;
-                text-transform: uppercase;
-                letter-spacing: 0.5px;
-            }
-            .mv-table {
-                width: 100%;
-                border-collapse: collapse;
-                font-size: 0.92rem;
-            }
-            .mv-table th {
-                text-align: right;
-                color: var(--text-secondary, #999);
-                font-weight: 600;
-                padding: 6px 8px;
-                border-bottom: 1px solid #333;
-                font-size: 0.85rem;
-            }
-            .mv-table th:first-child { text-align: left; }
-            .mv-table td {
-                padding: 8px 8px;
-                border-bottom: 1px solid #2a2a2a;
-            }
-            .mv-table tr:last-child td { border-bottom: none; }
-            .mv-label {
-                color: var(--text-secondary, #999);
-                white-space: nowrap;
-            }
-            .mv-value {
-                font-weight: 600;
-                text-align: right;
-                color: #fff;
-            }
-            .mv-note {
-                margin-top: 10px;
-                font-size: 0.78rem;
-                color: var(--text-secondary, #888);
-                font-style: italic;
-            }
-            .mv-subgrid {
-                display: grid;
-                grid-template-columns: repeat(3, 1fr);
-                gap: 16px;
-            }
-            @media (max-width: 700px) {
-                .mv-subgrid { grid-template-columns: 1fr; }
-            }
-            .mv-subblock h5 {
-                margin: 0 0 8px 0;
-                font-size: 0.82rem;
-                color: var(--text-secondary, #999);
-                font-weight: 600;
-            }
-            .mv-status-yes {
-                color: #ff5252;
-                font-weight: 700;
-            }
-        </style>
-
-        <div class="mv-header">
-            <h3><i class="fas fa-bolt"></i> ${factoryName} — ${meterName} Detay Paneli</h3>
-            <span class="badge success">Aktif</span>
-        </div>
-
-        <div class="mv-grid">
-            <div class="mv-card">
-                <h4><i class="fas fa-id-card"></i> Abone Bilgileri</h4>
-                ${buildKVTable(d.abone)}
-            </div>
-
-            <div class="mv-card">
-                <h4><i class="fas fa-tachometer-alt"></i> Endeks Bilgileri</h4>
-                ${endeksTable}
-                <div class="mv-note">${d.endeks.note}</div>
-            </div>
-
-            <div class="mv-card full">
-                <h4><i class="fas fa-exclamation-triangle"></i> Ceza Durumu</h4>
-                <div class="mv-subgrid">
-                    <div class="mv-subblock">
-                        <h5>Alınan Enerji</h5>
-                        ${buildKVTable(d.ceza.alinanEnerji)}
+        <div class="mv-panel">
+            <div class="mv-header">
+                <div class="mv-header-left">
+                    <span class="icon-badge lg"><i class="fas fa-bolt"></i></span>
+                    <div>
+                        <h3>${factoryName} <span class="mv-header-sep">·</span> ${meterName}</h3>
+                        <p class="mv-header-sub">Detaylı Ölçüm Raporu</p>
                     </div>
-                    <div class="mv-subblock">
-                        <h5>Reaktif Ceza</h5>
-                        ${buildKVTable(d.ceza.reaktifCeza)}
-                    </div>
-                    <div class="mv-subblock">
-                        <h5>Sözleşme Gücü Aşımı</h5>
-                        <table class="mv-table"><tbody>
-                            <tr><td class="mv-label">Aşıldı mı?</td><td class="mv-value mv-status-yes">${d.ceza.sozlesmeGucu["Aşıldı mı?"]}</td></tr>
-                            <tr><td class="mv-label">Aşım miktarı</td><td class="mv-value">${d.ceza.sozlesmeGucu["Aşım miktarı"]}</td></tr>
-                        </tbody></table>
-                    </div>
+                </div>
+                <div class="mv-header-right">
+                    <span class="badge success">Aktif</span>
+                    <span class="mv-header-updated">Son okuma: ${d.tuketim["Son Okuma Zamanı"]}</span>
                 </div>
             </div>
 
-            <div class="mv-card full">
-                <h4><i class="fas fa-chart-line"></i> Tüketim Bilgileri</h4>
-                ${buildKVTable(d.tuketim)}
-                <div class="mv-note">${d.tuketim.note}</div>
+            <div class="mv-kpis">${kpis}</div>
+
+            <div class="mv-grid">
+                <div class="mv-card">
+                    <div class="mv-card-head">
+                        <span class="icon-badge"><i class="fas fa-id-card"></i></span>
+                        <h4>Abone Bilgileri</h4>
+                    </div>
+                    ${kvGrid(d.abone)}
+                </div>
+
+                <div class="mv-card">
+                    <div class="mv-card-head">
+                        <span class="icon-badge"><i class="fas fa-tachometer-alt"></i></span>
+                        <h4>Endeks Bilgileri</h4>
+                    </div>
+                    <div class="kv-grid kv-grid-compare">${endeksRows}</div>
+                    <p class="mv-note">${d.endeks.note}</p>
+                </div>
+
+                <div class="mv-card full ${asimVar ? 'warn' : ''}">
+                    <div class="mv-card-head">
+                        <span class="icon-badge ${asimVar ? 'warn' : ''}"><i class="fas fa-exclamation-triangle"></i></span>
+                        <h4>Ceza Durumu</h4>
+                        ${asimVar ? '<span class="badge warning">Aşım Var</span>' : '<span class="badge good">Aşım Yok</span>'}
+                    </div>
+                    <div class="mv-subgrid">
+                        <div class="mv-subblock">
+                            <h5>Alınan Enerji</h5>
+                            ${kvGrid(d.ceza.alinanEnerji)}
+                        </div>
+                        <div class="mv-subblock">
+                            <h5>Reaktif Ceza</h5>
+                            ${kvGrid(d.ceza.reaktifCeza)}
+                        </div>
+                        <div class="mv-subblock ${asimVar ? 'warn' : ''}">
+                            <h5>Sözleşme Gücü Aşımı</h5>
+                            <div class="kv-grid">
+                                <div class="kv-row">
+                                    <span class="kv-label">Aşıldı mı?</span>
+                                    <span class="kv-value">${asimVar ? '<span class="badge warning">Evet</span>' : '<span class="badge good">Hayır</span>'}</span>
+                                </div>
+                                ${kvRow('Aşım miktarı', d.ceza.sozlesmeGucu.asimMiktari + ' kW')}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mv-card full">
+                    <div class="mv-card-head">
+                        <span class="icon-badge"><i class="fas fa-chart-line"></i></span>
+                        <h4>Tüketim Bilgileri</h4>
+                    </div>
+                    ${kvGrid(d.tuketim)}
+                    <p class="mv-note">${d.tuketim.note}</p>
+                </div>
             </div>
         </div>
     `;
