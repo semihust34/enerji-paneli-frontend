@@ -755,6 +755,18 @@ tbody tr:hover {
     display: block;
 }
 
+/* Mobil menü (sidebar) açıkken JS bu sınıfı body'e ekliyor: sayfayı
+   bulunduğu kaydırma konumunda sabitleyip arka planın kaymasını
+   engelliyor. Menü kapanınca ui.js sınıfı kaldırıp scroll konumunu
+   geri yüklüyor. */
+body.sidebar-locked {
+    position: fixed;
+    left: 0;
+    right: 0;
+    width: 100%;
+    overflow: hidden;
+}
+
 @media (max-width: 768px) {
     .dashboard-body {
         flex-direction: column;

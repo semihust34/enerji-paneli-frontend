@@ -41,13 +41,32 @@
         const overlay = document.getElementById('sidebarOverlay');
         if (!sidebar || !openBtn) return;
 
+        // Menü açıkken arkadaki sayfanın kaymasını engeller. Sadece
+        // `overflow: hidden` vermek iOS Safari'de body'yi durdurmaya
+        // yetmiyor; bu yüzden body'yi geçici olarak bulunduğu kaydırma
+        // konumunda position:fixed ile sabitleyip menü kapanınca aynı
+        // konuma geri döndürüyoruz.
+        let savedScrollY = 0;
+        const lockBodyScroll = () => {
+            savedScrollY = window.scrollY;
+            document.body.classList.add('sidebar-locked');
+            document.body.style.top = `-${savedScrollY}px`;
+        };
+        const unlockBodyScroll = () => {
+            document.body.classList.remove('sidebar-locked');
+            document.body.style.top = '';
+            window.scrollTo(0, savedScrollY);
+        };
+
         const closeSidebar = () => {
             sidebar.classList.remove('open');
             if (overlay) overlay.classList.remove('visible');
+            unlockBodyScroll();
         };
         const openSidebar = () => {
             sidebar.classList.add('open');
             if (overlay) overlay.classList.add('visible');
+            lockBodyScroll();
         };
 
         openBtn.addEventListener('click', () => {
