@@ -1,6 +1,14 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
+    <script>
+        (function () {
+            try {
+                var t = localStorage.getItem('theme') || 'dark';
+                document.documentElement.setAttribute('data-theme', t);
+            } catch (e) {}
+        })();
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Müşteri Yönetimi - Enerji İzleme</title>
@@ -8,6 +16,12 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body class="dashboard-body">
+
+    <div class="mobile-topbar">
+        <button id="sidebarToggleBtn" class="hamburger-btn" aria-label="Menüyü aç/kapat"><i class="fas fa-bars"></i></button>
+        <span class="logo">EnerjiPanel</span>
+    </div>
+    <div id="sidebarOverlay" class="sidebar-overlay"></div>
 
     <!-- Sol Menü -->
     <aside class="sidebar">
@@ -18,6 +32,7 @@
             <li><a href="customer-management.html" class="active"><i class="fas fa-users"></i> Kullanıcı Yönetimi</a></li>
             <li><a href="system-logs.html"><i class="fas fa-terminal"></i> Sistem Logları</a></li>
         </ul>
+        <button type="button" class="theme-toggle-btn" data-theme-toggle><i class="fas fa-moon"></i> <span class="theme-toggle-label">Karanlık Mod</span></button>
         <button id="logoutBtn" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Çıkış Yap</button>
     </aside>
 
@@ -85,7 +100,7 @@
                 </div>
 
                 <!-- YENİ: id="addFactorySection" eklendi -->
-                <div id="addFactorySection" class="input-group" style="background-color: #2c2c2c; padding: 15px; border-radius: 6px; border: 1px solid #333;">
+                <div id="addFactorySection" class="input-group" style="background-color: var(--surface-alt-color); padding: 15px; border-radius: 6px; border: 1px solid var(--border-color);">
                     <label style="color: var(--accent-color); font-weight: bold; margin-bottom: 10px;"><i class="fas fa-building"></i> Görüntüleyebileceği Fabrikalar</label>
                     <!-- Bu liste artık sabit değil: customers.js tarafından gerçek
                          /api/factories verisiyle dinamik olarak dolduruluyor. -->
@@ -133,19 +148,20 @@
                 </div>
 
                 <!-- YENİ: id="editFactorySection" eklendi -->
-                <div id="editFactorySection" class="input-group" style="background-color: #2c2c2c; padding: 15px; border-radius: 6px; border: 1px solid #333; margin-top: 15px;">
+                <div id="editFactorySection" class="input-group" style="background-color: var(--surface-alt-color); padding: 15px; border-radius: 6px; border: 1px solid var(--border-color); margin-top: 15px;">
                     <label style="color: var(--accent-color); font-weight: bold; margin-bottom: 10px;"><i class="fas fa-building"></i> Görüntüleyebileceği Fabrikalar</label>
                     <div id="editFactoryCheckboxList" style="display: flex; flex-direction: column; gap: 10px;">
                         <p style="color: var(--text-secondary); font-size: 0.85rem; margin: 0;">Yükleniyor...</p>
                     </div>
                 </div>
 
-                <button type="submit" style="margin-top: 15px; background-color: #4cd137;">Değişiklikleri Kaydet</button>
+                <button type="submit" style="margin-top: 15px; background-color: var(--success-color);">Değişiklikleri Kaydet</button>
             </form>
         </div>
     </div>
     
     <script src="auth.js"></script>
+    <script src="ui.js"></script>
     <script src="customers.js"></script>
 </body>
 </html>
