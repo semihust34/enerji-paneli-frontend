@@ -17,7 +17,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // Çıkış Yap Butonu (EKLENEN KISIM)
     const logoutBtn = document.getElementById('logoutBtn');
     if (logoutBtn) {
-        logoutBtn.addEventListener('click', logout);
+        logoutBtn.addEventListener('click', () => {
+            localStorage.clear();
+            window.location.href = 'index.html';
+        });
     }
 });
 
@@ -138,6 +141,17 @@ function ensureMeterStyles() {
         }
         .mp-section-title i { color: var(--mv-accent); }
 
+        /* Üstteki "Ana Giriş + Alt Sayaçlar" bloğunu tek bir kutu olarak
+           çerçeveler; alttaki sayaç detay raporundan (.mv-panel) net
+           şekilde ayrılsın diye kendi arkaplanı ve kenarlığı var. */
+        .mp-box-top {
+            background: var(--mv-bg);
+            border: 1px solid var(--mv-border);
+            border-radius: 16px;
+            padding: 20px 20px 22px;
+            margin-bottom: 26px;
+        }
+
         .mp-ana {
             display: flex; align-items: center; justify-content: space-between; gap: 14px;
             min-width: 0;
@@ -177,7 +191,19 @@ function ensureMeterStyles() {
         .mp-tile small { display: block; margin-top: 6px; color: var(--mv-text-dim); font-size: 0.75rem; overflow-wrap: anywhere; }
 
         /* ---------- Sayaç detay paneli ---------- */
-        .mv-panel { animation: mvFadeIn .35s ease both; }
+        .mv-panel {
+            animation: mvFadeIn .35s ease both;
+            /* Üstteki kutudan (.mp-box-top) net şekilde ayrılan, kendi
+               arkaplanı/kenarlığı olan ayrı bir kutu. */
+            background: var(--mv-bg-alt);
+            border: 1px solid var(--mv-border);
+            border-radius: 16px;
+            padding: 22px 22px 24px;
+            /* Sabit (sticky) mobil üst çubuğun altında kalmasın diye
+               kaydırma hedefine pay bırakır (scrollToMeterPanel bunu
+               JS'de manuel de hesaplıyor, bu ekstra bir güvence). */
+            scroll-margin-top: 84px;
+        }
         @keyframes mvFadeIn {
             from { opacity: 0; transform: translateY(8px); }
             to { opacity: 1; transform: none; }
@@ -186,7 +212,9 @@ function ensureMeterStyles() {
             .mv-panel { animation: none; }
         }
 
-        .mv-datapanel { margin-top: 36px; }
+        .mv-datapanel:empty { display: none; }
+        .mv-datapanel { margin-top: 0; }
+
 
         .mv-header {
             display: flex; align-items: flex-start; justify-content: space-between;
@@ -381,22 +409,24 @@ window.showDetails = function(f) {
 
     container.innerHTML = `
         <div class="meter-panel">
-            <h4 class="mp-section-title"><i class="fas fa-server"></i> ANA GİRİŞ SAYACI</h4>
-            <div class="mp-ana" tabindex="0" role="button"
-                 onclick="showMeterData('ANA SAYAÇ', '${f.name}')"
-                 onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); showMeterData('ANA SAYAÇ','${f.name}')}">
-                <div class="mp-ana-left">
-                    <span class="icon-badge lg"><i class="fas fa-bolt"></i></span>
-                    <div>
-                        <strong>${f.name} - Ana Giriş</strong>
-                        <span class="mp-ana-tag">Toplam tüketim ölçüm noktası</span>
+            <div class="mp-box-top">
+                <h4 class="mp-section-title"><i class="fas fa-server"></i> ANA GİRİŞ SAYACI</h4>
+                <div class="mp-ana" tabindex="0" role="button"
+                     onclick="showMeterData('ANA SAYAÇ', '${f.name}')"
+                     onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); showMeterData('ANA SAYAÇ','${f.name}')}">
+                    <div class="mp-ana-left">
+                        <span class="icon-badge lg"><i class="fas fa-bolt"></i></span>
+                        <div>
+                            <strong>${f.name} - Ana Giriş</strong>
+                            <span class="mp-ana-tag">Toplam tüketim ölçüm noktası</span>
+                        </div>
                     </div>
+                    <span class="badge success">Aktif</span>
                 </div>
-                <span class="badge success">Aktif</span>
-            </div>
 
-            <h4 class="mp-section-title"><i class="fas fa-microchip"></i> Alt Sayaçlar (${f.meterCount || 0} Adet)</h4>
-            <div class="mp-tiles" id="subMetersGrid"></div>
+                <h4 class="mp-section-title"><i class="fas fa-microchip"></i> Alt Sayaçlar (${f.meterCount || 0} Adet)</h4>
+                <div class="mp-tiles" id="subMetersGrid"></div>
+            </div>
             <div class="mv-datapanel" id="meterDataPanel"></div>
         </div>
     `;
@@ -630,8 +660,47 @@ window.showMeterData = function(meterName, factoryName) {
             </div>
         </div>
     `;
-    panel.scrollIntoView({ behavior: 'smooth' });
+    scrollToMeterPanel(panel);
 };
+
+// ---------------------------------------------------------------------
+// Sayaca tıklanınca detay panelinin başına kaydırır. Basit
+// panel.scrollIntoView() burada yanlış yere kayıyordu çünkü mobildeki
+// sabit (sticky) üst çubuğu (.mobile-topbar) hesaba katmıyordu ve hangi
+// elemanın gerçekten kaydığını (masaüstünde .main-content, mobilde
+// sayfanın kendisi) ayırt etmiyordu. Bu fonksiyon ikisini de doğru
+// hesaplayıp üst çubuğun altında kalmayacak şekilde kaydırıyor.
+function getScrollParent(el) {
+    let node = el.parentElement;
+    while (node) {
+        const style = getComputedStyle(node);
+        if (/(auto|scroll)/.test(style.overflowY) && node.scrollHeight > node.clientHeight + 1) {
+            return node;
+        }
+        node = node.parentElement;
+    }
+    return document.scrollingElement || document.documentElement;
+}
+
+function scrollToMeterPanel(panel) {
+    const scrollParent = getScrollParent(panel);
+    const isDocument = scrollParent === document.scrollingElement || scrollParent === document.documentElement;
+
+    const topbar = document.querySelector('.mobile-topbar');
+    const topbarVisible = topbar && getComputedStyle(topbar).display !== 'none';
+    const stickyOffset = (topbarVisible ? topbar.getBoundingClientRect().height : 0) + 16;
+
+    const panelRect = panel.getBoundingClientRect();
+    const parentTop = isDocument ? 0 : scrollParent.getBoundingClientRect().top;
+    const currentScroll = isDocument ? window.scrollY : scrollParent.scrollTop;
+    const targetScroll = Math.max(0, currentScroll + (panelRect.top - parentTop) - stickyOffset);
+
+    if (isDocument) {
+        window.scrollTo({ top: targetScroll, behavior: 'smooth' });
+    } else {
+        scrollParent.scrollTo({ top: targetScroll, behavior: 'smooth' });
+    }
+}
 
 async function handleFormSubmit(e) {
     e.preventDefault();
