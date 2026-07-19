@@ -1,30 +1,31 @@
 // app.js
 
-// 1. YENİ EKLENEN KISIM: Sayfa yüklendiğinde "Beni Hatırla" kontrolü yap
+// 1. Sayfa yüklendiğinde "Beni Hatırla" kontrolü yap
 document.addEventListener("DOMContentLoaded", function() {
     const usernameInput = document.getElementById("username");
+    const passwordInput = document.getElementById("password");
     const rememberMeCheckbox = document.getElementById("rememberMe");
 
-    // Eğer daha önce kaydedilmiş bir kullanıcı adı varsa, input'a yazdır ve kutucuğu işaretle
-    if (localStorage.getItem("rememberedUsername")) {
+    // Kayıtlı kullanıcı adı VE şifre varsa kutulara doldur
+    if (localStorage.getItem("rememberedUsername") && localStorage.getItem("rememberedPassword")) {
         usernameInput.value = localStorage.getItem("rememberedUsername");
+        passwordInput.value = localStorage.getItem("rememberedPassword");
         rememberMeCheckbox.checked = true;
     }
 });
 
-// VAR OLAN GİRİŞ İŞLEMİ
+// 2. GİRİŞ İŞLEMİ
 document.getElementById('loginForm').addEventListener('submit', async function(event) {
     event.preventDefault(); // Sayfanın yenilenmesini durdur
 
     const usernameInput = document.getElementById('username').value;
     const passwordInput = document.getElementById('password').value;
-    const rememberMeCheckbox = document.getElementById('rememberMe'); // Yeni eklendi
+    const rememberMeCheckbox = document.getElementById('rememberMe');
     const errorDiv = document.getElementById('errorMessage');
     
     errorDiv.classList.add('hidden'); // Her denemede hatayı gizle
 
     try {
-        // Gerçek Flask backend'e POST isteği atıyoruz
         const response = await fetch('https://web-production-388bad.up.railway.app/api/login', {
             method: 'POST',
             headers: {
@@ -37,21 +38,22 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
         const responseData = await response.json();
         
         if (response.ok && responseData.success) {
-            // 2. YENİ EKLENEN KISIM: Giriş başarılıysa Beni Hatırla durumunu kontrol et
+            // BENİ HATIRLA: İşaretliyse bilgileri kaydet, değilse sil
             if (rememberMeCheckbox.checked) {
                 localStorage.setItem("rememberedUsername", usernameInput);
+                localStorage.setItem("rememberedPassword", passwordInput);
             } else {
                 localStorage.removeItem("rememberedUsername");
+                localStorage.removeItem("rememberedPassword");
             }
 
-            // Başarılı giriş: Token, rol ve (müşteriyse) erişebileceği
-            // fabrika bilgilerini LocalStorage'a kaydet
+            // Başarılı giriş verilerini kaydet
             localStorage.setItem('userToken', responseData.token);
             localStorage.setItem('userRole', responseData.role);
             localStorage.setItem('userCompany', responseData.companyName || '');
             localStorage.setItem('userFactories', responseData.factories || '');
             
-            // ROLE KONTROLÜ VE YÖNLENDİRME (SUPERADMIN VE ADMIN AYNI PANELE GİDER)
+            // YÖNLENDİRME
             if(responseData.role === 'ADMIN' || responseData.role === 'SUPERADMIN') {
                 window.location.href = 'admin-dashboard.html';
             } else if (responseData.role === 'CUSTOMER') {
