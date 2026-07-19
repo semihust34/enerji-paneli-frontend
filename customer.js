@@ -51,10 +51,10 @@ async function loadMyFacilities() {
 
         tableBody.innerHTML = facilities.map(f => `
             <tr>
-                <td>${f.name || '-'}</td>
-                <td>${f.meterCount ?? '-'}</td>
-                <td>—</td>
-                <td><span class="badge neutral">Bilinmiyor</span></td>
+                <td data-label="Tesis Adı">${f.name || '-'}</td>
+                <td data-label="Bağlı Sayaç">${f.meterCount ?? '-'}</td>
+                <td data-label="Son Veri Güncelleme">—</td>
+                <td data-label="Durum"><span class="badge neutral">Bilinmiyor</span></td>
             </tr>
         `).join('');
     } catch (err) {
