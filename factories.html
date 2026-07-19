@@ -31,10 +31,10 @@
             <button id="openFactoryModalBtn" style="width: auto; padding: 10px 20px;">+ Yeni Fabrika Ekle</button>
         </div>
 
-        <!-- Fabrika Kartlarının Listeleneceği Alan -->
-        <section id="factoryList" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;">
-            <!-- JS ile dolacak -->
-        </section>
+        <!-- Akordeon listesinin tutulacağı yer -->
+        <div id="factoryAccordion" style="display: flex; flex-direction: column; gap: 10px;">
+            <!-- JS ile fabrikalar buraya eklenecek -->
+        </div>
     </main>
 
     <!-- Yeni Fabrika Ekleme Modalı -->
@@ -57,17 +57,6 @@
                 </div>
                 <button type="submit">Sisteme Kaydet</button>
             </form>
-        </div>
-    </div>
-
-    <!-- Fabrika Detay (Sayaçlar) Modalı -->
-    <div id="factoryDetailModal" class="modal hidden">
-        <div class="modal-content" style="max-width: 600px;">
-            <span class="close-btn" id="closeDetailBtn">&times;</span>
-            <h2 id="modalFactoryName" style="color: var(--accent-color); margin-bottom: 20px;">Fabrika Adı</h2>
-            <div id="meterListContainer">
-                <!-- JS ile sayaçlar buraya dolacak -->
-            </div>
         </div>
     </div>
     
