@@ -82,18 +82,18 @@ async function loadCustomers() {
                 let actionHtml = '';
                 if (canEditAndDelete) {
                     actionHtml = `
-                        <button class="action-btn" onclick="openEditModal(${user.id})" style="border-color: #f6e58d; color: #f6e58d; margin-right: 5px;"><i class="fas fa-edit"></i> Düzenle</button>
+                        <button class="action-btn" onclick="openEditModal(${user.id})" style="border-color: var(--warning-color); color: var(--warning-color); margin-right: 5px;"><i class="fas fa-edit"></i> Düzenle</button>
                         <button class="action-btn" onclick="deleteUser(${user.id})" style="border-color: var(--error-color); color: var(--error-color);"><i class="fas fa-trash"></i> Sil</button>
                     `;
                 } else {
-                    actionHtml = `<span style="color: #555; font-size: 0.8rem;"><i class="fas fa-lock"></i> Yetki Yok</span>`;
+                    actionHtml = `<span style="color: var(--text-secondary); font-size: 0.8rem;"><i class="fas fa-lock"></i> Yetki Yok</span>`;
                 }
 
                 let roleBadge = '';
                 let facilitiesText = '<span style="color: var(--accent-color);">Tüm Tesisler</span>';
 
                 if (user.role === 'SUPERADMIN') {
-                    roleBadge = '<span class="badge" style="background: rgba(255, 215, 0, 0.2); color: #ffd700;">Yönetici</span>';
+                    roleBadge = '<span class="badge" style="background: color-mix(in srgb, var(--gold-color) 20%, transparent); color: var(--gold-color);">Yönetici</span>';
                 } else if (user.role === 'ADMIN') {
                     roleBadge = '<span class="badge danger">Personel</span>';
                 } else {
@@ -103,12 +103,12 @@ async function loadCustomers() {
 
                 tbody.innerHTML += `
                     <tr>
-                        <td>${user.company_name}</td>
-                        <td>${user.username}</td>
-                        <td style="font-family: monospace; color: var(--accent-color);">${displayPassword}</td>
-                        <td style="font-size: 0.9rem;">${facilitiesText}</td>
-                        <td>${roleBadge}</td>
-                        <td>${actionHtml}</td>
+                        <td data-label="Firma/Kullanıcı Adı">${user.company_name}</td>
+                        <td data-label="Kullanıcı Adı (Giriş)">${user.username}</td>
+                        <td data-label="Şifre" style="font-family: monospace; color: var(--accent-color);">${displayPassword}</td>
+                        <td data-label="Görüntüleyebileceği Fabrikalar" style="font-size: 0.9rem;">${facilitiesText}</td>
+                        <td data-label="Yetki Seviyesi">${roleBadge}</td>
+                        <td data-label="İşlem">${actionHtml}</td>
                     </tr>
                 `;
             });
