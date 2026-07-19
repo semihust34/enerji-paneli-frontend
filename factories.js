@@ -355,20 +355,20 @@ window.showDetails = function(f) {
 function getMeterData(meterName, factoryName) {
     return {
         abone: {
-            "Abone Ad": "ESAN AKÜMÜLATÖR MALZEME SAN.VE.TİC.AŞ",
-            "Abone No": "10000400158",
-            "Sayaç Seri No": "50672742",
-            "Sayaç Tanım": "50672742",
+            "Abone Ad": "-",
+            "Abone No": "-",
+            "Sayaç Seri No": "-",
+            "Sayaç Tanım": "-",
             "Abone Tip": "-",
-            "Sözleşme Gücü": "240,00 kW",
-            "Çarpan": "1000",
+            "Sözleşme Gücü": "-",
+            "Çarpan": "-",
             "Etso Kod": "-",
             "Ölçüm Noktası Id": "-",
-            "Eposta": "esan.duyuru@esanaku.com",
-            "Abo. Bas. Tarih": "23.09.2020",
-            "San.Sic.Bel.Tarih": "17.08.2020",
-            "San.Sic.Bel.Bitiş": "17.08.2022",
-            "Kalan Süre": "0 gün"
+            "Eposta": "-",
+            "Abo. Bas. Tarih": "-",
+            "San.Sic.Bel.Tarih": "-",
+            "San.Sic.Bel.Bitiş": "-",
+            "Kalan Süre": "-"
         },
         endeks: {
             rows: [
