@@ -1,6 +1,14 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
+    <script>
+        (function () {
+            try {
+                var t = localStorage.getItem('theme') || 'dark';
+                document.documentElement.setAttribute('data-theme', t);
+            } catch (e) {}
+        })();
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Müşteri Paneli - Enerji İzleme</title>
@@ -8,6 +16,12 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body class="dashboard-body">
+
+    <div class="mobile-topbar">
+        <button id="sidebarToggleBtn" class="hamburger-btn" aria-label="Menüyü aç/kapat"><i class="fas fa-bars"></i></button>
+        <span class="logo">EnerjiPanel</span>
+    </div>
+    <div id="sidebarOverlay" class="sidebar-overlay"></div>
 
     <!-- Sol Menü (Müşteriye Özel Sadeleştirilmiş) -->
     <aside class="sidebar">
@@ -17,7 +31,8 @@
             <li><a href="#"><i class="fas fa-industry"></i> Tesislerim & Sayaçlar</a></li>
             <!-- Müşteri Yönetimi ve Sistem Logları buradan tamamen silindi -->
         </ul>
-        
+
+        <button type="button" class="theme-toggle-btn" data-theme-toggle><i class="fas fa-moon"></i> <span class="theme-toggle-label">Karanlık Mod</span></button>
         <!-- ÇIKIŞ YAP BUTONU -->
         <button id="logoutBtn" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Çıkış Yap</button>
     </aside>
@@ -67,6 +82,7 @@
     </main>
 
     <script src="auth.js"></script>
+    <script src="ui.js"></script>
     <script src="customer.js"></script>
 </body>
 </html>
