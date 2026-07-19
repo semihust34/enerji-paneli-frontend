@@ -9,10 +9,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     await loadMyFacilities();
 
-    document.getElementById('logoutBtn').addEventListener('click', () => {
-        localStorage.clear();
-        window.location.href = 'index.html';
-    });
+    document.getElementById('logoutBtn').addEventListener('click', logout);
 });
 
 // ---------------------------------------------------------------------

@@ -40,9 +40,20 @@ function requireRole(allowedRoles) {
 // oturumu temizleyip login'e atar. Fetch sonrası kontrol için kullanılabilir.
 function handleAuthFailure(response) {
     if (response.status === 401) {
-        localStorage.clear();
-        window.location.href = 'index.html';
+        logout();
         return true;
     }
     return false;
+}
+
+// Sadece oturuma ait anahtarları temizler. localStorage.clear() KULLANMIYORUZ
+// çünkü o, "Beni Hatırla" ile kaydedilmiş kullanıcı adı/şifreyi
+// (rememberedUsername / rememberedPassword) ve tema tercihini de silip
+// kullanıcıyı her çıkışta bu bilgileri kaybetmeye zorluyordu.
+function logout() {
+    localStorage.removeItem('userToken');
+    localStorage.removeItem('userRole');
+    localStorage.removeItem('userCompany');
+    localStorage.removeItem('userFactories');
+    window.location.href = 'index.html';
 }
