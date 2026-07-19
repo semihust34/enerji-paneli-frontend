@@ -684,12 +684,6 @@ function scrollToMeterPanel(panel) {
     const topbarVisible = topbar && getComputedStyle(topbar).display !== 'none';
     const offset = (topbarVisible ? topbar.getBoundingClientRect().height : 0) + 16;
     document.documentElement.style.setProperty('--mv-scroll-offset', offset + 'px');
-
-    // Bir sonraki frame'de kaydır: stil/offset güncellemesinin ve yeni
-    // eklenen içeriğin layout'a yansımasını garanti eder.
-    requestAnimationFrame(() => {
-        header.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    });
 }
 
 async function handleFormSubmit(e) {
