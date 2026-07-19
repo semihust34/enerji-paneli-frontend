@@ -71,12 +71,12 @@ function renderFactoryTable(factories) {
 
     tableBody.innerHTML = factories.map(f => `
         <tr>
-            <td>${f.name || '-'}</td>
-            <td>${f.ip || '-'}</td>
-            <td>${f.meterCount ?? '-'}</td>
-            <td>—</td>
-            <td><span class="badge neutral">Bilinmiyor</span></td>
-            <td><a class="action-btn" href="factories.html">Görüntüle</a></td>
+            <td data-label="Fabrika Adı">${f.name || '-'}</td>
+            <td data-label="Modem IP">${f.ip || '-'}</td>
+            <td data-label="Bağlı Sayaç">${f.meterCount ?? '-'}</td>
+            <td data-label="Son İletişim">—</td>
+            <td data-label="Durum (Reaktif)"><span class="badge neutral">Bilinmiyor</span></td>
+            <td data-label="İşlem"><a class="action-btn" href="factories.html">Görüntüle</a></td>
         </tr>
     `).join('');
 }
