@@ -87,13 +87,10 @@
                 <!-- YENİ: id="addFactorySection" eklendi -->
                 <div id="addFactorySection" class="input-group" style="background-color: #2c2c2c; padding: 15px; border-radius: 6px; border: 1px solid #333;">
                     <label style="color: var(--accent-color); font-weight: bold; margin-bottom: 10px;"><i class="fas fa-building"></i> Görüntüleyebileceği Fabrikalar</label>
-                    <div style="display: flex; flex-direction: column; gap: 10px;">
-                        <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
-                            <input type="checkbox" name="factories" value="Plastik Enjeksiyon A.Ş."> Plastik Enjeksiyon A.Ş.
-                        </label>
-                        <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
-                            <input type="checkbox" name="factories" value="Demir Döküm Fabrikası"> Demir Döküm Fabrikası
-                        </label>
+                    <!-- Bu liste artık sabit değil: customers.js tarafından gerçek
+                         /api/factories verisiyle dinamik olarak dolduruluyor. -->
+                    <div id="addFactoryCheckboxList" style="display: flex; flex-direction: column; gap: 10px;">
+                        <p style="color: var(--text-secondary); font-size: 0.85rem; margin: 0;">Yükleniyor...</p>
                     </div>
                 </div>
 
@@ -138,13 +135,8 @@
                 <!-- YENİ: id="editFactorySection" eklendi -->
                 <div id="editFactorySection" class="input-group" style="background-color: #2c2c2c; padding: 15px; border-radius: 6px; border: 1px solid #333; margin-top: 15px;">
                     <label style="color: var(--accent-color); font-weight: bold; margin-bottom: 10px;"><i class="fas fa-building"></i> Görüntüleyebileceği Fabrikalar</label>
-                    <div style="display: flex; flex-direction: column; gap: 10px;">
-                        <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
-                            <input type="checkbox" name="editFactories" value="Plastik Enjeksiyon A.Ş."> Plastik Enjeksiyon A.Ş.
-                        </label>
-                        <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
-                            <input type="checkbox" name="editFactories" value="Demir Döküm Fabrikası"> Demir Döküm Fabrikası
-                        </label>
+                    <div id="editFactoryCheckboxList" style="display: flex; flex-direction: column; gap: 10px;">
+                        <p style="color: var(--text-secondary); font-size: 0.85rem; margin: 0;">Yükleniyor...</p>
                     </div>
                 </div>
 
