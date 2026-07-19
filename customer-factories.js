@@ -73,9 +73,29 @@ function ensureMeterStyles() {
         .mp-tile i { color: var(--mv-accent); font-size: 1.1rem; }
         .mp-tile small { display: block; margin-top: 6px; color: var(--mv-text-dim); font-size: 0.75rem; overflow-wrap: anywhere; }
 
-        .mv-panel { animation: mvFadeIn .35s ease both; }
+        /* Üstteki "Ana Giriş + Alt Sayaçlar" seçim bloğunu tek bir kutu
+           olarak çerçeveler (admin panelindeki .mp-box-top ile aynı). */
+        .mp-box-top {
+            background: var(--mv-bg-alt);
+            border: 1px solid var(--mv-border);
+            border-radius: 16px;
+            padding: 20px 20px 22px;
+            margin-bottom: 26px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+        }
+
+        /* Seçilen sayacın verileri artık kendi arkaplanı/kenarlığı olan
+           AYRI bir kutu (yukarıdaki seçim kutusuyla karışmasın diye). */
+        .mv-panel {
+            animation: mvFadeIn .35s ease both;
+            background: var(--mv-bg-alt);
+            border: 1px solid var(--mv-border);
+            border-radius: 16px;
+            padding: 22px 22px 24px;
+        }
         @keyframes mvFadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
-        .mv-datapanel { margin-top: 36px; }
+        .mv-datapanel:empty { display: none; }
+        .mv-datapanel { margin-top: 0; }
 
         .mv-header { display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 12px; padding-bottom: 16px; margin-bottom: 20px; border-bottom: 1px solid var(--mv-border); }
         .mv-header-left { display: flex; align-items: center; gap: 12px; min-width: 0; }
@@ -181,22 +201,24 @@ window.showFacilityDetails = function(f) {
 
     container.innerHTML = `
         <div class="meter-panel">
-            <h4 class="mp-section-title"><i class="fas fa-server"></i> ANA GİRİŞ SAYACI</h4>
-            <div class="mp-ana" tabindex="0" role="button"
-                 onclick="showMeterData('ANA SAYAÇ', '${f.name}')"
-                 onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); showMeterData('ANA SAYAÇ','${f.name}')}">
-                <div class="mp-ana-left">
-                    <span class="icon-badge lg"><i class="fas fa-bolt"></i></span>
-                    <div>
-                        <strong>${f.name} - Ana Giriş</strong>
-                        <span class="mp-ana-tag">Toplam tüketim ölçüm noktası</span>
+            <div class="mp-box-top">
+                <h4 class="mp-section-title"><i class="fas fa-server"></i> ANA GİRİŞ SAYACI</h4>
+                <div class="mp-ana" tabindex="0" role="button"
+                     onclick="showMeterData('ANA SAYAÇ', '${f.name}')"
+                     onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); showMeterData('ANA SAYAÇ','${f.name}')}">
+                    <div class="mp-ana-left">
+                        <span class="icon-badge lg"><i class="fas fa-bolt"></i></span>
+                        <div>
+                            <strong>${f.name} - Ana Giriş</strong>
+                            <span class="mp-ana-tag">Toplam tüketim ölçüm noktası</span>
+                        </div>
                     </div>
+                    <span class="badge success">Aktif</span>
                 </div>
-                <span class="badge success">Aktif</span>
-            </div>
 
-            <h4 class="mp-section-title"><i class="fas fa-microchip"></i> Alt Sayaçlar (${f.meterCount || 0} Adet)</h4>
-            <div class="mp-tiles" id="subMetersGrid"></div>
+                <h4 class="mp-section-title"><i class="fas fa-microchip"></i> Alt Sayaçlar (${f.meterCount || 0} Adet)</h4>
+                <div class="mp-tiles" id="subMetersGrid"></div>
+            </div>
             <div class="mv-datapanel" id="meterDataPanel"></div>
         </div>
     `;
