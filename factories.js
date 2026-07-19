@@ -1,18 +1,12 @@
 document.addEventListener('DOMContentLoaded', () => {
     loadFactories();
 
-    // Modallar
     const addModal = document.getElementById('addFactoryModal');
-    const detailModal = document.getElementById('factoryDetailModal');
-    
     document.getElementById('openFactoryModalBtn').addEventListener('click', () => addModal.classList.remove('hidden'));
     document.getElementById('closeModalBtn').addEventListener('click', () => addModal.classList.add('hidden'));
-    document.getElementById('closeDetailBtn').addEventListener('click', () => detailModal.classList.add('hidden'));
 
-    // Çıkış
     document.getElementById('logoutBtn').addEventListener('click', () => window.location.href = 'index.html');
 
-    // Fabrika Ekleme
     document.getElementById('newFactoryForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         const factoryData = {
@@ -39,34 +33,49 @@ async function loadFactories() {
     const res = await fetch('https://web-production-388bad.up.railway.app/api/factories');
     const { factories } = await res.json();
     
-    const list = document.getElementById('factoryList');
-    list.innerHTML = '';
+    const container = document.getElementById('factoryAccordion');
+    container.innerHTML = '';
     
     factories.forEach(f => {
-        const card = document.createElement('div');
-        card.className = 'card';
-        card.style.border = '1px solid #333';
-        card.innerHTML = `
-            <h3>${f.name}</h3>
-            <p style="color: #a0a0a0; margin: 10px 0;">Bağlı Sayaç: ${f.meterCount} Adet</p>
-            <button onclick="openFactoryDetails(${f.meterCount}, '${f.name}')">Detayları Gör</button>
+        const item = document.createElement('div');
+        item.style.backgroundColor = '#1e1e1e';
+        item.style.border = '1px solid #333';
+        item.style.borderRadius = '8px';
+        
+        item.innerHTML = `
+            <div onclick="toggleFactory(this)" style="padding: 20px; cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
+                <h3>${f.name}</h3>
+                <i class="fas fa-chevron-down"></i>
+            </div>
+            <div class="factory-content" style="display: none; padding: 0 20px 20px 20px; border-top: 1px solid #333;">
+                <p style="margin-top: 15px; font-weight: bold; color: var(--accent-color);">Ana Sayaç</p>
+                <div style="background: #2c2c2c; padding: 10px; border-radius: 4px; margin: 5px 0;">Ana Enerji Giriş Sayacı (Aktif)</div>
+                <p style="margin-top: 15px; font-weight: bold; color: var(--text-secondary);">Alt Sayaçlar (${f.meterCount} Adet)</p>
+                <div id="meters-${f.id}"></div>
+            </div>
         `;
-        list.appendChild(card);
+        container.appendChild(item);
+
+        const meterContainer = document.getElementById(`meters-${f.id}`);
+        for(let i = 1; i <= f.meterCount; i++) {
+            meterContainer.innerHTML += `
+                <div style="background: #252525; padding: 8px; margin: 5px 0; border-radius: 4px;">
+                    Alt Sayaç #${i}
+                </div>
+            `;
+        }
     });
 }
 
-window.openFactoryDetails = function(count, name) {
-    document.getElementById('modalFactoryName').innerText = name;
-    const container = document.getElementById('meterListContainer');
-    container.innerHTML = `<p>Bu tesiste toplam <strong>${count}</strong> adet sayaç bulunmaktadır.</p><br>`;
+window.toggleFactory = function(element) {
+    const content = element.nextElementSibling;
+    const icon = element.querySelector('i');
     
-    for(let i = 1; i <= count; i++) {
-        container.innerHTML += `
-            <div style="background: #2c2c2c; padding: 12px; margin-bottom: 8px; border-radius: 6px; display: flex; justify-content: space-between;">
-                <span>Ana Sayaç / Sayaç #${i}</span>
-                <span class="badge success">Aktif</span>
-            </div>
-        `;
+    if (content.style.display === "none" || content.style.display === "") {
+        content.style.display = "block";
+        icon.className = "fas fa-chevron-up";
+    } else {
+        content.style.display = "none";
+        icon.className = "fas fa-chevron-down";
     }
-    document.getElementById('factoryDetailModal').classList.remove('hidden');
 };
