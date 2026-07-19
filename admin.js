@@ -1,8 +1,21 @@
 document.addEventListener('DOMContentLoaded', () => {
+    if (!requireRole(['ADMIN', 'SUPERADMIN'])) return;
+
+    const adminNameEl = document.getElementById('adminName');
+    if (adminNameEl) adminNameEl.textContent = localStorage.getItem('userCompany') || 'Yetkili';
+
+    const logoutBtn = document.getElementById('logoutBtn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', () => {
+            localStorage.clear();
+            window.location.href = 'index.html';
+        });
+    }
+
     loadDashboard();
 });
 
-const API_BASE = 'https://web-production-388bad.up.railway.app/api';
+// API_BASE artık auth.js içinde tanımlı (bu sayfaya auth.js dahil edilmeli)
 
 async function loadDashboard() {
     await loadFactoriesAndFillDashboard();
@@ -24,7 +37,8 @@ async function loadFactoriesAndFillDashboard() {
     }
 
     try {
-        const res = await fetch(`${API_BASE}/factories`);
+        const res = await fetch(`${API_BASE}/factories`, { headers: authHeaders() });
+        if (handleAuthFailure(res)) return;
         const data = await res.json();
         const factories = data.factories || data || [];
 
