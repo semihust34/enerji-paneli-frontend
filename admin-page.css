@@ -6,11 +6,6 @@
    Reuses --text-secondary / --error-color, same as everywhere else.
    ======================================================================= */
 
-.badge.neutral {
-    background-color: rgba(160, 160, 160, 0.15);
-    color: var(--text-secondary);
-}
-
 .table-loading,
 .table-error {
     text-align: center;
