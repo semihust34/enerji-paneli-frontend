@@ -9,6 +9,46 @@ if (!requireRole(['ADMIN', 'SUPERADMIN'])) {
 }
 
 let globalUsersData = [];
+let allFactoriesData = [];
+
+// ---------------------------------------------------------------------
+// Fabrika checkbox'ları artık sabit (hardcoded) değil — gerçek
+// /api/factories verisinden dinamik olarak oluşturuluyor. Böylece
+// Fabrikalar sayfasında eklenen her fabrika otomatik olarak burada da
+// seçilebilir hale gelir, ve müşteriye atanan isim gerçek fabrika
+// kaydıyla birebir eşleşir (backend filtrelemesi buna dayanıyor).
+// ---------------------------------------------------------------------
+async function loadFactoriesForCheckboxes() {
+    try {
+        const res = await fetch(`${API_BASE}/factories`, { headers: authHeaders() });
+        if (handleAuthFailure(res)) return [];
+        const data = await res.json();
+        allFactoriesData = data.factories || data || [];
+    } catch (err) {
+        console.error('Fabrika listesi yüklenemedi:', err);
+        allFactoriesData = [];
+    }
+    return allFactoriesData;
+}
+
+function renderFactoryCheckboxes(containerId, inputName, checkedValues = []) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+
+    if (!allFactoriesData.length) {
+        container.innerHTML = '<p style="color: var(--text-secondary); font-size: 0.85rem; margin: 0;">Henüz kayıtlı fabrika yok. Önce "Fabrikalar" sayfasından fabrika ekleyin.</p>';
+        return;
+    }
+
+    container.innerHTML = allFactoriesData.map(f => {
+        const checked = checkedValues.includes(f.name) ? 'checked' : '';
+        const inputId = `${inputName}_${f.id}`;
+        return `
+            <label for="${inputId}" style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                <input type="checkbox" id="${inputId}" name="${inputName}" value="${f.name}" ${checked}> ${f.name}
+            </label>`;
+    }).join('');
+}
 
 async function loadCustomers() {
     try {
@@ -98,7 +138,7 @@ window.deleteUser = async function(userId) {
     }
 };
 
-window.openEditModal = function(userId) {
+window.openEditModal = async function(userId) {
     const userToEdit = globalUsersData.find(u => u.id === userId);
     if (!userToEdit) return;
 
@@ -118,14 +158,13 @@ window.openEditModal = function(userId) {
         editFactorySection.style.display = 'none';
     }
 
-    document.querySelectorAll('input[name="editFactories"]').forEach(cb => cb.checked = false);
-    if (userToEdit.factories && userToEdit.role === 'CUSTOMER') {
-        const userFacs = userToEdit.factories.split(', ');
-        userFacs.forEach(fac => {
-            const cb = document.querySelector(`input[name="editFactories"][value="${fac}"]`);
-            if (cb) cb.checked = true;
-        });
-    }
+    // Güncel fabrika listesini çekip checkbox'ları yeniden oluştur,
+    // kullanıcının hâlihazırda erişebildiği fabrikaları işaretli getir.
+    await loadFactoriesForCheckboxes();
+    const checkedValues = (userToEdit.factories && userToEdit.role === 'CUSTOMER')
+        ? userToEdit.factories.split(', ').map(f => f.trim())
+        : [];
+    renderFactoryCheckboxes('editFactoryCheckboxList', 'editFactories', checkedValues);
 
     document.getElementById('editCustomerModal').classList.remove('hidden');
 };
@@ -135,6 +174,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (adminNameEl) adminNameEl.textContent = localStorage.getItem('userCompany') || 'Yetkili';
 
     loadCustomers();
+    loadFactoriesForCheckboxes().then(() => {
+        renderFactoryCheckboxes('addFactoryCheckboxList', 'factories');
+    });
 
     if (currentUserRole !== 'SUPERADMIN') {
         const custRoleSelect = document.getElementById('custRole');
@@ -184,12 +226,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeAddBtn = document.getElementById('closeCustomerModalBtn');
     
     if (openAddBtn) {
-        openAddBtn.addEventListener('click', () => {
+        openAddBtn.addEventListener('click', async () => {
             // Ekle butonuna tıklandığında Müşteri seçiliyse blok görünür kalsın
             if(custRoleDropdown) {
                 addFactorySection.style.display = custRoleDropdown.value === 'CUSTOMER' ? 'block' : 'none';
             }
             addModal.classList.remove('hidden');
+            // Güncel fabrika listesiyle checkbox'ları yenile
+            await loadFactoriesForCheckboxes();
+            renderFactoryCheckboxes('addFactoryCheckboxList', 'factories');
         });
     }
     if (closeAddBtn) closeAddBtn.addEventListener('click', () => addModal.classList.add('hidden'));
