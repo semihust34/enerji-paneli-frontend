@@ -1,6 +1,14 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
+    <script>
+        (function () {
+            try {
+                var t = localStorage.getItem('theme') || 'dark';
+                document.documentElement.setAttribute('data-theme', t);
+            } catch (e) {}
+        })();
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Paneli - Enerji İzleme</title>
@@ -11,6 +19,14 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body class="dashboard-body">
+
+    <!-- Mobilde görünen üst çubuk: hamburger menü düğmesi -->
+    <div class="mobile-topbar">
+        <button id="sidebarToggleBtn" class="hamburger-btn" aria-label="Menüyü aç/kapat"><i class="fas fa-bars"></i></button>
+        <span class="logo">EnerjiPanel</span>
+    </div>
+    <div id="sidebarOverlay" class="sidebar-overlay"></div>
+
     <!-- Sol Menü (Eksik olan aside ve logo eklendi) -->
     <aside class="sidebar">
         <div class="logo">EnerjiPanel</div>
@@ -22,6 +38,7 @@
             <!-- BURASI GÜNCELLENDİ: Artık system-logs.html dosyasına gidiyor -->
             <li><a href="system-logs.html"><i class="fas fa-terminal"></i> Sistem Logları</a></li>
         </ul>
+        <button type="button" class="theme-toggle-btn" data-theme-toggle><i class="fas fa-moon"></i> <span class="theme-toggle-label">Karanlık Mod</span></button>
         <button id="logoutBtn" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Çıkış Yap</button>
     </aside>
     <!-- Ana İçerik Alanı -->
@@ -47,7 +64,7 @@
                 <p id="reactiveAlarmText">Alarm verisi henüz bağlı değil</p>
             </div>
         </section>
-        <section class="chart-section" style="margin-bottom: 30px; background-color: var(--surface-color); padding: 20px; border-radius: 8px; border: 1px solid #333;">
+        <section class="chart-section" style="margin-bottom: 30px; background-color: var(--surface-color); padding: 20px; border-radius: 8px; border: 1px solid var(--border-color);">
             <h3 style="margin-bottom: 15px; color: var(--text-secondary);"><i class="fas fa-bolt" style="color: var(--accent-color);"></i> Günlük Reaktif Tüketim Trendi</h3>
             <canvas id="energyChart" height="80"></canvas>
         </section>
@@ -78,6 +95,7 @@
 
     <!-- SCRIPT DOSYASI HER ZAMAN EN ALTTA OLMALIDIR -->
     <script src="auth.js"></script>
+    <script src="ui.js"></script>
     <script src="admin.js"></script>
 </body>
 </html>
