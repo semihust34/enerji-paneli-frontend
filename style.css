@@ -1,11 +1,45 @@
 :root {
+    /* Karanlık mod (varsayılan) */
     --bg-color: #121212;
     --surface-color: #1e1e1e;
+    --surface-alt-color: #2c2c2c;
+    --border-color: #333333;
+    --hover-color: #252525;
     --text-primary: #ffffff;
     --text-secondary: #a0a0a0;
     --accent-color: #00adb5;
     --accent-hover: #008c9e;
     --error-color: #cf6679;
+    --success-color: #4cd137;
+    --warning-color: #f6e58d;
+    --gold-color: #ffd700;
+    --shadow-color: rgba(0, 0, 0, 0.5);
+    --overlay-color: rgba(0, 0, 0, 0.7);
+
+    color-scheme: dark;
+}
+
+/* Aydınlık mod: <html data-theme="light"> ayarlandığında devreye girer.
+   Marka rengi (turkuaz) her iki modda da aynı kalır; sadece yüzey,
+   metin ve durum renkleri kontrast için ayarlanır. */
+html[data-theme="light"] {
+    --bg-color: #f2f4f6;
+    --surface-color: #ffffff;
+    --surface-alt-color: #eef1f3;
+    --border-color: #dde2e6;
+    --hover-color: #f3f5f7;
+    --text-primary: #1a1d21;
+    --text-secondary: #5b6570;
+    --accent-color: #00adb5;
+    --accent-hover: #008c9e;
+    --error-color: #c23a52;
+    --success-color: #2f9e44;
+    --warning-color: #b8860b;
+    --gold-color: #a6790a;
+    --shadow-color: rgba(20, 30, 40, 0.12);
+    --overlay-color: rgba(20, 25, 30, 0.45);
+
+    color-scheme: light;
 }
 
 * {
@@ -15,25 +49,40 @@
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-/* Sadece Giriş Sayfası İçin Sabitleme */
+html {
+    background-color: var(--bg-color);
+}
+
+body,
+.sidebar,
+.card,
+.table-container,
+.modal-content,
+.login-box,
+.input-group input,
+.input-group select,
+button,
+.nav-links li a,
+.action-btn,
+.mobile-topbar {
+    transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+}
+
 body.login-page {
     background-color: var(--bg-color);
     color: var(--text-primary);
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    min-height: 100vh;
     width: 100vw;
-    overflow: hidden; /* Sayfanın kaymasını kesin olarak engeller */
 }
 
-/* Normal Sayfalar (Dashboard) İçin */
 body:not(.login-page) {
     background-color: var(--bg-color);
     color: var(--text-primary);
 }
 
-/* --- GİRİŞ EKRANI STİLLERİ --- */
 .login-container {
     display: flex;
     flex-direction: column;
@@ -41,6 +90,7 @@ body:not(.login-page) {
     justify-content: center;
     width: 100%;
     padding: 20px;
+    position: relative;
 }
 
 .logo-container {
@@ -49,7 +99,7 @@ body:not(.login-page) {
 }
 
 .login-logo {
-    max-width: 350px; /* Logon burada büyütüldü */
+    max-width: 350px;
     width: 100%;
     height: auto;
 }
@@ -58,10 +108,11 @@ body:not(.login-page) {
     background-color: var(--surface-color);
     padding: 40px;
     border-radius: 12px;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+    box-shadow: 0 8px 24px var(--shadow-color);
     width: 90%;
     max-width: 450px;
     box-sizing: border-box;
+    border: 1px solid var(--border-color);
 }
 
 h2 {
@@ -91,19 +142,15 @@ h2 {
     width: 100%;
     padding: 15px;
     font-size: 16px;
-    border: 1px solid #333;
+    border: 1px solid var(--border-color);
     border-radius: 6px;
-    background-color: #2c2c2c;
+    background-color: var(--surface-alt-color);
     color: var(--text-primary);
     outline: none;
     transition: border-color 0.3s;
     box-sizing: border-box;
 }
 
-/* Yukarıdaki kural metin/şifre input'ları için tasarlandı; checkbox'lar
-   (ör. "Görüntüleyebileceği Fabrikalar" listesi .input-group içinde
-   olduğu için) aynı width:100%/padding:15px'i yanlışlıkla miras alıp
-   satırı bozuyordu. Checkbox'ları normal boyutuna geri döndürüyoruz. */
 .input-group input[type="checkbox"] {
     width: 16px;
     height: 16px;
@@ -115,17 +162,13 @@ h2 {
     border-color: var(--accent-color);
 }
 
-/* Formlardaki <select> kutuları (ör. "Hesap Türü") artık input'larla
-   birebir aynı boyut/padding/font'u paylaşıyor — daha önce her select
-   kendi satır-içi stiliyle tanımlıydı (padding:12px, font-size yok) ve
-   bu yüzden yanındaki input'lardan daha küçük/uyumsuz görünüyordu. */
 .input-group select {
     width: 100%;
     padding: 15px;
     font-size: 16px;
-    border: 1px solid #333;
+    border: 1px solid var(--border-color);
     border-radius: 6px;
-    background-color: #2c2c2c;
+    background-color: var(--surface-alt-color);
     color: var(--text-primary);
     outline: none;
     transition: border-color 0.3s;
@@ -148,6 +191,7 @@ button {
     cursor: pointer;
     font-weight: bold;
     transition: background-color 0.3s;
+    min-height: 48px;
 }
 
 button:hover {
@@ -165,12 +209,59 @@ button:hover {
     display: none;
 }
 
-/* --- DASHBOARD STİLLERİ --- */
+/* =======================================================================
+   TEMA DEĞİŞTİRME DÜĞMESİ (Karanlık / Aydınlık)
+   ======================================================================= */
+.theme-toggle-btn {
+    width: calc(100% - 40px);
+    margin: 0 20px 14px 20px;
+    background-color: var(--surface-alt-color);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    border-radius: 6px;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    flex-shrink: 0;
+}
+.theme-toggle-btn:hover {
+    background-color: var(--hover-color);
+    border-color: var(--accent-color);
+    color: var(--accent-color);
+}
+.theme-toggle-btn i { color: var(--accent-color); }
+
+.theme-toggle-standalone {
+    position: absolute;
+    top: 18px;
+    right: 18px;
+    width: auto;
+    padding: 10px 14px;
+    background-color: var(--surface-color);
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    border-radius: 30px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    box-shadow: 0 4px 14px var(--shadow-color);
+}
+.theme-toggle-standalone:hover {
+    color: var(--accent-color);
+    border-color: var(--accent-color);
+}
+
 .dashboard-body {
     display: flex;
     justify-content: flex-start;
     align-items: flex-start;
-    height: 100vh;
+    min-height: 100vh;
     background-color: var(--bg-color);
 }
 
@@ -183,7 +274,7 @@ button:hover {
     padding: 20px 0;
     display: flex;
     flex-direction: column;
-    border-right: 1px solid #333;
+    border-right: 1px solid var(--border-color);
 }
 
 .sidebar .logo {
@@ -208,7 +299,7 @@ button:hover {
 }
 
 .nav-links li a:hover, .nav-links li a.active {
-    background-color: #2c2c2c;
+    background-color: var(--surface-alt-color);
     color: var(--text-primary);
     border-left: 4px solid var(--accent-color);
 }
@@ -234,6 +325,7 @@ button:hover {
     padding: 30px;
     height: 100vh;
     overflow-y: auto;
+    min-width: 0;
 }
 
 header {
@@ -242,7 +334,9 @@ header {
     align-items: center;
     margin-bottom: 30px;
     padding-bottom: 15px;
-    border-bottom: 1px solid #333;
+    border-bottom: 1px solid var(--border-color);
+    flex-wrap: wrap;
+    gap: 10px;
 }
 
 .content-cards {
@@ -256,7 +350,8 @@ header {
     padding: 20px;
     border-radius: 8px;
     flex: 1;
-    border: 1px solid #333;
+    border: 1px solid var(--border-color);
+    min-width: 0;
 }
 
 .card.warning {
@@ -271,19 +366,19 @@ header {
 }
 
 .placeholder-box {
-    background-color: #2c2c2c;
-    padding: 50px;
+    background-color: var(--surface-alt-color);
+    padding: 50px 20px;
     text-align: center;
     color: var(--text-secondary);
     border-radius: 8px;
-    border: 1px dashed #555;
+    border: 1px dashed var(--border-color);
 }
 
 .table-container {
     background-color: var(--surface-color);
     border-radius: 8px;
     padding: 15px;
-    border: 1px solid #333;
+    border: 1px solid var(--border-color);
     overflow-x: auto;
 }
 
@@ -294,23 +389,24 @@ table {
 }
 
 thead tr {
-    border-bottom: 2px solid #444;
+    border-bottom: 2px solid var(--border-color);
 }
 
 th {
     padding: 12px 15px;
     color: var(--text-secondary);
     font-weight: 600;
+    white-space: nowrap;
 }
 
 td {
     padding: 12px 15px;
-    border-bottom: 1px solid #2c2c2c;
+    border-bottom: 1px solid var(--surface-alt-color);
     color: var(--text-primary);
 }
 
 tbody tr:hover {
-    background-color: #252525;
+    background-color: var(--hover-color);
 }
 
 .badge {
@@ -318,20 +414,21 @@ tbody tr:hover {
     border-radius: 20px;
     font-size: 0.8rem;
     font-weight: bold;
+    display: inline-block;
 }
 
 .badge.success {
-    background-color: rgba(0, 173, 181, 0.2);
+    background-color: color-mix(in srgb, var(--accent-color) 20%, transparent);
     color: var(--accent-color);
 }
 
 .badge.danger {
-    background-color: rgba(207, 102, 121, 0.2);
+    background-color: color-mix(in srgb, var(--error-color) 20%, transparent);
     color: var(--error-color);
 }
 
 .badge.neutral {
-    background-color: rgba(160, 160, 160, 0.15);
+    background-color: color-mix(in srgb, var(--text-secondary) 15%, transparent);
     color: var(--text-secondary);
 }
 
@@ -364,12 +461,13 @@ tbody tr:hover {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.7);
+    background-color: var(--overlay-color);
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 1000;
+    z-index: 3000;
     backdrop-filter: blur(3px);
+    padding: 20px;
 }
 
 .modal.hidden {
@@ -382,9 +480,11 @@ tbody tr:hover {
     border-radius: 12px;
     width: 90%;
     max-width: 450px;
+    max-height: 90vh;
+    overflow-y: auto;
     position: relative;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.8);
-    border: 1px solid #333;
+    box-shadow: 0 10px 30px var(--shadow-color);
+    border: 1px solid var(--border-color);
 }
 
 .close-btn {
@@ -405,27 +505,94 @@ tbody tr:hover {
     height: 350px;
 }
 
+/* =======================================================================
+   MOBİL ÜST ÇUBUK + AÇILIR (OFF-CANVAS) MENÜ
+   ======================================================================= */
+.mobile-topbar {
+    display: none;
+}
+
+.sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background-color: var(--overlay-color);
+    z-index: 1900;
+}
+.sidebar-overlay.visible {
+    display: block;
+}
+
 @media (max-width: 768px) {
     .dashboard-body {
         flex-direction: column;
         height: auto;
+        min-height: 100vh;
     }
-    .sidebar {
-        width: 100%;
-        height: auto;
-        min-height: auto;
-        min-width: 100%;
-        padding: 15px 0;
-        border-right: none;
-        border-bottom: 1px solid #333;
-    }
-    .nav-links {
+
+    .mobile-topbar {
         display: flex;
-        overflow-x: auto;
-        white-space: nowrap;
-        padding-bottom: 10px;
-        margin: 0 10px;
+        align-items: center;
+        gap: 14px;
+        position: sticky;
+        top: 0;
+        z-index: 1500;
+        width: 100%;
+        background-color: var(--surface-color);
+        border-bottom: 1px solid var(--border-color);
+        padding: 14px 16px;
     }
+    .mobile-topbar .logo {
+        font-size: 1.2rem;
+        font-weight: bold;
+        color: var(--accent-color);
+    }
+    .hamburger-btn {
+        width: 42px;
+        height: 42px;
+        min-height: 42px;
+        flex-shrink: 0;
+        background-color: var(--surface-alt-color);
+        border: 1px solid var(--border-color);
+        color: var(--text-primary);
+        border-radius: 8px;
+        font-size: 1.1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+    }
+    .hamburger-btn:hover {
+        border-color: var(--accent-color);
+        color: var(--accent-color);
+    }
+
+    .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 78vw;
+        max-width: 300px;
+        min-width: 0;
+        height: 100vh;
+        transform: translateX(-100%);
+        transition: transform 0.28s ease;
+        z-index: 2000;
+        border-right: 1px solid var(--border-color);
+        border-bottom: none;
+        box-shadow: 8px 0 24px var(--shadow-color);
+    }
+    .sidebar.open {
+        transform: translateX(0);
+    }
+
+    .nav-links {
+        display: block;
+        overflow-x: visible;
+        white-space: normal;
+        margin: 0;
+    }
+
     .main-content {
         padding: 15px;
         width: 100%;
@@ -435,6 +602,80 @@ tbody tr:hover {
         flex-direction: column;
     }
     .chart-section {
-        height: 300px;
+        height: 260px;
     }
+    header h2 {
+        font-size: 1.2rem;
+    }
+    .modal-content {
+        padding: 20px;
+    }
+}
+
+/* =======================================================================
+   MOBİLDE TABLOLARI KART GÖRÜNÜMÜNE ÇEVİR
+   ======================================================================= */
+@media (max-width: 700px) {
+    .table-container { padding: 8px; overflow-x: visible; }
+
+    table {
+        border: none;
+    }
+    table thead {
+        display: none;
+    }
+    table tbody,
+    table tr,
+    table td {
+        display: block;
+        width: 100%;
+    }
+    table tr {
+        margin-bottom: 12px;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        padding: 6px 0;
+        background-color: var(--surface-alt-color);
+    }
+    table tr:last-child { margin-bottom: 0; }
+    table td {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        text-align: right;
+        padding: 10px 14px;
+        border-bottom: 1px solid var(--border-color);
+    }
+    table td:last-child { border-bottom: none; }
+    table td::before {
+        content: attr(data-label);
+        color: var(--text-secondary);
+        font-weight: 600;
+        font-size: 0.78rem;
+        text-align: left;
+        flex-shrink: 0;
+    }
+    table td:not([data-label]) {
+        justify-content: flex-start;
+    }
+    table td.table-loading,
+    table td.table-error {
+        display: block;
+        text-align: center;
+    }
+    table td.table-loading::before,
+    table td.table-error::before {
+        content: none;
+    }
+}
+
+@media (max-width: 480px) {
+    .fp-header { flex-direction: column; align-items: stretch; }
+    .theme-toggle-standalone {
+        position: static;
+        margin-bottom: 20px;
+        align-self: center;
+    }
+    .login-container { padding-top: 10px; }
 }
