@@ -168,16 +168,19 @@ function ensureMeterStyles() {
         .mp-ana {
             display: flex; align-items: center; justify-content: space-between; gap: 14px;
             min-width: 0;
-            background: var(--mv-accent-bg);
-            border: 1px solid var(--mv-accent-border);
+            background: var(--mv-bg-alt);
+            border: 1px solid var(--mv-accent);
             border-radius: 12px;
             padding: 16px 18px;
             cursor: pointer;
             margin-bottom: 28px;
             transition: background .15s ease, transform .15s ease;
         }
-        .mp-ana:hover { background: color-mix(in srgb, var(--mv-accent) 18%, transparent); transform: translateY(-1px); }
+        .mp-ana:hover { background: var(--mv-accent-bg); transform: translateY(-1px); }
         .mp-ana:focus-visible { outline: 2px solid var(--mv-accent); outline-offset: 2px; }
+        /* Ana giriş sayacının simge/rozet rengi, artık beyaz arka plan üzerinde
+           daha koyu/doygun bir tonda kalsın diye ayrı bir vurgu değişkeni. */
+        .mp-ana .icon-badge.lg { background: var(--mv-accent); color: #fff; }
         /* Hangi sayacın (ana giriş ya da alt sayaçlardan biri) o an
            görüntülendiğini net göstermek için seçili durum vurgusu. */
         .mp-ana.selected {
