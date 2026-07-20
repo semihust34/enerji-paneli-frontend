@@ -76,6 +76,14 @@ function ensureMeterStyles() {
         }
         .fl-item:hover { border-color: var(--mv-accent); background: var(--mv-bg); transform: translateX(2px); }
         .fl-item:focus-visible { outline: 2px solid var(--mv-accent); outline-offset: 2px; }
+        .fl-item.active {
+            background: var(--mv-accent-bg);
+            border-color: var(--mv-accent);
+            border-left: 3px solid var(--mv-accent);
+            padding-left: 12px;
+        }
+        .fl-item.active .fl-body strong { color: var(--mv-accent); }
+        .fl-item.active .fl-chevron { color: var(--mv-accent); }
         .fl-icon {
             flex-shrink: 0;
             width: 34px; height: 34px;
@@ -190,6 +198,12 @@ function ensureMeterStyles() {
         .mp-tile:focus-visible { outline: 2px solid var(--mv-accent); outline-offset: 2px; }
         .mp-tile i { color: var(--mv-accent); font-size: 1.1rem; }
         .mp-tile small { display: block; margin-top: 6px; color: var(--mv-text-dim); font-size: 0.75rem; overflow-wrap: anywhere; }
+        .mp-ana.active, .mp-tile.active {
+            border-color: var(--mv-accent);
+            box-shadow: 0 0 0 2px var(--mv-accent) inset;
+        }
+        .mp-tile.active { background: var(--mv-accent-bg); }
+        .mp-tile.active i, .mp-tile.active small { color: var(--mv-accent); }
 
         /* ---------- Sayaç detay paneli ---------- */
         .mv-panel {
@@ -354,7 +368,11 @@ async function loadFactories() {
             `;
 
             // Fonksiyonu burada doğrudan çağırıyoruz
-            btn.onclick = () => showDetails(f);
+            btn.onclick = () => {
+                list.querySelectorAll('.fl-item.active').forEach(el => el.classList.remove('active'));
+                btn.classList.add('active');
+                showDetails(f);
+            };
             btn.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); btn.click(); }
             });
@@ -403,6 +421,16 @@ window.deleteFactory = async function (factoryId, factoryName, evt) {
     }
 };
 
+// Ana Giriş Sayacı veya Alt Sayaç tıklandığında, hangisinin seçili olduğunu
+// görsel olarak belli eder (aynı kutu içindeki diğer seçimden 'active'
+// sınıfını kaldırıp tıklanana ekler).
+window.selectMeterItem = function(el) {
+    const box = el.closest('.mp-box-top');
+    if (!box) return;
+    box.querySelectorAll('.mp-ana.active, .mp-tile.active').forEach(x => x.classList.remove('active'));
+    el.classList.add('active');
+};
+
 // showDetails artık global olarak tanımlı, sorunsuz çalışmalı
 window.showDetails = function(f) {
     ensureMeterStyles();
@@ -414,8 +442,8 @@ window.showDetails = function(f) {
             <div class="mp-box-top">
                 <h4 class="mp-section-title"><i class="fas fa-server"></i> ANA GİRİŞ SAYACI</h4>
                 <div class="mp-ana" tabindex="0" role="button"
-                     onclick="showMeterData('ANA SAYAÇ', '${f.name}')"
-                     onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); showMeterData('ANA SAYAÇ','${f.name}')}">
+                     onclick="selectMeterItem(this); showMeterData('ANA SAYAÇ', '${f.name}')"
+                     onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); selectMeterItem(this); showMeterData('ANA SAYAÇ','${f.name}')}">
                     <div class="mp-ana-left">
                         <span class="icon-badge lg"><i class="fas fa-bolt"></i></span>
                         <div>
@@ -440,7 +468,7 @@ window.showDetails = function(f) {
         div.setAttribute('tabindex', '0');
         div.setAttribute('role', 'button');
         div.innerHTML = `<i class="fas fa-microchip"></i><br><small>Sayaç #${i}</small>`;
-        div.onclick = () => showMeterData(`Sayaç #${i}`, f.name);
+        div.onclick = () => { selectMeterItem(div); showMeterData(`Sayaç #${i}`, f.name); };
         div.addEventListener('keydown', (e) => {
             if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); div.click(); }
         });

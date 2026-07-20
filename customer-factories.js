@@ -44,6 +44,14 @@ function ensureMeterStyles() {
         .fl-item { display: flex; align-items: center; gap: 12px; padding: 13px 14px; background: var(--mv-bg-alt); border: 1px solid var(--mv-border); border-radius: 10px; cursor: pointer; margin-bottom: 10px; transition: all .15s ease; }
         .fl-item:hover { border-color: var(--mv-accent); background: var(--mv-bg); transform: translateX(2px); }
         .fl-item:focus-visible { outline: 2px solid var(--mv-accent); outline-offset: 2px; }
+        .fl-item.active {
+            background: var(--mv-accent-bg);
+            border-color: var(--mv-accent);
+            border-left: 3px solid var(--mv-accent);
+            padding-left: 12px;
+        }
+        .fl-item.active .fl-body strong { color: var(--mv-accent); }
+        .fl-item.active .fl-chevron { color: var(--mv-accent); }
         .fl-icon { flex-shrink: 0; width: 34px; height: 34px; border-radius: 9px; display: flex; align-items: center; justify-content: center; background: var(--mv-accent-bg); color: var(--mv-accent); font-size: 13px; }
         .fl-body { min-width: 0; flex: 1 1 auto; display: flex; flex-direction: column; }
         .fl-body strong { font-size: 0.92rem; color: var(--mv-text); overflow-wrap: anywhere; }
@@ -72,6 +80,12 @@ function ensureMeterStyles() {
         .mp-tile:hover { border-color: var(--mv-accent); background: var(--mv-bg); transform: translateY(-2px); }
         .mp-tile i { color: var(--mv-accent); font-size: 1.1rem; }
         .mp-tile small { display: block; margin-top: 6px; color: var(--mv-text-dim); font-size: 0.75rem; overflow-wrap: anywhere; }
+        .mp-ana.active, .mp-tile.active {
+            border-color: var(--mv-accent);
+            box-shadow: 0 0 0 2px var(--mv-accent) inset;
+        }
+        .mp-tile.active { background: var(--mv-accent-bg); }
+        .mp-tile.active i, .mp-tile.active small { color: var(--mv-accent); }
 
         /* Üstteki "Ana Giriş + Alt Sayaçlar" seçim bloğunu tek bir kutu
            olarak çerçeveler (admin panelindeki .mp-box-top ile aynı). */
@@ -180,7 +194,11 @@ async function loadMyFactoriesList() {
                 <i class="fas fa-chevron-right fl-chevron"></i>
             `;
 
-            btn.onclick = () => showFacilityDetails(f);
+            btn.onclick = () => {
+                list.querySelectorAll('.fl-item.active').forEach(el => el.classList.remove('active'));
+                btn.classList.add('active');
+                showFacilityDetails(f);
+            };
             btn.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); btn.click(); }
             });
@@ -193,6 +211,16 @@ async function loadMyFactoriesList() {
     }
 }
 
+// Ana Giriş Sayacı veya Alt Sayaç tıklandığında, hangisinin seçili olduğunu
+// görsel olarak belli eder (aynı kutu içindeki diğer seçimden 'active'
+// sınıfını kaldırıp tıklanana ekler).
+window.selectMeterItem = function(el) {
+    const box = el.closest('.mp-box-top');
+    if (!box) return;
+    box.querySelectorAll('.mp-ana.active, .mp-tile.active').forEach(x => x.classList.remove('active'));
+    el.classList.add('active');
+};
+
 // Detayları Gösterme Fonksiyonu
 window.showFacilityDetails = function(f) {
     ensureMeterStyles();
@@ -204,8 +232,8 @@ window.showFacilityDetails = function(f) {
             <div class="mp-box-top">
                 <h4 class="mp-section-title"><i class="fas fa-server"></i> ANA GİRİŞ SAYACI</h4>
                 <div class="mp-ana" tabindex="0" role="button"
-                     onclick="showMeterData('ANA SAYAÇ', '${f.name}')"
-                     onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); showMeterData('ANA SAYAÇ','${f.name}')}">
+                     onclick="selectMeterItem(this); showMeterData('ANA SAYAÇ', '${f.name}')"
+                     onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); selectMeterItem(this); showMeterData('ANA SAYAÇ','${f.name}')}">
                     <div class="mp-ana-left">
                         <span class="icon-badge lg"><i class="fas fa-bolt"></i></span>
                         <div>
@@ -230,7 +258,7 @@ window.showFacilityDetails = function(f) {
         div.setAttribute('tabindex', '0');
         div.setAttribute('role', 'button');
         div.innerHTML = `<i class="fas fa-microchip"></i><br><small>Sayaç #${i}</small>`;
-        div.onclick = () => showMeterData(`Sayaç #${i}`, f.name);
+        div.onclick = () => { selectMeterItem(div); showMeterData(`Sayaç #${i}`, f.name); };
         div.addEventListener('keydown', (e) => {
             if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); div.click(); }
         });
