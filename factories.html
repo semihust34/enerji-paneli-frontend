@@ -11,7 +11,7 @@
     </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fabrika Yönetimi - Enerji Panel</title>
+    <title>Tesis Yönetimi - Enerji Panel</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="factories-page.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -28,7 +28,7 @@
         <div class="logo">EnerjiPanel</div>
         <ul class="nav-links">
             <li><a href="admin-dashboard.html"><i class="fas fa-chart-line"></i> Genel Bakış</a></li>
-            <li><a href="factories.html" class="active"><i class="fas fa-industry"></i> Fabrikalar & Sayaçlar</a></li>
+            <li><a href="factories.html" class="active"><i class="fas fa-industry"></i> Tesisler & Sayaçlar</a></li>
             <li><a href="customer-management.html"><i class="fas fa-users"></i> Müşteri Yönetimi</a></li>
             <li><a href="system-logs.html"><i class="fas fa-terminal"></i> Sistem Logları</a></li>
         </ul>
@@ -40,35 +40,35 @@
         <div class="fp-main">
             <div class="fp-header">
                 <div>
-                    <h2>Fabrikalar</h2>
-                    <p class="fp-subtitle">Bağlı fabrikaları görüntüleyin, sayaçlarını takip edin ve yenilerini tanımlayın.</p>
+                    <h2>Tesisler</h2>
+                    <p class="fp-subtitle">Bağlı tesisleri görüntüleyin, sayaçlarını takip edin ve yenilerini tanımlayın.</p>
                 </div>
-                <button id="openFactoryModalBtn" class="btn-inline"><i class="fas fa-plus"></i> Yeni Fabrika</button>
+                <button id="openFactoryModalBtn" class="btn-inline"><i class="fas fa-plus"></i> Yeni Tesis</button>
             </div>
 
             <div class="fp-layout">
-                <!-- Sol: Fabrika Listesi -->
+                <!-- Sol: Tesis Listesi -->
                 <section class="card fp-list-card">
                     <div class="fp-card-header">
-                        <h3><i class="fas fa-industry"></i> Fabrika Listesi</h3>
+                        <h3><i class="fas fa-industry"></i> Tesis Listesi</h3>
                         <span class="fp-count" id="factoryCount">0</span>
                     </div>
                     <div class="fp-search">
                         <i class="fas fa-search"></i>
-                        <input type="text" id="factorySearchInput" placeholder="Fabrika ara...">
+                        <input type="text" id="factorySearchInput" placeholder="Tesis ara...">
                     </div>
                     <div id="factoryList"></div>
                 </section>
 
-                <!-- Sağ: Detay Paneli (Seçili Fabrika) -->
+                <!-- Sağ: Detay Paneli (Seçili Tesis) -->
                 <section id="detailPanel" class="card fp-detail-card">
                     <div class="fp-card-header">
-                        <h3><i class="fas fa-bolt"></i> <span id="detailTitle">Bir fabrika seçin</span></h3>
+                        <h3><i class="fas fa-bolt"></i> <span id="detailTitle">Bir tesis seçin</span></h3>
                     </div>
                     <div id="meterDisplay">
                         <div class="fp-empty-state">
                             <i class="fas fa-hand-pointer"></i>
-                            <p>Detayları görüntülemek için soldaki listeden bir fabrika seçin.</p>
+                            <p>Detayları görüntülemek için soldaki listeden bir tesis seçin.</p>
                         </div>
                     </div>
                 </section>
@@ -76,14 +76,14 @@
         </div>
     </main>
 
-    <!-- Yeni Fabrika Modalı -->
+    <!-- Yeni Tesis Modalı -->
     <div id="addFactoryModal" class="modal hidden">
         <div class="modal-content">
             <span class="close-btn" id="closeModalBtn">&times;</span>
-            <h3><i class="fas fa-industry"></i> Yeni Fabrika Tanımla</h3>
+            <h3><i class="fas fa-industry"></i> Yeni Tesis Tanımla</h3>
             <form id="newFactoryForm">
                 <div class="input-group">
-                    <label for="newFacName"><i class="fas fa-tag"></i> Fabrika Adı</label>
+                    <label for="newFacName"><i class="fas fa-tag"></i> Tesis Adı</label>
                     <input type="text" id="newFacName" placeholder="Örn. Bul Mühendislik" required>
                 </div>
                 <div class="input-group">
@@ -104,7 +104,7 @@
     <script src="factories.js"></script>
     <script>
         // Sayfaya özel küçük eklentiler — factories.js dosyasına dokunmadan:
-        // fabrika sayacı rozeti ve canlı arama filtresi.
+        // tesis sayacı rozeti ve canlı arama filtresi.
         (function () {
             const listEl = document.getElementById('factoryList');
             const countEl = document.getElementById('factoryCount');
