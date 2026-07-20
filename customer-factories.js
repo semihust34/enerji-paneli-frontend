@@ -70,8 +70,9 @@ function ensureMeterStyles() {
         .mp-section-title { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; letter-spacing: 0.4px; color: var(--mv-text-dim); font-weight: 600; margin: 0 0 14px 0; }
         .mp-section-title i { color: var(--mv-accent); }
 
-        .mp-ana { display: flex; align-items: center; justify-content: space-between; gap: 14px; min-width: 0; background: var(--mv-accent-bg); border: 1px solid var(--mv-accent-border); border-radius: 12px; padding: 16px 18px; cursor: pointer; margin-bottom: 28px; transition: background .15s ease, transform .15s ease; }
-        .mp-ana:hover { background: color-mix(in srgb, var(--mv-accent) 18%, transparent); transform: translateY(-1px); }
+        .mp-ana { display: flex; align-items: center; justify-content: space-between; gap: 14px; min-width: 0; background: var(--mv-bg-alt); border: 1px solid var(--mv-accent); border-radius: 12px; padding: 16px 18px; cursor: pointer; margin-bottom: 28px; transition: background .15s ease, transform .15s ease; }
+        .mp-ana:hover { background: var(--mv-accent-bg); transform: translateY(-1px); }
+        .mp-ana .icon-badge.lg { background: var(--mv-accent); color: #fff; }
         /* Hangi sayacın (ana giriş ya da alt sayaçlardan biri) o an
            görüntülendiğini net göstermek için seçili durum vurgusu. */
         .mp-ana.selected {
