@@ -14,10 +14,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // Form gönderimi
     document.getElementById('newFactoryForm').addEventListener('submit', handleFormSubmit);
 
-    // Çıkış Yap Butonu
+    // Çıkış Yap Butonu (EKLENEN KISIM)
     const logoutBtn = document.getElementById('logoutBtn');
     if (logoutBtn) {
-        logoutBtn.addEventListener('click', logout);
+        logoutBtn.addEventListener('click', () => {
+            localStorage.clear();
+            window.location.href = 'index.html';
+        });
     }
 });
 
@@ -76,6 +79,15 @@ function ensureMeterStyles() {
         }
         .fl-item:hover { border-color: var(--mv-accent); background: var(--mv-bg); transform: translateX(2px); }
         .fl-item:focus-visible { outline: 2px solid var(--mv-accent); outline-offset: 2px; }
+        /* Seçili fabrika: vurgu kenarlığı + hafif dolgu + sol şerit, böylece
+           listede hangi fabrikanın açık olduğu net görülür. */
+        .fl-item.selected {
+            border-color: var(--mv-accent);
+            background: var(--mv-accent-bg);
+            box-shadow: inset 3px 0 0 var(--mv-accent);
+        }
+        .fl-item.selected .fl-body strong { color: var(--mv-accent); }
+        .fl-item.selected .fl-chevron { color: var(--mv-accent); }
         .fl-icon {
             flex-shrink: 0;
             width: 34px; height: 34px;
@@ -166,6 +178,13 @@ function ensureMeterStyles() {
         }
         .mp-ana:hover { background: color-mix(in srgb, var(--mv-accent) 18%, transparent); transform: translateY(-1px); }
         .mp-ana:focus-visible { outline: 2px solid var(--mv-accent); outline-offset: 2px; }
+        /* Hangi sayacın (ana giriş ya da alt sayaçlardan biri) o an
+           görüntülendiğini net göstermek için seçili durum vurgusu. */
+        .mp-ana.selected {
+            background: color-mix(in srgb, var(--mv-accent) 26%, transparent);
+            border-color: var(--mv-accent);
+            box-shadow: 0 0 0 2px var(--mv-accent-border);
+        }
         .mp-ana-left { display: flex; align-items: center; gap: 12px; min-width: 0; }
         .mp-ana-left strong { font-size: 1rem; color: var(--mv-text); overflow-wrap: anywhere; }
         .mp-ana-tag { display: block; font-size: 0.75rem; color: var(--mv-text-dim); margin-top: 2px; }
@@ -188,6 +207,12 @@ function ensureMeterStyles() {
         }
         .mp-tile:hover { border-color: var(--mv-accent); background: var(--mv-accent-bg); transform: translateY(-2px); }
         .mp-tile:focus-visible { outline: 2px solid var(--mv-accent); outline-offset: 2px; }
+        .mp-tile.selected {
+            border-color: var(--mv-accent);
+            background: var(--mv-accent-bg);
+            box-shadow: 0 0 0 2px var(--mv-accent-border);
+        }
+        .mp-tile.selected small { color: var(--mv-text); font-weight: 700; }
         .mp-tile i { color: var(--mv-accent); font-size: 1.1rem; }
         .mp-tile small { display: block; margin-top: 6px; color: var(--mv-text-dim); font-size: 0.75rem; overflow-wrap: anywhere; }
 
@@ -354,7 +379,11 @@ async function loadFactories() {
             `;
 
             // Fonksiyonu burada doğrudan çağırıyoruz
-            btn.onclick = () => showDetails(f);
+            btn.onclick = () => {
+                list.querySelectorAll('.fl-item.selected').forEach(el => el.classList.remove('selected'));
+                btn.classList.add('selected');
+                showDetails(f);
+            };
             btn.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); btn.click(); }
             });
@@ -413,9 +442,7 @@ window.showDetails = function(f) {
         <div class="meter-panel">
             <div class="mp-box-top">
                 <h4 class="mp-section-title"><i class="fas fa-server"></i> ANA GİRİŞ SAYACI</h4>
-                <div class="mp-ana" tabindex="0" role="button"
-                     onclick="showMeterData('ANA SAYAÇ', '${f.name}')"
-                     onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); showMeterData('ANA SAYAÇ','${f.name}')}">
+                <div class="mp-ana" tabindex="0" role="button">
                     <div class="mp-ana-left">
                         <span class="icon-badge lg"><i class="fas fa-bolt"></i></span>
                         <div>
@@ -433,6 +460,22 @@ window.showDetails = function(f) {
         </div>
     `;
 
+    // Ana giriş sayacı ile alt sayaç kutucukları (mp-tile) arasında hangisinin
+    // o an seçili/görüntülenen sayaç olduğunu göstermek için ortak bir
+    // "selected" durumu yönetiyoruz — biri seçilince diğerlerinden kalkar.
+    const meterButtons = [];
+    function selectMeterButton(target) {
+        meterButtons.forEach(btn => btn.classList.toggle('selected', btn === target));
+    }
+
+    const anaBtn = container.querySelector('.mp-ana');
+    meterButtons.push(anaBtn);
+    const selectAna = () => { selectMeterButton(anaBtn); showMeterData('ANA SAYAÇ', f.name); };
+    anaBtn.addEventListener('click', selectAna);
+    anaBtn.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); selectAna(); }
+    });
+
     const grid = document.getElementById('subMetersGrid');
     for (let i = 1; i <= (f.meterCount || 0); i++) {
         const div = document.createElement('div');
@@ -440,10 +483,12 @@ window.showDetails = function(f) {
         div.setAttribute('tabindex', '0');
         div.setAttribute('role', 'button');
         div.innerHTML = `<i class="fas fa-microchip"></i><br><small>Sayaç #${i}</small>`;
-        div.onclick = () => showMeterData(`Sayaç #${i}`, f.name);
+        const selectTile = () => { selectMeterButton(div); showMeterData(`Sayaç #${i}`, f.name); };
+        div.onclick = selectTile;
         div.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); div.click(); }
+            if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); selectTile(); }
         });
+        meterButtons.push(div);
         grid.appendChild(div);
     }
 };
