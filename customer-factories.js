@@ -44,15 +44,6 @@ function ensureMeterStyles() {
         .fl-item { display: flex; align-items: center; gap: 12px; padding: 13px 14px; background: var(--mv-bg-alt); border: 1px solid var(--mv-border); border-radius: 10px; cursor: pointer; margin-bottom: 10px; transition: all .15s ease; }
         .fl-item:hover { border-color: var(--mv-accent); background: var(--mv-bg); transform: translateX(2px); }
         .fl-item:focus-visible { outline: 2px solid var(--mv-accent); outline-offset: 2px; }
-        /* Seçili tesis: vurgu kenarlığı + hafif dolgu + sol şerit, böylece
-           listede hangi tesisin açık olduğu net görülür. */
-        .fl-item.selected {
-            border-color: var(--mv-accent);
-            background: var(--mv-accent-bg);
-            box-shadow: inset 3px 0 0 var(--mv-accent);
-        }
-        .fl-item.selected .fl-body strong { color: var(--mv-accent); }
-        .fl-item.selected .fl-chevron { color: var(--mv-accent); }
         .fl-icon { flex-shrink: 0; width: 34px; height: 34px; border-radius: 9px; display: flex; align-items: center; justify-content: center; background: var(--mv-accent-bg); color: var(--mv-accent); font-size: 13px; }
         .fl-body { min-width: 0; flex: 1 1 auto; display: flex; flex-direction: column; }
         .fl-body strong { font-size: 0.92rem; color: var(--mv-text); overflow-wrap: anywhere; }
@@ -70,16 +61,8 @@ function ensureMeterStyles() {
         .mp-section-title { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; letter-spacing: 0.4px; color: var(--mv-text-dim); font-weight: 600; margin: 0 0 14px 0; }
         .mp-section-title i { color: var(--mv-accent); }
 
-        .mp-ana { display: flex; align-items: center; justify-content: space-between; gap: 14px; min-width: 0; background: var(--mv-bg-alt); border: 1px solid var(--mv-accent); border-radius: 12px; padding: 16px 18px; cursor: pointer; margin-bottom: 28px; transition: background .15s ease, transform .15s ease; }
-        .mp-ana:hover { background: var(--mv-accent-bg); transform: translateY(-1px); }
-        .mp-ana .icon-badge.lg { background: var(--mv-accent); color: #fff; }
-        /* Hangi sayacın (ana giriş ya da alt sayaçlardan biri) o an
-           görüntülendiğini net göstermek için seçili durum vurgusu. */
-        .mp-ana.selected {
-            background: color-mix(in srgb, var(--mv-accent) 26%, transparent);
-            border-color: var(--mv-accent);
-            box-shadow: 0 0 0 2px var(--mv-accent-border);
-        }
+        .mp-ana { display: flex; align-items: center; justify-content: space-between; gap: 14px; min-width: 0; background: var(--mv-accent-bg); border: 1px solid var(--mv-accent-border); border-radius: 12px; padding: 16px 18px; cursor: pointer; margin-bottom: 28px; transition: background .15s ease, transform .15s ease; }
+        .mp-ana:hover { background: color-mix(in srgb, var(--mv-accent) 18%, transparent); transform: translateY(-1px); }
         .mp-ana-left { display: flex; align-items: center; gap: 12px; min-width: 0; }
         .mp-ana-left strong { font-size: 1rem; color: var(--mv-text); overflow-wrap: anywhere; }
         .mp-ana-tag { display: block; font-size: 0.75rem; color: var(--mv-text-dim); margin-top: 2px; }
@@ -87,12 +70,6 @@ function ensureMeterStyles() {
         .mp-tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; margin-top: 14px; }
         .mp-tile { min-width: 0; background: var(--mv-bg-alt); border: 1px solid var(--mv-border); border-radius: 10px; padding: 14px 10px; text-align: center; cursor: pointer; transition: border-color .15s ease, transform .15s ease, background .15s ease; }
         .mp-tile:hover { border-color: var(--mv-accent); background: var(--mv-bg); transform: translateY(-2px); }
-        .mp-tile.selected {
-            border-color: var(--mv-accent);
-            background: var(--mv-accent-bg);
-            box-shadow: 0 0 0 2px var(--mv-accent-border);
-        }
-        .mp-tile.selected small { color: var(--mv-text); font-weight: 700; }
         .mp-tile i { color: var(--mv-accent); font-size: 1.1rem; }
         .mp-tile small { display: block; margin-top: 6px; color: var(--mv-text-dim); font-size: 0.75rem; overflow-wrap: anywhere; }
 
@@ -203,11 +180,7 @@ async function loadMyFactoriesList() {
                 <i class="fas fa-chevron-right fl-chevron"></i>
             `;
 
-            btn.onclick = () => {
-                list.querySelectorAll('.fl-item.selected').forEach(el => el.classList.remove('selected'));
-                btn.classList.add('selected');
-                showFacilityDetails(f);
-            };
+            btn.onclick = () => showFacilityDetails(f);
             btn.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); btn.click(); }
             });
@@ -230,7 +203,9 @@ window.showFacilityDetails = function(f) {
         <div class="meter-panel">
             <div class="mp-box-top">
                 <h4 class="mp-section-title"><i class="fas fa-server"></i> ANA GİRİŞ SAYACI</h4>
-                <div class="mp-ana" tabindex="0" role="button">
+                <div class="mp-ana" tabindex="0" role="button"
+                     onclick="showMeterData('ANA SAYAÇ', '${f.name}')"
+                     onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault(); showMeterData('ANA SAYAÇ','${f.name}')}">
                     <div class="mp-ana-left">
                         <span class="icon-badge lg"><i class="fas fa-bolt"></i></span>
                         <div>
@@ -248,22 +223,6 @@ window.showFacilityDetails = function(f) {
         </div>
     `;
 
-    // Ana giriş sayacı ile alt sayaç kutucukları arasında hangisinin o an
-    // görüntülenen sayaç olduğunu göstermek için ortak bir "selected"
-    // durumu yönetiyoruz — biri seçilince diğerlerinden kalkar.
-    const meterButtons = [];
-    function selectMeterButton(target) {
-        meterButtons.forEach(btn => btn.classList.toggle('selected', btn === target));
-    }
-
-    const anaBtn = container.querySelector('.mp-ana');
-    meterButtons.push(anaBtn);
-    const selectAna = () => { selectMeterButton(anaBtn); showMeterData('ANA SAYAÇ', f.name); };
-    anaBtn.addEventListener('click', selectAna);
-    anaBtn.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); selectAna(); }
-    });
-
     const grid = document.getElementById('subMetersGrid');
     for (let i = 1; i <= (f.meterCount || 0); i++) {
         const div = document.createElement('div');
@@ -271,12 +230,10 @@ window.showFacilityDetails = function(f) {
         div.setAttribute('tabindex', '0');
         div.setAttribute('role', 'button');
         div.innerHTML = `<i class="fas fa-microchip"></i><br><small>Sayaç #${i}</small>`;
-        const selectTile = () => { selectMeterButton(div); showMeterData(`Sayaç #${i}`, f.name); };
-        div.onclick = selectTile;
+        div.onclick = () => showMeterData(`Sayaç #${i}`, f.name);
         div.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); selectTile(); }
+            if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); div.click(); }
         });
-        meterButtons.push(div);
         grid.appendChild(div);
     }
 };
